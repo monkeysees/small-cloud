@@ -1,6 +1,8 @@
 # Small Software Cloud pilot specification
 
-Status: draft for test-seam confirmation; GitHub issue tracker configured.
+Status: testing boundaries confirmed; ready-for-agent.
+
+Published specification: [GitHub issue #1](https://github.com/monkeysees/small-cloud/issues/1).
 
 ## Problem Statement
 
@@ -90,7 +92,7 @@ The platform handles isolated builds and execution, ordinary redeployment, idle 
 
 ## Testing Decisions
 
-The proposed primary seam is the externally observable platform workflow: exercise the CLI as a creator or administrator and make authenticated HTTP requests to the directory and published tool URLs as different users. Prefer a reusable, minimal HTTP tool fixture with database and optional external-service behavior over tests tied to internal modules. There is no implementation or test suite in the reviewed workspace, so there is no existing test seam or prior test pattern to reuse. This proposal awaits the user confirmation required by the to-spec workflow.
+The confirmed primary seam is the externally observable platform workflow: exercise the CLI as a creator or administrator and make authenticated HTTP requests to the directory and published tool URLs as different users. Prefer a reusable, minimal HTTP tool fixture with database and optional external-service behavior over tests tied to internal modules. There is no implementation or test suite in the reviewed workspace, so there is no existing test seam or prior test pattern to reuse. The user confirmed this boundary together with the separate infrastructure isolation and EU-residency checks.
 
 Good tests assert outcomes, access boundaries, and preserved or removed data. They must not depend on internal class structure, orchestration objects, or a particular hosting vendor. Deterministic timing and accounting controls may be necessary for lifecycle and quota tests; their concrete design is not yet decided.
 
@@ -122,6 +124,6 @@ Good tests assert outcomes, access boundaries, and preserved or removed data. Th
 
 This specification synthesizes the domain glossary, MVP document, and eight ADRs present in the workspace. The glossary's distinction between disposable-data tools and durable apps is intentional. Disposable data must still survive routine platform lifecycle operations.
 
-There is no implementation or test suite in the reviewed folder. The project now uses GitHub Issues, with tracker conventions and default triage labels documented in the agent configuration. The requested publication label is `ready-for-agent`. This draft awaits test-seam confirmation and has not been published or labeled.
+There is no implementation or test suite in the reviewed folder. The project now uses GitHub Issues, with tracker conventions and default triage labels documented in the agent configuration. The publication label is `ready-for-agent`; unresolved infrastructure decisions remain subject to the selection gate below.
 
 The product requirements are substantially defined, but this is not an assertion that infrastructure implementation is unblocked. Provider and orchestration selection, database engine, per-tool resources, exact CLI and identity contracts, build accounting details, log-volume limits, and cleanup semantics remain open. The two-week timebox is a constraint rather than proof that all requirements fit; the hosting evaluation must establish feasibility without silently weakening accepted isolation or residency requirements.
