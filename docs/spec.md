@@ -1,6 +1,6 @@
 # Small Software Cloud pilot specification
 
-Status: draft for test-seam confirmation; issue publication pending tracker setup.
+Status: draft for test-seam confirmation; GitHub issue tracker configured.
 
 ## Problem Statement
 
@@ -122,6 +122,6 @@ Good tests assert outcomes, access boundaries, and preserved or removed data. Th
 
 This specification synthesizes the domain glossary, MVP document, and eight ADRs present in the workspace. The glossary's distinction between disposable-data tools and durable apps is intentional. Disposable data must still survive routine platform lifecycle operations.
 
-There is no implementation, test suite, Git metadata, or configured issue-tracker destination in the reviewed folder. The requested publication label is `ready-for-agent`, but the project tracker and its available label vocabulary have not been established. Run `/setup-matt-pocock-skills` to configure them before publication. This draft has not been published or labeled.
+There is no implementation or test suite in the reviewed folder. The project now uses GitHub Issues, with tracker conventions and default triage labels documented in the agent configuration. The requested publication label is `ready-for-agent`. This draft awaits test-seam confirmation and has not been published or labeled.
 
 The product requirements are substantially defined, but this is not an assertion that infrastructure implementation is unblocked. Provider and orchestration selection, database engine, per-tool resources, exact CLI and identity contracts, build accounting details, log-volume limits, and cleanup semantics remain open. The two-week timebox is a constraint rather than proof that all requirements fit; the hosting evaluation must establish feasibility without silently weakening accepted isolation or residency requirements.
