@@ -88,7 +88,7 @@ The platform handles isolated builds and execution, ordinary redeployment, idle 
 - **Creator removal:** Immediately revoke the removed creator's platform credentials and disable their tools. Do not implicitly transfer ownership.
 - **Residency:** Store source, images, databases, secrets, and logs in EU regions and execute builds and tools there. Provider account metadata and support access need not remain entirely in the EU. Creators are responsible for destinations of their configured external API calls.
 - **Infrastructure selection gate:** Before infrastructure implementation, select provider, orchestration, isolated build execution, database engine, and resource limits using a bounded isolation test, EU-residency check, capacity check, and complete cost estimate. Prefer managed container execution with an explicit isolation boundary and an isolated build service. Managed Kubernetes and VM-based sandboxed containers remain candidates; neither is accepted. Hide Kubernetes concepts from creator workflows if selected.
-- **Budget interpretation:** Use the MVP's $100/month infrastructure spending target excluding labor, supported by alerts rather than a guaranteed hard cap. The original pilot ADR uses “ceiling”; this inconsistency requires an explicit documentation resolution and is not evidence of a technically enforceable cap.
+- **Budget interpretation:** Use the MVP's $100/month infrastructure spending target excluding labor, supported by alerts rather than a guaranteed hard cap. Issue #2 resolves the original pilot ADR's “ceiling” wording to this target; ADR 0001 now agrees. Alerts are not evidence of a technically enforceable cap.
 
 ## Testing Decisions
 
