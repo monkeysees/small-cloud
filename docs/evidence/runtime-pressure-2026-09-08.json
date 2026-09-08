@@ -1,0 +1,1851 @@
+[
+  {
+    "mode": "cpu",
+    "candidate_start_seconds": 2.3,
+    "limits": {
+      "NanoCpus": 500000000,
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "PidsLimit": 128,
+      "ReadonlyRootfs": true,
+      "Tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      }
+    },
+    "exit": 0,
+    "output": "{\"resource\": \"cpu\", \"observed\": \"cpu_seconds_over_ten_wall_seconds\", \"value\": 8.93, \"rlimit_nproc\": [128, 128]}\n",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 7829,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-09-08T11:34:39.727900946Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "neighbor_requests": [
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 47.0
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.09
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 5.45
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.69
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.59
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.82
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.57
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.69
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.51
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.36
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.97
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.39
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.43
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.26
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.46
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.57
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.1
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.33
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.76
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.29
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.95
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.57
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.3
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.7
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.62
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.33
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.04
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.57
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.53
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.19
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.16
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.98
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.74
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.59
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.93
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.2
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.04
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.01
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.53
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.23
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.97
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.24
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.82
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.72
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.89
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.9
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.45
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.26
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.17
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.42
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.38
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.34
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.19
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.4
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.44
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.69
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.44
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.38
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.3
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 4.07
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.95
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.39
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.95
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.09
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.31
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.53
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.31
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.9
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.27
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.3
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.07
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.65
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.45
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.19
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.17
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.75
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.44
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.34
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.18
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.06
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.72
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.53
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.34
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.96
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.47
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.9
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.18
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.25
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.6
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.27
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.21
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.15
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.56
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.93
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.75
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.21
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.39
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 4.04
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.36
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.97
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.56
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.05
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.71
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.56
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.43
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.3
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.7
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.94
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 4.19
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.44
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 5.03
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.2
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 4.22
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.7
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.7
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.1
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 2.93
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.65
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.57
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.78
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.1
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.63
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.95
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 4.04
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.3
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.91
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.32
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.4
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.21
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.26
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.93
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.29
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.03
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.49
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.82
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.71
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.21
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.93
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.13
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.13
+      }
+    ]
+  },
+  {
+    "mode": "pids",
+    "candidate_start_seconds": 2.093,
+    "limits": {
+      "NanoCpus": 500000000,
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "PidsLimit": 128,
+      "ReadonlyRootfs": true,
+      "Tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      }
+    },
+    "exit": 128,
+    "output": "",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": true,
+      "Dead": false,
+      "Pid": 8212,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-09-08T11:34:54.17471061Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "neighbor_requests": [
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.78
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.39
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.36
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.76
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.69
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.52
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.12
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.81
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.95
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.29
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.12
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.79
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.65
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.39
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.26
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.91
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.02
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.37
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.78
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.08
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.95
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.22
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.85
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.84
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.88
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.08
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.45
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.43
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.61
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.14
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.33
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 2.83
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.97
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.83
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.97
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.18
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.5
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.51
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.7
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.25
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.73
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.4
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.26
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.02
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.05
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.56
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.1
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 4.14
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.44
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.98
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.2
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.23
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.32
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.59
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 5.24
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.84
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.51
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.22
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.44
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.49
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.78
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.62
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.85
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.71
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.06
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 2.96
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.03
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.45
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.12
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.38
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.15
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.04
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.5
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.31
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.72
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.63
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.28
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 4.26
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.48
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.86
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.82
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.29
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.45
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.9
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.98
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.97
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.12
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.15
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.2
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.27
+      }
+    ]
+  },
+  {
+    "mode": "memory",
+    "candidate_start_seconds": 2.298,
+    "limits": {
+      "NanoCpus": 500000000,
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "PidsLimit": 128,
+      "ReadonlyRootfs": true,
+      "Tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      }
+    },
+    "exit": 128,
+    "output": "",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": true,
+      "Dead": false,
+      "Pid": 8707,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-09-08T11:35:03.674572478Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "neighbor_requests": [
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.18
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.21
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.88
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.77
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.84
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.45
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.92
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.61
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.65
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.25
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.37
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 4.18
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.34
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.88
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.65
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.91
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.69
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.61
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.21
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.04
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.31
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.38
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.57
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.49
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.22
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.41
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.63
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.24
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.19
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.49
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.68
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.69
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 4.07
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.54
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.19
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.0
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.22
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.38
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.63
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.53
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.98
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.43
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.56
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.95
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.82
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.48
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 2.8
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.65
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.49
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.43
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.93
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.91
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.88
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.77
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.06
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.71
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.13
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.96
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.78
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.66
+      }
+    ]
+  },
+  {
+    "mode": "disk",
+    "candidate_start_seconds": 2.126,
+    "limits": {
+      "NanoCpus": 500000000,
+      "Memory": 536870912,
+      "MemorySwap": 536870912,
+      "PidsLimit": 128,
+      "ReadonlyRootfs": true,
+      "Tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      }
+    },
+    "exit": 128,
+    "output": "",
+    "state": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": true,
+      "Dead": false,
+      "Pid": 9096,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-09-08T11:35:09.753353042Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "neighbor_requests": [
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.08
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.34
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.06
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.98
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.02
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.94
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.14
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.14
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.12
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.17
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.87
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.53
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.37
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.62
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.19
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.4
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.3
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.17
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.81
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.6
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.62
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.0
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.99
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.59
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 2.95
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.2
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.89
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 4.42
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 4.46
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.83
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.8
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.23
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.98
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.09
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.3
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.98
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.68
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.8
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 2.97
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.26
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 4.15
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.33
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 2.92
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.33
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.32
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.84
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 2.99
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.13
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.04
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.25
+      },
+      {
+        "port": 18080,
+        "status": 200,
+        "latency_ms": 3.57
+      },
+      {
+        "port": 18081,
+        "status": 200,
+        "latency_ms": 3.01
+      },
+      {
+        "port": 18082,
+        "status": 200,
+        "latency_ms": 3.01
+      },
+      {
+        "port": 18083,
+        "status": 200,
+        "latency_ms": 3.45
+      },
+      {
+        "port": 18084,
+        "status": 200,
+        "latency_ms": 3.32
+      }
+    ]
+  }
+]

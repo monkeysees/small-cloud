@@ -8,7 +8,7 @@ secrets or database credentials on this VM. An SSH public key is sufficient for
 the trusted upload/export channel; its private key stays with the operator.
 
 Run `bootstrap.sh` as root before uploading any creator content. Copy `run.sh`
-and `worker.py` to `/opt/small-cloud-builder/`, then upload an **uncompressed** tar
+and `worker.py` to `/opt/small-cloud-builder/`, with the shared `harden.sh` beside `bootstrap.sh`, then upload an **uncompressed** tar
 archive to `/var/lib/small-cloud-build/context.tar`. Run:
 
 ```bash
@@ -68,6 +68,8 @@ healthy forbidden-endpoint controls, public HTTPS, IPv6 denial, export limits,
 disconnect handling and cloud deletion before admitting creator workloads.
 The VM boundary also needs evaluation against the current kernel/daemon versions;
 this implementation does not claim protection from a guest kernel escape.
+
+The coordinator also retrieves bounded `resources.json` from the trusted `evidence.py` helper before deletion: ancestor cgroup peaks/events, filesystem size, host/namespace IPv6 disable state and crash-export policy. This is optional diagnostic evidence for a build, not a replacement for its success result. Acceptance requires these observations for the dedicated pressure probes. The [permanent-foundation report](../../docs/hosting-acceptance-2026-09-08.md) records the real checks, including zero populated tasks after resource exhaustion and a fresh hardened builder.
 
 Package versions come from the Ubuntu archive at bootstrap time and must be
 recorded in each evaluation result; no prepared image or shared cache is used.

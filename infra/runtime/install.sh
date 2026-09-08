@@ -4,6 +4,8 @@ set -euo pipefail
 : "${RUNSC_URL:?Set an immutable https gVisor release artifact URL}"
 : "${RUNSC_SHA256:?Set its independently verified SHA256}"
 [[ "$(id -u)" == 0 && "$(uname -m)" == x86_64 ]]
+runtime_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+bash "$runtime_dir/../harden.sh"
 [[ "$RUNSC_URL" == https://storage.googleapis.com/gvisor/releases/release/*/x86_64/gvisor.tar.bz2 ]]
 [[ "$RUNSC_URL" != *latest* && "$RUNSC_SHA256" =~ ^[0-9a-f]{64}$ ]]
 daemon_config='{"runtimes":{"runsc":{"path":"/usr/local/bin/runsc","runtimeArgs":["--network=sandbox"]}},"ipv6":false,"live-restore":false,"log-driver":"none"}'

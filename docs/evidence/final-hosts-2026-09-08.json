@@ -1,0 +1,163 @@
+{
+  "checked_at": "2026-09-08T12:47:03.302574+00:00",
+  "hosts": {
+    "runtime": {
+      "core_handler": "|/bin/false",
+      "ipv6_disabled": "1",
+      "apport": "masked",
+      "crash_entries": 0,
+      "remote_syslog_rules": 0,
+      "health": {
+        "time": "2026-09-08T12:47:41.706238+00:00",
+        "host": "small-cloud-runtime",
+        "disks": [
+          {
+            "path": "/",
+            "used_percent": 0.9,
+            "free_bytes": 306151919616
+          }
+        ],
+        "services": [
+          {
+            "unit": "docker.service",
+            "active": true
+          },
+          {
+            "unit": "small-cloud-runtime-images.timer",
+            "active": true
+          }
+        ],
+        "alerts": [],
+        "peers": [
+          {
+            "name": "control",
+            "reachable": true
+          }
+        ],
+        "oneshot_services": [
+          {
+            "unit": "small-cloud-runtime-images.service",
+            "successful": true
+          }
+        ],
+        "tls": {
+          "hostname": "small-cloud.monkeysees.one",
+          "expires": "2026-12-07T10:23:28+00:00",
+          "days_remaining": 89
+        },
+        "delivery": "not requested"
+      },
+      "boot_id_changed": true
+    },
+    "control": {
+      "core_handler": "|/bin/false",
+      "ipv6_disabled": "0",
+      "apport": "masked",
+      "crash_entries": 0,
+      "remote_syslog_rules": 0,
+      "health": {
+        "time": "2026-09-08T12:48:19.669379+00:00",
+        "host": "small-cloud-control",
+        "disks": [
+          {
+            "path": "/",
+            "used_percent": 2.9,
+            "free_bytes": 149611196416
+          }
+        ],
+        "services": [
+          {
+            "unit": "caddy.service",
+            "active": true
+          },
+          {
+            "unit": "docker-registry.service",
+            "active": true
+          },
+          {
+            "unit": "postgresql@16-main.service",
+            "active": true
+          },
+          {
+            "unit": "small-cloud-artifacts.timer",
+            "active": true
+          },
+          {
+            "unit": "small-cloud-reconcile.timer",
+            "active": true
+          },
+          {
+            "unit": "small-cloud-releases.timer",
+            "active": true
+          },
+          {
+            "unit": "small-cloud-spending.timer",
+            "active": true
+          }
+        ],
+        "alerts": [
+          "forecast_usd reached USD 100 threshold"
+        ],
+        "peers": [
+          {
+            "name": "runtime",
+            "reachable": true
+          }
+        ],
+        "oneshot_services": [
+          {
+            "unit": "small-cloud-artifacts.service",
+            "successful": true
+          },
+          {
+            "unit": "small-cloud-reconcile.service",
+            "successful": true
+          },
+          {
+            "unit": "small-cloud-releases.service",
+            "successful": true
+          },
+          {
+            "unit": "small-cloud-spending.service",
+            "successful": true
+          }
+        ],
+        "tls": {
+          "hostname": "small-cloud.monkeysees.one",
+          "expires": "2026-12-07T10:23:28+00:00",
+          "days_remaining": 89
+        },
+        "spending": {
+          "estimated_usd": 1.88,
+          "forecast_usd": 108.31,
+          "estimated_eur_net": 1.6175,
+          "forecast_eur_net": 93.1936,
+          "basis": "api-resource-estimate",
+          "as_of": "2026-09-08T12:48:18.538132+00:00",
+          "source": "Hetzner project inventory, current price API, creation times, traffic counters and builder deletion archives",
+          "fx_source": "ECB EUR/USD reference rate 1.1622; https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+          "fx_as_of": "2026-09-07T00:00:00+00:00",
+          "vat_percent": "0.000000",
+          "month": "2026-09",
+          "resource_count": 44,
+          "opening_estimate": {
+            "month": "2026-09",
+            "amount_eur": "0.4678",
+            "source": "docs/evidence/hosting-2026-09-08.json; upper bound of temporary validation estimate, not invoice"
+          },
+          "warnings": [],
+          "assumptions": [
+            "Estimate, not an invoice; current account prices and quoted VAT are used",
+            "Forecast retains currently live resources until month end; future new builds and future traffic excluded",
+            "Resources deleted outside this controller between polls may be missed; deletion detection can overestimate lifetime",
+            "Project-only scope; other projects, support, domains and external services excluded"
+          ]
+        },
+        "delivery": "not requested"
+      },
+      "boot_id_changed": true
+    }
+  },
+  "sentinel": "permanent-reapply-reboot",
+  "runtime_allocations": []
+}

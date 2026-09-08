@@ -1,0 +1,30 @@
+{
+  "base_digest": "sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e",
+  "source_files": {
+    "Dockerfile": "FROM node:24-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e\nWORKDIR /app\nCOPY server.js ./\nRUN node --check server.js\nUSER 65532:65532\nCMD [\"node\", \"--max-old-space-size=384\", \"/app/server.js\"]\n",
+    "server.js": "require('node:http').createServer((req,res)=>{res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({runtime:process.version,uid:process.getuid()}));}).listen(Number(process.env.PORT || 8080),'0.0.0.0');\n"
+  },
+  "runtime": {
+    "candidate": {
+      "runtime": "v24.20.0",
+      "uid": 65532
+    },
+    "old_status": 200
+  },
+  "result": {
+    "ok": true,
+    "image_archive_sha256": "0f27491f9429b9a6b13766865c726fb4fbceedf04490f10cb063dc183db00ae7",
+    "image_bytes": 235104256,
+    "dropped_log_bytes": 0,
+    "execution_started_at": "2026-09-08T11:42:27Z",
+    "execution_completed_at": "2026-09-08T11:42:34Z",
+    "execution_duration_seconds": 7.212
+  },
+  "teardown": {
+    "id": 165133314,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  }
+}

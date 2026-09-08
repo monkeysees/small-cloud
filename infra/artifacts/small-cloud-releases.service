@@ -1,0 +1,12 @@
+[Unit]
+Description=Prune retired Small Cloud registry releases
+After=docker-registry.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/small-cloud/infra/releases.py prune
+ExecStopPost=/usr/bin/systemctl start docker-registry.service
+TimeoutStartSec=600
+MemoryMax=512M
+TasksMax=64
+UMask=0077

@@ -1,0 +1,750 @@
+{
+  "checked_at": "2026-09-08T12:48:42.101027+00:00",
+  "currency": "EUR",
+  "vat_rate": "0.000000",
+  "server_prices": [
+    {
+      "name": "cpx22",
+      "cores": 2,
+      "memory": 4,
+      "disk": 80,
+      "prices": [
+        {
+          "location": "fsn1",
+          "price_hourly": {
+            "gross": "0.0312000000000000",
+            "net": "0.0312000000"
+          },
+          "price_monthly": {
+            "gross": "19.4900000000000000",
+            "net": "19.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "hel1",
+          "price_hourly": {
+            "gross": "0.0312000000000000",
+            "net": "0.0312000000"
+          },
+          "price_monthly": {
+            "gross": "19.4900000000000000",
+            "net": "19.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "nbg1",
+          "price_hourly": {
+            "gross": "0.0312000000000000",
+            "net": "0.0312000000"
+          },
+          "price_monthly": {
+            "gross": "19.4900000000000000",
+            "net": "19.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "sin",
+          "price_hourly": {
+            "gross": "0.0425000000000000",
+            "net": "0.0425000000"
+          },
+          "price_monthly": {
+            "gross": "26.4900000000000000",
+            "net": "26.4900000000"
+          },
+          "included_traffic": 1099511627776,
+          "price_per_tb_traffic": {
+            "gross": "7.4000000000000000",
+            "net": "7.4000000000"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "id": 1,
+          "name": "fsn1",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 2,
+          "name": "nbg1",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 3,
+          "name": "hel1",
+          "available": true,
+          "recommended": true,
+          "deprecation": null
+        },
+        {
+          "id": 6,
+          "name": "sin",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        }
+      ]
+    },
+    {
+      "name": "cpx32",
+      "cores": 4,
+      "memory": 8,
+      "disk": 160,
+      "prices": [
+        {
+          "location": "fsn1",
+          "price_hourly": {
+            "gross": "0.0569000000000000",
+            "net": "0.0569000000"
+          },
+          "price_monthly": {
+            "gross": "35.4900000000000000",
+            "net": "35.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "hel1",
+          "price_hourly": {
+            "gross": "0.0569000000000000",
+            "net": "0.0569000000"
+          },
+          "price_monthly": {
+            "gross": "35.4900000000000000",
+            "net": "35.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "nbg1",
+          "price_hourly": {
+            "gross": "0.0569000000000000",
+            "net": "0.0569000000"
+          },
+          "price_monthly": {
+            "gross": "35.4900000000000000",
+            "net": "35.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "sin",
+          "price_hourly": {
+            "gross": "0.0785000000000000",
+            "net": "0.0785000000"
+          },
+          "price_monthly": {
+            "gross": "48.9900000000000000",
+            "net": "48.9900000000"
+          },
+          "included_traffic": 2199023255552,
+          "price_per_tb_traffic": {
+            "gross": "7.4000000000000000",
+            "net": "7.4000000000"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "id": 1,
+          "name": "fsn1",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 2,
+          "name": "nbg1",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 3,
+          "name": "hel1",
+          "available": true,
+          "recommended": true,
+          "deprecation": null
+        },
+        {
+          "id": 6,
+          "name": "sin",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        }
+      ]
+    },
+    {
+      "name": "cpx42",
+      "cores": 8,
+      "memory": 16,
+      "disk": 320,
+      "prices": [
+        {
+          "location": "fsn1",
+          "price_hourly": {
+            "gross": "0.1114000000000000",
+            "net": "0.1114000000"
+          },
+          "price_monthly": {
+            "gross": "69.4900000000000000",
+            "net": "69.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "hel1",
+          "price_hourly": {
+            "gross": "0.1114000000000000",
+            "net": "0.1114000000"
+          },
+          "price_monthly": {
+            "gross": "69.4900000000000000",
+            "net": "69.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "nbg1",
+          "price_hourly": {
+            "gross": "0.1114000000000000",
+            "net": "0.1114000000"
+          },
+          "price_monthly": {
+            "gross": "69.4900000000000000",
+            "net": "69.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "sin",
+          "price_hourly": {
+            "gross": "0.1498000000000000",
+            "net": "0.1498000000"
+          },
+          "price_monthly": {
+            "gross": "93.4900000000000000",
+            "net": "93.4900000000"
+          },
+          "included_traffic": 3298534883328,
+          "price_per_tb_traffic": {
+            "gross": "7.4000000000000000",
+            "net": "7.4000000000"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "id": 1,
+          "name": "fsn1",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 2,
+          "name": "nbg1",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 3,
+          "name": "hel1",
+          "available": true,
+          "recommended": true,
+          "deprecation": null
+        },
+        {
+          "id": 6,
+          "name": "sin",
+          "available": true,
+          "recommended": false,
+          "deprecation": null
+        }
+      ]
+    },
+    {
+      "name": "cx23",
+      "cores": 2,
+      "memory": 4,
+      "disk": 40,
+      "prices": [
+        {
+          "location": "fsn1",
+          "price_hourly": {
+            "gross": "0.0088000000000000",
+            "net": "0.0088000000"
+          },
+          "price_monthly": {
+            "gross": "5.4900000000000000",
+            "net": "5.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "hel1",
+          "price_hourly": {
+            "gross": "0.0088000000000000",
+            "net": "0.0088000000"
+          },
+          "price_monthly": {
+            "gross": "5.4900000000000000",
+            "net": "5.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "nbg1",
+          "price_hourly": {
+            "gross": "0.0088000000000000",
+            "net": "0.0088000000"
+          },
+          "price_monthly": {
+            "gross": "5.4900000000000000",
+            "net": "5.4900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "id": 1,
+          "name": "fsn1",
+          "available": false,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 2,
+          "name": "nbg1",
+          "available": false,
+          "recommended": false,
+          "deprecation": null
+        },
+        {
+          "id": 3,
+          "name": "hel1",
+          "available": false,
+          "recommended": false,
+          "deprecation": null
+        }
+      ]
+    }
+  ],
+  "ipv4_prices": [
+    {
+      "type": "ipv4",
+      "prices": [
+        {
+          "location": "fsn1",
+          "price_hourly": {
+            "net": "0.0008000000",
+            "gross": "0.0008000000000000"
+          },
+          "price_monthly": {
+            "net": "0.5000000000",
+            "gross": "0.5000000000000000"
+          }
+        },
+        {
+          "location": "nbg1",
+          "price_hourly": {
+            "net": "0.0008000000",
+            "gross": "0.0008000000000000"
+          },
+          "price_monthly": {
+            "net": "0.5000000000",
+            "gross": "0.5000000000000000"
+          }
+        },
+        {
+          "location": "hel1",
+          "price_hourly": {
+            "net": "0.0008000000",
+            "gross": "0.0008000000000000"
+          },
+          "price_monthly": {
+            "net": "0.5000000000",
+            "gross": "0.5000000000000000"
+          }
+        },
+        {
+          "location": "ash",
+          "price_hourly": {
+            "net": "0.0008000000",
+            "gross": "0.0008000000000000"
+          },
+          "price_monthly": {
+            "net": "0.5000000000",
+            "gross": "0.5000000000000000"
+          }
+        },
+        {
+          "location": "hil",
+          "price_hourly": {
+            "net": "0.0008000000",
+            "gross": "0.0008000000000000"
+          },
+          "price_monthly": {
+            "net": "0.5000000000",
+            "gross": "0.5000000000000000"
+          }
+        },
+        {
+          "location": "sin",
+          "price_hourly": {
+            "net": "0.0008000000",
+            "gross": "0.0008000000000000"
+          },
+          "price_monthly": {
+            "net": "0.5000000000",
+            "gross": "0.5000000000000000"
+          }
+        }
+      ]
+    }
+  ],
+  "inventory": {
+    "servers": [
+      {
+        "id": 165120313,
+        "name": "small-cloud-control",
+        "status": "running",
+        "assignee_id": null,
+        "created": "2026-09-08T10:29:10Z"
+      },
+      {
+        "id": 165120370,
+        "name": "small-cloud-runtime",
+        "status": "running",
+        "assignee_id": null,
+        "created": "2026-09-08T10:29:29Z"
+      }
+    ],
+    "primary_ips": [
+      {
+        "id": 148618556,
+        "name": "primary_ip-148618556",
+        "status": null,
+        "assignee_id": 165120313,
+        "created": "2026-09-08T10:29:10Z"
+      },
+      {
+        "id": 148618592,
+        "name": "primary_ip-148618592",
+        "status": null,
+        "assignee_id": 165120370,
+        "created": "2026-09-08T10:29:29Z"
+      }
+    ],
+    "volumes": [],
+    "load_balancers": []
+  },
+  "current_estimate": {
+    "estimated_usd": 1.88,
+    "forecast_usd": 108.31,
+    "estimated_eur_net": 1.6175,
+    "forecast_eur_net": 93.1936,
+    "basis": "api-resource-estimate",
+    "as_of": "2026-09-08T12:48:43.599694+00:00",
+    "source": "Hetzner project inventory, current price API, creation times, traffic counters and builder deletion archives",
+    "fx_source": "ECB EUR/USD reference rate 1.1622; https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+    "fx_as_of": "2026-09-07T00:00:00+00:00",
+    "vat_percent": "0.000000",
+    "month": "2026-09",
+    "resource_count": 44,
+    "opening_estimate": {
+      "month": "2026-09",
+      "amount_eur": "0.4678",
+      "source": "docs/evidence/hosting-2026-09-08.json; upper bound of temporary validation estimate, not invoice"
+    },
+    "warnings": [],
+    "assumptions": [
+      "Estimate, not an invoice; current account prices and quoted VAT are used",
+      "Forecast retains currently live resources until month end; future new builds and future traffic excluded",
+      "Resources deleted outside this controller between polls may be missed; deletion detection can overestimate lifetime",
+      "Project-only scope; other projects, support, domains and external services excluded"
+    ]
+  },
+  "completed_builder_lifetimes": [
+    {
+      "id": 165127027,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:04:15Z",
+      "deleted_at": "2026-09-08T11:05:31.686488+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148623200
+      ]
+    },
+    {
+      "id": 165128354,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:12:38Z",
+      "deleted_at": "2026-09-08T11:17:45.788733+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148623976
+      ]
+    },
+    {
+      "id": 165128384,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:12:49Z",
+      "deleted_at": "2026-09-08T11:17:58.287977+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148624012
+      ]
+    },
+    {
+      "id": 165128440,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:12:58Z",
+      "deleted_at": "2026-09-08T11:18:08.744583+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148624059
+      ]
+    },
+    {
+      "id": 165128486,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:13:08Z",
+      "deleted_at": "2026-09-08T11:18:42.844194+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148624107
+      ]
+    },
+    {
+      "id": 165128546,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:13:19Z",
+      "deleted_at": "2026-09-08T11:18:32.372863+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148624156
+      ]
+    },
+    {
+      "id": 165130092,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:21:12Z",
+      "deleted_at": "2026-09-08T11:43:19.543913+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148625408
+      ]
+    },
+    {
+      "id": 165131151,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:27:43Z",
+      "deleted_at": "2026-09-08T11:29:37.153415+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148626262
+      ]
+    },
+    {
+      "id": 165132031,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:32:35Z",
+      "deleted_at": "2026-09-08T11:34:45.489181+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148627345
+      ]
+    },
+    {
+      "id": 165132129,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:33:31Z",
+      "deleted_at": "2026-09-08T11:35:09.533449+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148627474
+      ]
+    },
+    {
+      "id": 165132139,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:33:40Z",
+      "deleted_at": "2026-09-08T11:34:59.051614+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148627490
+      ]
+    },
+    {
+      "id": 165132156,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:33:51Z",
+      "deleted_at": "2026-09-08T11:35:20.012702+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148627499
+      ]
+    },
+    {
+      "id": 165132577,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:37:07Z",
+      "deleted_at": "2026-09-08T11:39:20.224673+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148627776
+      ]
+    },
+    {
+      "id": 165133314,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:41:34Z",
+      "deleted_at": "2026-09-08T11:42:47.760735+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148628269
+      ]
+    },
+    {
+      "id": 165135940,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T11:57:01Z",
+      "deleted_at": "2026-09-08T11:58:21.014133+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148630476
+      ]
+    },
+    {
+      "id": 165143016,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T12:38:46Z",
+      "deleted_at": "2026-09-08T12:44:04.430112+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148636662
+      ]
+    },
+    {
+      "id": 165143049,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T12:38:59Z",
+      "deleted_at": "2026-09-08T12:44:21.329212+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148636682
+      ]
+    },
+    {
+      "id": 165143074,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T12:39:13Z",
+      "deleted_at": "2026-09-08T12:44:31.851775+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148636691
+      ]
+    },
+    {
+      "id": 165143098,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T12:39:24Z",
+      "deleted_at": "2026-09-08T12:44:42.301706+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148636703
+      ]
+    },
+    {
+      "id": 165143109,
+      "type": "cpx22",
+      "location": "nbg1",
+      "created": "2026-09-08T12:39:35Z",
+      "deleted_at": "2026-09-08T12:44:55.221121+00:00",
+      "rounded_hours": 1,
+      "deleted_addresses": [
+        148636712
+      ]
+    }
+  ],
+  "completed_builder_compute_ipv4_estimate_eur": 0.64
+}

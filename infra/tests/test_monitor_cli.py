@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 import os
+import socket
 from pathlib import Path
 import subprocess
 import sys
@@ -38,7 +39,7 @@ class MonitorCLI(unittest.TestCase):
                          'as_of': now.isoformat(), 'source': 'fixture metering; September',
                          'fx_source': 'fixture USD identity rate 1', 'fx_as_of': now.isoformat()}
 
-    def invoke(self, extra=()):
+    def invoke(self, extra=(), job_result='success'):
         self.spend.write_text(json.dumps(self.evidence))
         original_fstat, original_lstat = os.fstat, Path.lstat
         stdout = io.StringIO()
@@ -48,7 +49,7 @@ class MonitorCLI(unittest.TestCase):
             stack.enter_context(patch.object(os, 'fstat', side_effect=lambda fd: root_metadata(original_fstat(fd))))
             stack.enter_context(patch.object(Path, 'lstat', lambda path: root_metadata(original_lstat(path))))
             stack.enter_context(patch.object(monitor.shutil, 'disk_usage', return_value=SimpleNamespace(total=100, used=20, free=80)))
-            stack.enter_context(patch.object(monitor.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)))
+            stack.enter_context(patch.object(monitor.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, job_result)))
             smtp = stack.enter_context(patch.object(monitor.smtplib, 'SMTP', side_effect=AssertionError('unexpected SMTP')))
             smtps = stack.enter_context(patch.object(monitor.smtplib, 'SMTP_SSL', side_effect=AssertionError('unexpected SMTP TLS')))
             stack.enter_context(redirect_stdout(stdout))
@@ -69,6 +70,28 @@ class MonitorCLI(unittest.TestCase):
                 for message, threshold in zip(alerts, expected):
                     self.assertIn(f'USD {threshold} threshold', message)
                 self.assertEqual(report['delivery'], 'not requested')
+
+    def test_peer_loss_is_reported_and_recovery_clears_the_alert(self):
+        with socket.socket() as listener:
+            listener.bind(('127.0.0.1', 0))
+            endpoint = {'name': 'runtime', 'host': '127.0.0.1', 'port': listener.getsockname()[1]}
+            config = json.loads(self.config.read_text())
+            config['peers'] = [endpoint]
+            self.config.write_text(json.dumps(config))
+            report = self.invoke()
+            self.assertIn('Peer runtime is unreachable', report['alerts'])
+            listener.listen()
+            report = self.invoke()
+            self.assertEqual(report['peers'], [{'name': 'runtime', 'reachable': True}])
+            self.assertEqual(report['alerts'], [])
+
+    def test_failed_scheduled_cleanup_is_reported_without_treating_successful_inactive_jobs_as_down(self):
+        config = json.loads(self.config.read_text())
+        config['oneshot_services'] = ['small-cloud-releases.service']
+        self.config.write_text(json.dumps(config))
+        self.assertEqual(self.invoke()['alerts'], [])
+        report = self.invoke(job_result='exit-code')
+        self.assertIn('Scheduled service small-cloud-releases.service failed', report['alerts'])
 
     def test_stale_or_estimated_actuals_close_spending_evidence(self):
         for changes in ({'as_of': (datetime.now(timezone.utc) - timedelta(days=3)).isoformat()},

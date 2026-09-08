@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-09-08T11:42:33.753059+00:00",
+  "records": [
+    {
+      "path": "/issue17-20260908-a-runtime",
+      "time": 1788866887.4612422
+    },
+    {
+      "path": "/issue17-20260908-a-runtime",
+      "time": 1788866890.6049006
+    },
+    {
+      "path": "/redirect/issue17-20260908-a-runtime",
+      "time": 1788866890.7517157
+    },
+    {
+      "path": "/issue17-20260908-a-runtime-rebind-ready",
+      "time": 1788866893.9659472
+    },
+    {
+      "path": "/issue17-20260908-a-build",
+      "time": 1788866952.202194
+    },
+    {
+      "path": "/issue17-20260908-a-build",
+      "time": 1788866955.3029654
+    },
+    {
+      "path": "/redirect/issue17-20260908-a-build",
+      "time": 1788866955.3701832
+    },
+    {
+      "path": "/issue17-20260908-a-build-rebind-ready",
+      "time": 1788866958.538591
+    },
+    {
+      "path": "/issue17-20260908-b-runtime",
+      "time": 1788867179.1379128
+    },
+    {
+      "path": "/issue17-20260908-b-runtime",
+      "time": 1788867182.3420165
+    },
+    {
+      "path": "/redirect/issue17-20260908-b-runtime",
+      "time": 1788867182.505158
+    },
+    {
+      "path": "/issue17-20260908-b-runtime-rebind-ready",
+      "time": 1788867185.6749108
+    },
+    {
+      "path": "/issue17-20260908-b-build",
+      "time": 1788867249.2437298
+    },
+    {
+      "path": "/issue17-20260908-b-build",
+      "time": 1788867252.347846
+    },
+    {
+      "path": "/redirect/issue17-20260908-b-build",
+      "time": 1788867252.414604
+    },
+    {
+      "path": "/issue17-20260908-b-build-rebind-ready",
+      "time": 1788867255.5803626
+    }
+  ]
+}

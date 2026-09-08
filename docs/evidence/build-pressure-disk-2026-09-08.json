@@ -1,0 +1,52 @@
+{
+  "result.json": {
+    "ok": true,
+    "image_archive_sha256": "4b8ea235263501210cce618ce2c24c08076eb279a764eb065873fc287df30fb8",
+    "image_bytes": 130418688,
+    "dropped_log_bytes": 0,
+    "execution_started_at": "2026-09-08T11:38:07Z",
+    "execution_completed_at": "2026-09-08T11:39:06Z",
+    "execution_duration_seconds": 59.763
+  },
+  "resources.json": {
+    "kernel": "6.8.0-138-generic",
+    "cgroup": {
+      "cpu.max": "200000 100000",
+      "cpu.stat": "usage_usec 16262996\nuser_usec 3847639\nsystem_usec 12415357\ncore_sched.force_idle_usec 0\nnr_periods 595\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "memory.max": "3670016000",
+      "memory.peak": "3357876224",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "memory.swap.max": "0",
+      "pids.max": "512",
+      "pids.peak": "58",
+      "pids.events": "max 0",
+      "cgroup.events": "populated 0\nfrozen 0"
+    },
+    "filesystem_bytes": 10464022528,
+    "filesystem_free_bytes": 10173136896,
+    "ipv6_disabled": "1",
+    "build_namespace_ipv6_disabled": "1",
+    "trusted_host_metadata_listener": true
+  },
+  "teardown.json": {
+    "id": 165132577,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  },
+  "builder.json": {
+    "id": 165132577,
+    "job": "acceptance-pressure-disk",
+    "ipv4": "2.28.77.46",
+    "type": "cpx22",
+    "location": "nbg1",
+    "expires": 1788869227,
+    "hourly_net": "0.0312000000",
+    "currency": "EUR"
+  },
+  "fixture_observations": [
+    "{\"other_builder_connected\": false, \"timeout\": true}",
+    "{\"resource\": \"disk\", \"written_bytes\": 10303709184, \"errno\": 28, \"filesystem_bytes\": 10464022528, \"available_bytes\": 0}"
+  ]
+}

@@ -36,6 +36,7 @@ systemd-run --unit=sc-build-deadline --on-active=600s --timer-property=AccuracyS
   /usr/bin/python3 /opt/small-cloud-builder/worker.py terminate
 systemd-run --unit=sc-build-daemon --slice=small-cloud-build.slice \
   --property=Delegate=yes --property=TimeoutStopSec=1s \
+  --property=LimitCORE=0 \
   --property=StandardOutput=null --property=StandardError=null \
   /usr/bin/unshare --mount --propagation private \
   /usr/bin/python3 /opt/small-cloud-builder/worker.py daemon \
@@ -48,5 +49,6 @@ systemd-run --unit=sc-build-daemon --slice=small-cloud-build.slice \
   --log-driver=local --log-opt=max-size=1m --log-opt=max-file=1
 systemd-run --wait --unit=sc-build-worker --slice=small-cloud-build.slice \
   --property=TimeoutStopSec=1s --property=StandardOutput=null --property=StandardError=null \
+  --property=LimitCORE=0 \
   /usr/bin/python3 /opt/small-cloud-builder/worker.py execute
 printf '%s\n' 'Build succeeded: retrieve output/image.tar, output/build.log and output/result.json over SSH, then delete this VM.'

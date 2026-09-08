@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-09-08T12:48:42.101027+00:00",
+  "provider_statuses": [
+    {
+      "id": "465d6882-6085-4ecf-9bf1-2fa86b2d55bd",
+      "created_at": "2026-09-08 12:00:39.952000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "71d5b106-452a-4687-af90-6087e76c36d6",
+      "created_at": "2026-09-08 11:40:23.180000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "323ad944-3510-4485-81e2-5098d5b44dcc",
+      "created_at": "2026-09-08 11:40:21.608000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "e597f7b1-f55b-4dae-88ed-4ae16bd1b793",
+      "created_at": "2026-09-08 11:40:19.973000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "63823575-bd9b-4bf1-966f-d77991c6f1ae",
+      "created_at": "2026-09-08 11:09:39.234000+00",
+      "subject": "Small Cloud operator alert: small-cloud-runtime",
+      "last_event": "delivered"
+    },
+    {
+      "id": "2e07cd16-2c2a-46da-9194-5e60113dbae8",
+      "created_at": "2026-09-08 11:08:40.553000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "143eb3e7-4d55-4a1f-8158-3ba864261798",
+      "created_at": "2026-09-08 11:02:09.697000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "d3e31320-3b50-48e6-84fc-d8d4d16462e8",
+      "created_at": "2026-09-08 10:51:06.598000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "b8331825-4c1e-4fef-8931-b4c79637b2b5",
+      "created_at": "2026-09-08 10:32:41.588000+00",
+      "subject": "Small Cloud operator alert: small-cloud-runtime",
+      "last_event": "delivered"
+    },
+    {
+      "id": "c6368bf4-45c6-4d4b-8261-6c6c4bd5b75e",
+      "created_at": "2026-09-08 10:32:39.172000+00",
+      "subject": "Small Cloud operator alert: small-cloud-control",
+      "last_event": "delivered"
+    },
+    {
+      "id": "83b1c9ad-dc98-4694-b09a-bc68144a1e38",
+      "created_at": "2026-09-08 09:55:14.385000+00",
+      "subject": "Small Cloud operator alert: operator-delivery-check",
+      "last_event": "delivered"
+    }
+  ],
+  "human_receipt": "Original workstation test confirmed; these later messages not independently human-confirmed."
+}

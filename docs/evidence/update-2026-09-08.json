@@ -1,0 +1,29 @@
+{
+  "sixth_exit": 1,
+  "sixth_reason": "ValueError: tool already allocated or five active allocations reserved",
+  "candidate": {
+    "container": "sc-acceptance-00-candidate",
+    "role": "candidate",
+    "private_port": 18085
+  },
+  "candidate_state": {
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 42,
+    "Error": "",
+    "StartedAt": "2026-09-08T12:10:00.837062202Z",
+    "FinishedAt": "2026-09-08T12:10:01.356605528Z"
+  },
+  "five_old_tools": [
+    200,
+    200,
+    200,
+    200,
+    200
+  ]
+}

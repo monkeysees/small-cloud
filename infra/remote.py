@@ -19,6 +19,7 @@ import time
 import tempfile
 
 from cloud import API, Failure, OWNER, SECRET_DIR, SELECTOR, private_file, state_directory
+from artifacts import require_space
 
 HERE = Path(__file__).resolve().parent
 
@@ -131,6 +132,7 @@ def configure(args: argparse.Namespace) -> dict:
         host.ready()
         destination = "/opt/small-cloud/" + role
         host.command("mkdir", "-p", destination)
+        host.upload(HERE / 'harden.sh', '/opt/small-cloud/harden.sh')
         for source in (HERE / role).iterdir():
             if source.suffix in (".sh", ".py"):
                 host.upload(source, destination + "/" + source.name)
@@ -159,9 +161,9 @@ def configure(args: argparse.Namespace) -> dict:
     control.command("chmod", "0600", "/root/.config/small-cloud/secrets/hetzner-token",
                     "/root/.local/state/small-cloud/infra/operator_ed25519")
     control.command("install", "-d", "-m", "0755", "/opt/small-cloud/infra/builder")
-    for name in ("cloud.py", "builders.py", "remote.py"):
+    for name in ("cloud.py", "builders.py", "remote.py", "releases.py", "harden.sh"):
         control.upload(HERE / name, "/opt/small-cloud/infra/" + name)
-    for name in ("bootstrap.sh", "run.sh", "worker.py"):
+    for name in ("bootstrap.sh", "run.sh", "worker.py", "evidence.py"):
         control.upload(HERE / "builder" / name, "/opt/small-cloud/infra/builder/" + name)
     for name in ("small-cloud-reconcile.service", "small-cloud-reconcile.timer"):
         control.upload(HERE / name, "/etc/systemd/system/" + name)
@@ -170,6 +172,8 @@ def configure(args: argparse.Namespace) -> dict:
     control.command("systemctl", "enable", "--now", "small-cloud-reconcile.timer")
     control.upload(HERE / 'artifacts.py', '/opt/small-cloud/infra/artifacts.py')
     for name in ('small-cloud-artifacts.service', 'small-cloud-artifacts.timer'):
+        control.upload(HERE / 'artifacts' / name, '/etc/systemd/system/' + name)
+    for name in ('small-cloud-releases.service', 'small-cloud-releases.timer'):
         control.upload(HERE / 'artifacts' / name, '/etc/systemd/system/' + name)
     for name in ('small-cloud-runtime-images.service', 'small-cloud-runtime-images.timer'):
         runtime.upload(HERE / 'runtime' / name, '/etc/systemd/system/' + name)
@@ -180,11 +184,19 @@ def configure(args: argparse.Namespace) -> dict:
         host.upload(HERE / 'monitor.py', '/opt/small-cloud/infra/monitor.py')
         for name in ('small-cloud-monitor.service', 'small-cloud-monitor.timer'):
             host.upload(HERE / 'monitor' / name, '/etc/systemd/system/' + name)
-        health_config = json.dumps({'disks': ['/'], 'services': services,
-                                    'tls_hostname': 'small-cloud.monkeysees.one'})
+        jobs = ['small-cloud-reconcile', 'small-cloud-artifacts', 'small-cloud-releases'] if host is control else ['small-cloud-runtime-images']
+        health_config = json.dumps({'disks': ['/'], 'services': services + [job + '.timer' for job in jobs],
+            'oneshot_services': [job + '.service' for job in jobs],
+            'tls_hostname': 'small-cloud.monkeysees.one',
+            'peers': [{'name': 'runtime', 'host': '10.42.0.3', 'port': 22}] if host is control else
+                     [{'name': 'control', 'host': '10.42.0.2', 'port': 5432}]})
         host.command('python3', '-c',
-                     'import os,pathlib,sys; os.umask(0o077); p=pathlib.Path("/etc/small-cloud/monitor.json"); '
-                     'p.exists() or p.write_text(sys.argv[1])', health_config)
+                     'import json,os,pathlib,sys; os.umask(0o077); p=pathlib.Path("/etc/small-cloud/monitor.json"); '
+                     'defaults=json.loads(sys.argv[1]); d=json.loads(p.read_text()) if p.exists() else defaults; '
+                     'd["peers"]=defaults["peers"]; '
+                     'd["services"]=sorted(set(d.get("services",[])+defaults["services"])); '
+                     'd["oneshot_services"]=sorted(set(d.get("oneshot_services",[])+defaults["oneshot_services"])); '
+                     'p.write_text(json.dumps(d))', health_config)
         host.command('python3', '-c',
                      'import pathlib; pathlib.Path("/etc/systemd/system/small-cloud-monitor.service.d/10-collect-only.conf").write_text('
                      '"[Service]\\nExecStart=\\nExecStart=/usr/bin/python3 /opt/small-cloud/infra/monitor.py '
@@ -192,6 +204,7 @@ def configure(args: argparse.Namespace) -> dict:
         host.command('systemctl', 'daemon-reload')
         host.command('systemctl', 'enable', '--now', 'small-cloud-monitor.timer')
     control.command('systemctl', 'enable', '--now', 'small-cloud-artifacts.timer')
+    control.command('systemctl', 'enable', '--now', 'small-cloud-releases.timer')
     runtime.command('systemctl', 'enable', '--now', 'small-cloud-runtime-images.timer')
     return {"configured": True, "workload_admission": "closed", "live_acceptance": "not run"}
 
@@ -255,7 +268,7 @@ def enable_alerts(args: argparse.Namespace) -> dict:
             finally:
                 host.command('rm', '-f', '--', destination)
     return {'alerts_enabled': True, 'hosts': ['control', 'runtime'],
-            'billing_evidence': 'separate input required', 'delivery_check': 'not sent'}
+            'spending': 'API estimate collector configured separately', 'delivery_check': 'not sent'}
 
 
 def management_addresses() -> list[str]:
@@ -296,6 +309,11 @@ def enable_spending(args: argparse.Namespace) -> dict:
     for name in ('small-cloud-spending.service', 'small-cloud-spending.timer'):
         control.upload(HERE / 'monitor' / name, '/etc/systemd/system/' + name)
     control.upload(HERE / 'monitor/05-spending.conf', '/etc/systemd/system/small-cloud-monitor.service.d/05-spending.conf')
+    control.command('python3', '-c',
+        'import json,pathlib; p=pathlib.Path("/etc/small-cloud/monitor.json"); d=json.loads(p.read_text()); '
+        'd["services"]=sorted(set(d.get("services",[])+["small-cloud-spending.timer"])); '
+        'd["oneshot_services"]=sorted(set(d.get("oneshot_services",[])+["small-cloud-spending.service"])); '
+        'p.write_text(json.dumps(d))')
     for host in (control, runtime):
         host.command('systemctl', 'daemon-reload')
     control.command('systemctl', 'start', 'small-cloud-spending.service', timeout=200)
@@ -313,6 +331,7 @@ def build(args: argparse.Namespace) -> dict:
         raise Failure('Source context must be inside the controlled EU source directory')
     if not source.is_file() or source.stat().st_size > 116 * 1024 * 1024:
         raise Failure("Source must be a bounded uncompressed context tar, at most 116 MiB")
+    require_space(staging)
     management = management_addresses()
     destination = args.output.resolve()
     if destination.parent != staging:
@@ -332,7 +351,8 @@ def build(args: argparse.Namespace) -> dict:
         host = Host(created["ipv4"], host_key_alias=f"builder-{created['id']}")
         host.ready()
         host.command("mkdir", "-p", "/opt/small-cloud-builder")
-        for name in ("bootstrap.sh", "run.sh", "worker.py"):
+        host.upload(HERE / 'harden.sh', '/opt/small-cloud-builder/harden.sh')
+        for name in ("bootstrap.sh", "run.sh", "worker.py", "evidence.py"):
             host.upload(HERE / "builder" / name, "/opt/small-cloud-builder/" + name)
         host.command("bash", "/opt/small-cloud-builder/bootstrap.sh", timeout=600)
         host.upload(copied_source, "/var/lib/small-cloud-build/context.tar")
@@ -341,6 +361,11 @@ def build(args: argparse.Namespace) -> dict:
             host.command("bash", "/opt/small-cloud-builder/run.sh", "/var/lib/small-cloud-build/context.tar",
                          *management, timeout=660)
         finally:
+            try:
+                observation = host.command('python3', '/opt/small-cloud-builder/evidence.py', timeout=15)
+                (destination / 'resources.json').write_text(observation)
+            except Failure:
+                pass
             # Private output never reaches the console, including failed Dockerfile logs.
             for name in ("build.log", "daemon.log", "result.json"):
                 try:

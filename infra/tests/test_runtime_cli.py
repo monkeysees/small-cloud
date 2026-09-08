@@ -140,7 +140,7 @@ class RuntimeCLI(unittest.TestCase):
                 patch.object(builtins, 'open', side_effect=open_boundary), \
                 patch.object(runtime.subprocess, 'run', side_effect=process):
             runtime.main()
-        self.assertEqual(sorted(calls), sorted([['docker', 'image', 'rm', old], ['docker', 'image', 'rm', used]]))
+        self.assertEqual(sorted(calls), sorted([['docker', 'image', 'rm', '--no-prune', old], ['docker', 'image', 'rm', '--no-prune', used]]))
         self.assertFalse((state / (old[7:] + '.json')).exists())
         self.assertTrue((state / (fresh[7:] + '.json')).exists())
         self.assertTrue((state / (used[7:] + '.json')).exists())
@@ -156,6 +156,44 @@ class RuntimeCLI(unittest.TestCase):
                    'IPAM': {'Config': [{'Subnet': '172.30.0.0/24', 'Gateway': '172.30.0.1', 'IPRange': ''}]}}
         with self.assertRaisesRegex(ValueError, 'prune before preparing'):
             self.invoke_start(network=network)
+
+    def test_stored_release_survives_pruning_without_a_running_container(self):
+        state = self.root / 'runtime' / 'images'
+        original_open = builtins.open
+        def open_boundary(path, *args, **kwargs):
+            return original_open(self.root / 'lock' if path == '/run/small-cloud-runtime.lock' else path, *args, **kwargs)
+        calls = []
+        child = 'sha256:' + 'b' * 64
+        present = {IMAGE, child}
+        def process(argv, **kwargs):
+            calls.append(list(argv))
+            if list(argv[:3]) == ['docker', 'image', 'rm']:
+                present.discard(argv[-1])
+                if argv[-1] == child and '--no-prune' not in argv:
+                    present.discard(IMAGE)
+            return subprocess.CompletedProcess(argv, 0, json.dumps([{'Id': IMAGE}]))
+        def invoke(*args):
+            with patch.object(sys, 'argv', ['sandbox', '--config', str(self.config), *args]):
+                runtime.main()
+        with patch.object(runtime.os, 'geteuid', return_value=0), \
+                patch.object(runtime, 'IMAGE_STATE', state), \
+                patch.object(builtins, 'open', side_effect=open_boundary), \
+                patch.object(runtime.subprocess, 'run', side_effect=process):
+            invoke('retain-image', 'tool-a', 'release-a', IMAGE)
+            record = state / (child[7:] + '.json')
+            record.write_text(json.dumps({'image': child, 'created_at': time.time() - 90000}))
+            record.chmod(0o600)
+            with patch.object(runtime.time, 'time', return_value=time.time() + 90000):
+                invoke('prune-images')
+            self.assertIn(IMAGE, present, 'removing a derived image must preserve its pinned untagged parent')
+            self.assertNotIn(child, present)
+            self.assertIn(IMAGE, present)
+            invoke('forget-release', 'tool-a', 'release-a')
+            invoke('prune-images')
+            self.assertIn(IMAGE, present)
+            with patch.object(runtime.time, 'time', return_value=time.time() + 90000):
+                invoke('prune-images')
+            self.assertNotIn(IMAGE, present)
 
     def test_mutable_image_and_invalid_tool_names_are_refused_before_mutation(self):
         for tool, image in [('tool-a', 'alpine:latest'), ('../escape', IMAGE), ('UPPER', IMAGE)]:

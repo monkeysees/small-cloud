@@ -1,0 +1,12 @@
+{
+  "parent": "sha256:bbf33c759140c02847e428c04fd9f22c9649ffc74eba53b539cf7aa4ab30498d",
+  "derived": "sha256:6368fddea74bf6afdf74a77f803bfce163a54f45d154c8634d26a0c0defc3c56",
+  "parent_untagged_before_cleanup": true,
+  "prune": {
+    "removed_images": 10,
+    "retained_images": 9
+  },
+  "parent_after_cleanup": "sha256:bbf33c759140c02847e428c04fd9f22c9649ffc74eba53b539cf7aa4ab30498d",
+  "derived_removed": true,
+  "command_policy": "docker image rm --no-prune; never force"
+}

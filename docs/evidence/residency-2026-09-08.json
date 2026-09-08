@@ -1,0 +1,119 @@
+{
+  "checked_at": "2026-09-08T11:52:13.405849+00:00",
+  "servers": [
+    {
+      "id": 165120313,
+      "role": "control",
+      "location": "nbg1",
+      "country": "DE",
+      "type": "cpx32",
+      "backups_enabled": false,
+      "public_ipv6": null
+    },
+    {
+      "id": 165120370,
+      "role": "runtime",
+      "location": "nbg1",
+      "country": "DE",
+      "type": "cpx42",
+      "backups_enabled": false,
+      "public_ipv6": null
+    }
+  ],
+  "volumes": 0,
+  "snapshots": 0,
+  "backups": 0,
+  "hosts": {
+    "control": {
+      "storage": [
+        {
+          "path": "/srv/small-cloud/source",
+          "uid": 0,
+          "mode": "0o700"
+        },
+        {
+          "path": "/srv/small-cloud/registry",
+          "uid": 108,
+          "mode": "0o700"
+        },
+        {
+          "path": "/srv/small-cloud/postgresql",
+          "uid": 110,
+          "mode": "0o700"
+        },
+        {
+          "path": "/srv/small-cloud/secrets",
+          "uid": 0,
+          "mode": "0o700"
+        },
+        {
+          "path": "/srv/small-cloud/secrets/identity.age",
+          "uid": 0,
+          "mode": "0o600"
+        },
+        {
+          "path": "/srv/small-cloud/logs",
+          "uid": 0,
+          "mode": "0o700"
+        },
+        {
+          "path": "/var/lib/small-cloud-monitor",
+          "uid": 0,
+          "mode": "0o700"
+        }
+      ],
+      "core_handler": "|/bin/false",
+      "apport_config": "enabled=0",
+      "crash_directory_entries": 0,
+      "crash_services": [
+        "masked",
+        "masked",
+        "masked",
+        "masked"
+      ],
+      "service_identities": "User=\nGroup=\n\nUser=docker-registry\nGroup=\n\nUser=caddy\nGroup=caddy\n\nUser=\nGroup=\n"
+    },
+    "runtime": {
+      "storage": [
+        {
+          "path": "/var/lib/small-cloud-runtime",
+          "uid": 0,
+          "mode": "0o700"
+        },
+        {
+          "path": "/var/lib/small-cloud-monitor",
+          "uid": 0,
+          "mode": "0o700"
+        }
+      ],
+      "core_handler": "|/bin/false",
+      "apport_config": "enabled=0",
+      "crash_directory_entries": 0,
+      "crash_services": [
+        "masked",
+        "masked",
+        "masked",
+        "masked"
+      ],
+      "service_identities": "User=\nGroup=\n\nUser=\nGroup=\n\nUser=\nGroup=\n\nUser=\nGroup=\n"
+    }
+  },
+  "dns": {
+    "small-cloud.monkeysees.one": [
+      {
+        "type": "A",
+        "name": "small-cloud.monkeysees.one",
+        "content": "2.28.60.91",
+        "proxied": false
+      }
+    ],
+    "*.monkeysees.one": [
+      {
+        "type": "CNAME",
+        "name": "*.monkeysees.one",
+        "content": "pixie.porkbun.com",
+        "proxied": true
+      }
+    ]
+  }
+}

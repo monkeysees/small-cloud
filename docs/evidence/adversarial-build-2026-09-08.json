@@ -1,0 +1,277 @@
+{
+  "phase": "build",
+  "utc": "2026-09-08T11:34:09Z",
+  "checks": [
+    {
+      "name": "metadata",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "private-management",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "control-public",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "management-dns",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "runtime-public",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "private-proxy",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "database",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    },
+    {
+      "name": "host-gateway",
+      "expected": "deny",
+      "proxy": "bypassed",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003,
+      "result": "pass"
+    }
+  ],
+  "ipv6_interface_count": 1,
+  "proxy_environment_present": false,
+  "limitation": "Denials require independent healthy controls; correlate public nonces with canary logs.",
+  "public_nonce": "issue17-20260908-b-build",
+  "public_https": {
+    "connected": true,
+    "status": 200
+  },
+  "private_proxy": {
+    "connected": false,
+    "timeout": true
+  },
+  "proxy_bypassed": {
+    "connected": true,
+    "status": 200
+  },
+  "redirect_to_private": {
+    "connected": false,
+    "timeout": true
+  },
+  "filesystem": {
+    "/var/run/docker.sock": false,
+    "/run/sc-build.sock": false,
+    "/srv/small-cloud/secrets/identity.age": false,
+    "/root/.config/small-cloud/secrets/hetzner-token": false
+  },
+  "uid": 0,
+  "rebind": [
+    {
+      "resolved": "167.235.61.82",
+      "family": "ipv4",
+      "connected": true,
+      "observed": "connected",
+      "phase": "connect",
+      "elapsed_ms": 1
+    },
+    {
+      "resolved": "167.235.61.82",
+      "family": "ipv4",
+      "connected": true,
+      "observed": "connected",
+      "phase": "connect",
+      "elapsed_ms": 1
+    },
+    {
+      "resolved": "10.42.0.2",
+      "family": "ipv4",
+      "observed": "timeout",
+      "phase": "connect",
+      "elapsed_ms": 3003
+    }
+  ],
+  "rebind_pass": true,
+  "ipv6_attempt": {
+    "family": "ipv6",
+    "observed": "unreachable",
+    "phase": "connect",
+    "elapsed_ms": 0
+  },
+  "execution": {
+    "result": {
+      "ok": true,
+      "image_archive_sha256": "a51bca686de09638c3d24aea1c559b9440e54b09f2826fc9a863a21107669e8b",
+      "image_bytes": 187397632,
+      "dropped_log_bytes": 0,
+      "execution_started_at": "2026-09-08T11:33:32Z",
+      "execution_completed_at": "2026-09-08T11:34:30Z",
+      "execution_duration_seconds": 57.245
+    },
+    "builder": {
+      "id": 165132031,
+      "job": "acceptance-adversarial-retry",
+      "ipv4": "2.28.77.46",
+      "type": "cpx22",
+      "location": "nbg1",
+      "expires": 1788868954,
+      "hourly_net": "0.0312000000",
+      "currency": "EUR"
+    },
+    "teardown": {
+      "id": 165132031,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    }
+  },
+  "configuration": {
+    "nonce": "issue17-20260908-b",
+    "public_origin": "https://canary.small-cloud.monkeysees.one",
+    "public_ipv4": "167.235.61.82",
+    "private_ipv4": "10.42.0.2",
+    "rebind_domain": "retry.rebind.small-cloud.monkeysees.one",
+    "private_proxy": "http://10.42.0.2:18000",
+    "targets": [
+      {
+        "name": "metadata",
+        "host": "169.254.169.254",
+        "port": 80,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "private-management",
+        "host": "10.42.0.2",
+        "port": 22,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "control-public",
+        "host": "2.28.60.91",
+        "port": 443,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "management-dns",
+        "host": "small-cloud.monkeysees.one",
+        "port": 443,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "runtime-public",
+        "host": "2.28.67.62",
+        "port": 22,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "private-proxy",
+        "host": "10.42.0.2",
+        "port": 18000,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "database",
+        "host": "10.42.0.2",
+        "port": 5432,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "allow",
+        "control_verified": true
+      }
+    ],
+    "build_targets": [
+      {
+        "name": "host-gateway",
+        "host": "192.0.2.1",
+        "port": 22,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      }
+    ],
+    "runtime_targets": [
+      {
+        "name": "host-gateway",
+        "host": "172.30.0.1",
+        "port": 22,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      },
+      {
+        "name": "other-tool",
+        "host": "172.30.1.2",
+        "port": 8080,
+        "family": "ipv4",
+        "build": "deny",
+        "runtime": "deny",
+        "control_verified": true
+      }
+    ]
+  }
+}

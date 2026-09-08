@@ -1,0 +1,12 @@
+{
+  "host_elapsed_seconds": 11.195295784999871,
+  "host_cpu_seconds": 5.587908,
+  "cpu_per_wall_second": 0.49913000132493274,
+  "cpu_max": "50000 100000",
+  "memory_max": "536870912",
+  "host_pids_max": "128",
+  "threads": {
+    "guest_threads_created": 126,
+    "refused": true
+  }
+}

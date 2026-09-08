@@ -4,6 +4,8 @@ set -euo pipefail
 [[ "$(id -u)" == 0 && "$(uname -m)" == x86_64 ]]
 [[ -f /sys/fs/cgroup/cgroup.controllers ]]
 [[ ! -e /var/lib/small-cloud-build ]]
+builder_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+bash "$builder_dir/harden.sh"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y -qq docker.io docker-buildx nftables iproute2 python3 e2fsprogs

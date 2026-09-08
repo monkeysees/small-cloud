@@ -6,6 +6,7 @@ umask 077
 source /etc/os-release
 [[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo 'Ubuntu 24.04 required' >&2; exit 1; }
 control_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+bash "$control_dir/../harden.sh"
 install -d -m 0755 /srv/small-cloud /etc/postgresql-common
 install -d -m 0700 /srv/small-cloud/source /srv/small-cloud/secrets /srv/small-cloud/logs /etc/small-cloud
 # Do not create a second cluster on the system-default path during package install.
@@ -14,7 +15,7 @@ export DEBIAN_FRONTEND=noninteractive
 # Package post-install hooks must not expose an unconfigured registry or gateway.
 systemctl mask --runtime caddy.service docker-registry.service postgresql.service postgresql@16-main.service
 apt-get update -qq
-apt-get install -y -qq postgresql-16 caddy docker-registry age openssl
+apt-get install -y -qq postgresql-16 caddy docker-registry age openssl skopeo
 install -d -o postgres -g postgres -m 0700 /srv/small-cloud/postgresql
 if [[ ! -f /etc/postgresql/16/main/postgresql.conf ]]; then
   pg_createcluster 16 main --datadir /srv/small-cloud/postgresql
@@ -67,6 +68,12 @@ version: 0.1
 log:
   level: warn
 storage:
+  maintenance:
+    uploadpurging:
+      enabled: true
+      age: 23h
+      interval: 1h
+      dryrun: false
   filesystem:
     rootdirectory: /srv/small-cloud/registry
   delete:

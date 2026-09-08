@@ -13,6 +13,7 @@ import subprocess
 import tarfile
 import time
 import math
+import tempfile
 
 
 def run(*args, input=None):
@@ -60,6 +61,75 @@ def containers():
 IMAGE_STATE = Path('/var/lib/small-cloud-runtime/images')
 
 
+def private_record(path):
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    with os.fdopen(descriptor) as stream:
+        info = os.fstat(stream.fileno())
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1 or info.st_size > 65536):
+            raise ValueError('unsafe release inventory')
+        return json.load(stream)
+
+
+def save_record(path, record):
+    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.record-')
+    try:
+        with os.fdopen(descriptor, 'w') as stream:
+            json.dump(record, stream)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(name, path)
+        descriptor = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    finally:
+        Path(name).unlink(missing_ok=True)
+
+
+def release_records():
+    image_state(check_capacity=False)
+    path = IMAGE_STATE.parent / 'releases.json'
+    try:
+        records = private_record(path)
+    except FileNotFoundError:
+        return {}
+    if not isinstance(records, dict) or len(records) > 60:
+        raise ValueError('invalid release inventory')
+    for key, image in records.items():
+        if (not re.fullmatch(r'[a-z0-9-]{1,32}/[a-z0-9-]{1,64}', key)
+                or not isinstance(image, str) or not re.fullmatch(r'sha256:[0-9a-f]{64}', image)):
+            raise ValueError('invalid retained release')
+    return records
+
+
+def retain_release(tool, release, image=None):
+    if (not re.fullmatch(r'[a-z0-9-]{1,32}', tool)
+            or not re.fullmatch(r'[a-z0-9-]{1,64}', release)):
+        raise ValueError('invalid tool or release identifier')
+    records = release_records()
+    key = tool + '/' + release
+    if image is not None:
+        if not re.fullmatch(r'sha256:[0-9a-f]{64}', image):
+            raise ValueError('release image must be an immutable image ID')
+        if key in records and records[key] != image:
+            raise ValueError('release identity is immutable')
+        if key not in records and (len(records) >= 60 or sum(k.startswith(tool + '/') for k in records) >= 2
+                                   or len({k.split('/')[0] for k in records} | {tool}) > 30):
+            raise ValueError('retain at most thirty tools and two releases per tool')
+        if json.loads(run('docker', 'image', 'inspect', image))[0]['Id'] != image:
+            raise ValueError('loaded image identity mismatch')
+        track_image(image)
+        records[key] = image
+    elif key in records:
+        old = records.pop(key)
+        # Start grace before unpinning, so a crash can only retain the image longer.
+        save_record(IMAGE_STATE / (old[7:] + '.json'), {'image': old, 'created_at': time.time()})
+    save_record(IMAGE_STATE.parent / 'releases.json', records)
+    print(json.dumps({'retained_releases': len(records)}))
+
+
 def image_state(check_capacity=True):
     IMAGE_STATE.parent.mkdir(mode=0o700, exist_ok=True)
     IMAGE_STATE.mkdir(mode=0o700, exist_ok=True)
@@ -81,6 +151,12 @@ def image_state(check_capacity=True):
 def track_image(image):
     if not re.fullmatch(r'sha256:[0-9a-f]{64}', image):
         raise ValueError('Docker did not return an immutable derived image ID')
+    image_state(check_capacity=False)
+    path = IMAGE_STATE / (image.removeprefix('sha256:') + '.json')
+    if path.exists():
+        if private_record(path)['image'] != image:
+            raise ValueError('image inventory identity mismatch')
+        return
     if len(image_state()) >= 256:
         raise ValueError('image inventory full; prune before tracking another image')
     path = IMAGE_STATE / (image.removeprefix('sha256:') + '.json')
@@ -108,6 +184,7 @@ def prune_images():
     retained = 0
     now = time.time()
     image_state(check_capacity=False)
+    protected = set(release_records().values())
     for path in image_records():
         info = path.lstat()
         if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
@@ -118,14 +195,14 @@ def prune_images():
         if not re.fullmatch(r'sha256:[0-9a-f]{64}', image) or path.name != image[7:] + '.json':
             raise ValueError('derived-image inventory identity mismatch')
         created = record['created_at']
-        if not isinstance(created, (int, float)) or not math.isfinite(created) or not 0 <= created <= now:
+        if isinstance(created, bool) or not isinstance(created, (int, float)) or not math.isfinite(created) or not 0 <= created <= now:
             raise ValueError('invalid derived-image timestamp')
-        if now - created < 86400:
+        if image in protected or now - created < 3600:
             retained += 1
             continue
         try:
-            # Never force: Docker protects images referenced by running or stopped containers.
-            run('docker', 'image', 'rm', image)
+            # Parent images may be retained releases even without a container or tag.
+            run('docker', 'image', 'rm', '--no-prune', image)
         except subprocess.CalledProcessError:
             retained += 1
             continue
@@ -156,7 +233,7 @@ def image_with_ca(image, ca):
         try:
             track_image(derived)
         except (OSError, ValueError):
-            run('docker', 'image', 'rm', derived)
+            run('docker', 'image', 'rm', '--no-prune', derived)
             raise
         return derived
     finally:
@@ -244,7 +321,7 @@ def launch(config, tool, image, candidate=False, env_file=None):
         '--mount', f'type=bind,src={resolver},dst=/etc/resolv.conf,readonly',
         '--tmpfs', '/tmp:rw,nosuid,nodev,noexec,size=1073741824,mode=1777',
         '--shm-size', '1m', '--cpus', '0.5', '--memory', '512m', '--memory-swap', '512m',
-        '--pids-limit', '128', '--ulimit', 'nproc=128:128', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+        '--pids-limit', '128', '--ulimit', 'nproc=128:128', '--ulimit', 'core=0:0', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
         '--user', '65532:65532', '--ulimit', 'nofile=1024:1024', '--log-driver', 'none',
         '--publish', f"{config['runtime_private_ip']}:{18080 + int(slot)}:8080",
         *environment, '--env', 'PORT=8080', image)
@@ -268,7 +345,14 @@ def main():
     commands = parser.add_subparsers(dest='command', required=True)
     commands.add_parser('policy', help='render firewall for inspection')
     commands.add_parser('apply-policy')
-    commands.add_parser('prune-images', help='remove only tracked derived images older than 24 hours without force')
+    commands.add_parser('prune-images', help='remove unreferenced tracked images after a one-hour grace period, without force')
+    retain = commands.add_parser('retain-image', help='protect an imported image for a stored release')
+    retain.add_argument('tool')
+    retain.add_argument('release')
+    retain.add_argument('image')
+    forget = commands.add_parser('forget-release', help='release a stored image after a one-hour grace period')
+    forget.add_argument('tool')
+    forget.add_argument('release')
     start = commands.add_parser('start')
     start.add_argument('tool')
     start.add_argument('image')
@@ -288,6 +372,10 @@ def main():
             install_policy(config)
         elif args.command == 'prune-images':
             prune_images()
+        elif args.command == 'retain-image':
+            retain_release(args.tool, args.release, args.image)
+        elif args.command == 'forget-release':
+            retain_release(args.tool, args.release)
         else:
             launch(config, args.tool, args.image, args.candidate, args.env_file)
 

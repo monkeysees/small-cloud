@@ -1,0 +1,155 @@
+{
+  "checked_at": "2026-09-08T11:08:22.790749+00:00",
+  "reapplication": "passed",
+  "sentinel_after_reapplication": "permanent-reapply-reboot",
+  "hosts": {
+    "runtime": {
+      "observed_provider_state": "off",
+      "independent_observer": {
+        "time": "2026-09-08T11:08:33.941533+00:00",
+        "host": "small-cloud-control",
+        "disks": [
+          {
+            "path": "/",
+            "used_percent": 1.4,
+            "free_bytes": 152082382848
+          }
+        ],
+        "services": [
+          {
+            "unit": "postgresql@16-main.service",
+            "active": true
+          },
+          {
+            "unit": "caddy.service",
+            "active": true
+          },
+          {
+            "unit": "docker-registry.service",
+            "active": true
+          }
+        ],
+        "alerts": [
+          "Peer runtime is unreachable"
+        ],
+        "peers": [
+          {
+            "name": "runtime",
+            "reachable": false
+          }
+        ],
+        "tls": {
+          "hostname": "small-cloud.monkeysees.one",
+          "expires": "2026-12-07T09:32:26+00:00",
+          "days_remaining": 89
+        },
+        "delivery": "SMTP accepted; recipient receipt unverified"
+      },
+      "after_boot": {
+        "time": "2026-09-08T11:09:10.548195+00:00",
+        "host": "small-cloud-runtime",
+        "disks": [
+          {
+            "path": "/",
+            "used_percent": 0.8,
+            "free_bytes": 306484703232
+          }
+        ],
+        "services": [
+          {
+            "unit": "docker.service",
+            "active": true
+          }
+        ],
+        "alerts": [],
+        "peers": [
+          {
+            "name": "control",
+            "reachable": true
+          }
+        ],
+        "tls": {
+          "hostname": "small-cloud.monkeysees.one",
+          "expires": "2026-12-07T09:32:26+00:00",
+          "days_remaining": 89
+        },
+        "delivery": "not requested"
+      }
+    },
+    "control": {
+      "observed_provider_state": "off",
+      "independent_observer": {
+        "time": "2026-09-08T11:09:21.959171+00:00",
+        "host": "small-cloud-runtime",
+        "disks": [
+          {
+            "path": "/",
+            "used_percent": 0.8,
+            "free_bytes": 306484686848
+          }
+        ],
+        "services": [
+          {
+            "unit": "docker.service",
+            "active": true
+          }
+        ],
+        "alerts": [
+          "Peer control is unreachable",
+          "TLS certificate/connectivity verification failed for small-cloud.monkeysees.one"
+        ],
+        "peers": [
+          {
+            "name": "control",
+            "reachable": false
+          }
+        ],
+        "tls": {
+          "hostname": "small-cloud.monkeysees.one",
+          "verified": false
+        },
+        "delivery": "SMTP accepted; recipient receipt unverified"
+      },
+      "after_boot": {
+        "time": "2026-09-08T11:10:07.226012+00:00",
+        "host": "small-cloud-control",
+        "disks": [
+          {
+            "path": "/",
+            "used_percent": 1.5,
+            "free_bytes": 151914217472
+          }
+        ],
+        "services": [
+          {
+            "unit": "postgresql@16-main.service",
+            "active": true
+          },
+          {
+            "unit": "caddy.service",
+            "active": true
+          },
+          {
+            "unit": "docker-registry.service",
+            "active": true
+          }
+        ],
+        "alerts": [],
+        "peers": [
+          {
+            "name": "runtime",
+            "reachable": true
+          }
+        ],
+        "tls": {
+          "hostname": "small-cloud.monkeysees.one",
+          "expires": "2026-12-07T09:32:26+00:00",
+          "days_remaining": 89
+        },
+        "delivery": "not requested"
+      }
+    }
+  },
+  "sentinel_after_reboots": "permanent-reapply-reboot",
+  "runtime_after_reboot": ""
+}

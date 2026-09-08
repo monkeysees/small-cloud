@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Complete #17 infrastructure acceptance with live concurrency/isolation/renewal evidence, release-aware retention, crash-export hardening and independent host-loss alerts; retain the closed creator gateway and document approved costs.
 - Enable Hetzner API-based estimated spending alerts with retained builder costs, monthly caps, traffic, quoted VAT, ECB conversion and explicit coverage/staleness warnings.
 
 - Remove the CX watcher and support explicitly approved permanent CPX32/CPX42 provisioning in Germany; defer cost optimization.

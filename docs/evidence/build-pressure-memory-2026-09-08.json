@@ -1,0 +1,45 @@
+{
+  "result.json": {
+    "ok": false,
+    "error": "RuntimeError",
+    "execution_started_at": "2026-09-08T11:34:36Z",
+    "execution_completed_at": "2026-09-08T11:34:44Z",
+    "execution_duration_seconds": 7.95
+  },
+  "resources.json": {
+    "kernel": "6.8.0-138-generic",
+    "cgroup": {
+      "cpu.max": "200000 100000",
+      "cpu.stat": "usage_usec 7115657\nuser_usec 2757863\nsystem_usec 4357794\ncore_sched.force_idle_usec 0\nnr_periods 90\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "memory.max": "3670016000",
+      "memory.peak": "3670016000",
+      "memory.events": "low 0\nhigh 0\nmax 97\noom 1\noom_kill 1\noom_group_kill 0",
+      "memory.swap.max": "0",
+      "pids.max": "512",
+      "pids.peak": "59",
+      "pids.events": "max 0",
+      "cgroup.events": "populated 0\nfrozen 0"
+    },
+    "filesystem_bytes": 10464022528,
+    "filesystem_free_bytes": 10305110016,
+    "ipv6_disabled": "1"
+  },
+  "teardown.json": {
+    "id": 165132139,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  },
+  "builder.json": {
+    "id": 165132139,
+    "job": "acceptance-pressure-memory",
+    "ipv4": "2.28.115.173",
+    "type": "cpx22",
+    "location": "nbg1",
+    "expires": 1788869019,
+    "hourly_net": "0.0312000000",
+    "currency": "EUR"
+  },
+  "fixture_observations": []
+}

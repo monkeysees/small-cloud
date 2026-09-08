@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-09-08T11:43:21.176166+00:00",
+  "builder": {
+    "id": 165130092,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  },
+  "dns_records_removed": [
+    "1e6524fe57dbee53d4293459d01868d4",
+    "1b150adfc564c7afdb3cf303b58f665e"
+  ],
+  "dedicated_firewall_removed": 11592122,
+  "estimated_net_eur": 0.032,
+  "invoice_verified": false
+}

@@ -44,6 +44,25 @@ class ArtifactsCLI(unittest.TestCase):
         self.assertTrue((job / 'daemon.log').exists())
         self.assertTrue((job / '.small-cloud-build.json').exists())
 
+    def test_uploaded_source_enters_managed_retention_without_overwriting_a_job(self):
+        # Mock the host capacity boundary while exercising the real CLI and stdin.
+        launcher = ('import runpy,shutil,types; '
+                    'shutil.disk_usage=lambda _: types.SimpleNamespace(free=20*1024**3); '
+                    'runpy.run_path(__import__("sys").argv.pop(1),run_name="__main__")')
+        command = [sys.executable, '-c', launcher, str(SCRIPT), '--root', str(self.root), '--stage', 'upload-a']
+        result = subprocess.run(command, input=b'fixture source archive', capture_output=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        source = Path(json.loads(result.stdout)['source'])
+        self.assertEqual(source.read_bytes(), b'fixture source archive')
+        self.assertEqual(source.stat().st_mode & 0o777, 0o600)
+        duplicate = subprocess.run(command, input=b'replacement', capture_output=True, timeout=10)
+        self.assertNotEqual(duplicate.returncode, 0)
+        self.assertEqual(source.read_bytes(), b'fixture source archive')
+        marker = source.parent / '.small-cloud-build.json'
+        marker.write_text(json.dumps({'created_at': time.time() - 86400}))
+        self.assertEqual(self.invoke().returncode, 0)
+        self.assertFalse(source.exists())
+
     def test_week_old_known_files_removed_but_unrelated_data_preserved(self):
         job = self.job(8 * 86400)
         (job / 'caller-original.tar').write_text('keep')

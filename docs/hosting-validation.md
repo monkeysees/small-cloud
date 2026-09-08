@@ -1,5 +1,7 @@
 # Hosting validation outcome
 
+**Current result:** the [permanent-foundation acceptance report, 2026-09-08](hosting-acceptance-2026-09-08.md), supersedes the incomplete infrastructure findings below. It records separate build/runtime matrices, five concurrent builds, thirty stored releases, renewal/reboot, release-aware cleanup, EU destinations and delivered alerts. Creator admission remains closed for product integration. The following dated sections preserve earlier failures, limitations and resource history; their “pending” statements are historical.
+
 2026-09-07 — [issue #2](https://github.com/monkeysees/small-cloud/issues/2).
 
 **Hetzner setup is authorized; deployment acceptance remains unverified.** The operator's decision in [#17](https://github.com/monkeysees/small-cloud/issues/17) supersedes this report's original selection hold. The approved [builder provisioning policy](hosting-research.md#approved-implementation-direction--2026-09-08) uses fresh CX23 VMs with CPX22 fallback across the EU, initially without a prewarmed pool. The operator expanded builder placement beyond Germany on 2026-09-08. Implementation may proceed, but creator workloads must not be admitted on the strength of this report.

@@ -1,0 +1,54 @@
+{
+  "result.json": {
+    "ok": true,
+    "image_archive_sha256": "3e88df279289859169011c10c30e41e8eb27c7fd379692e1e912a8ae39bd6e46",
+    "image_bytes": 129574912,
+    "dropped_log_bytes": 0,
+    "execution_started_at": "2026-09-08T11:57:58Z",
+    "execution_completed_at": "2026-09-08T11:58:06Z",
+    "execution_duration_seconds": 7.138
+  },
+  "resources.json": {
+    "kernel": "6.8.0-138-generic",
+    "cgroup": {
+      "cpu.max": "200000 100000",
+      "cpu.stat": "usage_usec 6248989\nuser_usec 3108146\nsystem_usec 3140842\ncore_sched.force_idle_usec 0\nnr_periods 80\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0",
+      "memory.max": "3670016000",
+      "memory.peak": "785350656",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "memory.swap.max": "0",
+      "pids.max": "512",
+      "pids.peak": "59",
+      "pids.events": "max 0",
+      "cgroup.events": "populated 0\nfrozen 0"
+    },
+    "filesystem_bytes": 10464022528,
+    "filesystem_free_bytes": 10175000576,
+    "ipv6_disabled": "1",
+    "build_namespace_ipv6_disabled": "1",
+    "trusted_host_metadata_listener": true,
+    "core_handler": "|/bin/false",
+    "apport_state": "masked",
+    "docker_version": "Docker version 29.1.3, build 29.1.3-0ubuntu3~24.04.2"
+  },
+  "teardown.json": {
+    "id": 165135940,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  },
+  "builder.json": {
+    "id": 165135940,
+    "job": "acceptance-hardening",
+    "ipv4": "167.235.61.82",
+    "type": "cpx22",
+    "location": "nbg1",
+    "expires": 1788870420,
+    "hourly_net": "0.0312000000",
+    "currency": "EUR"
+  },
+  "guest_core": [
+    "{\"core_limit\": [0, 0]}"
+  ]
+}

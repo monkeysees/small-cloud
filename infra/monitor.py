@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 import json
+import ipaddress
 import os
 from pathlib import Path
 import re
@@ -65,6 +66,23 @@ def spend_evidence(path, now):
 
 def collect(config, now):
     report = {'time': now.isoformat(), 'host': socket.gethostname(), 'disks': [], 'services': [], 'alerts': []}
+    peers = config.get('peers', [])
+    if not isinstance(peers, list) or len(peers) > 2:
+        raise ValueError('at most two peer checks are supported')
+    report['peers'] = []
+    for peer in peers:
+        name, address, port = peer['name'], str(ipaddress.ip_address(peer['host'])), peer['port']
+        if (not re.fullmatch(r'[a-z0-9-]{1,32}', name) or isinstance(port, bool)
+                or not isinstance(port, int) or not 1 <= port <= 65535):
+            raise ValueError('invalid peer name or port')
+        try:
+            with socket.create_connection((address, port), timeout=5):
+                reachable = True
+        except OSError:
+            reachable = False
+        report['peers'].append({'name': name, 'reachable': reachable})
+        if not reachable:
+            report['alerts'].append(f'Peer {name} is unreachable')
     for path in config.get('disks', ['/']):
         usage = shutil.disk_usage(path)
         percent = round(100 * usage.used / usage.total, 1)
@@ -72,8 +90,8 @@ def collect(config, now):
         if percent >= 80:
             report['alerts'].append(f'disk {path} is {percent}% full')
     for service in config.get('services', []):
-        if not re.fullmatch(r'[A-Za-z0-9_.@-]{1,128}\.service', service):
-            raise ValueError('service name must be a systemd .service unit')
+        if not re.fullmatch(r'[A-Za-z0-9_.@-]{1,128}\.(?:service|timer)', service):
+            raise ValueError('service name must be a systemd service or timer unit')
         try:
             result = subprocess.run(['systemctl', 'is-active', '--quiet', service],
                                     timeout=10, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -83,6 +101,19 @@ def collect(config, now):
         report['services'].append({'unit': service, 'active': active})
         if not active:
             report['alerts'].append(f'service {service} is not active')
+    report['oneshot_services'] = []
+    for service in config.get('oneshot_services', []):
+        if not re.fullmatch(r'[A-Za-z0-9_.@-]{1,128}\.service', service):
+            raise ValueError('scheduled service name must be a systemd service unit')
+        try:
+            result = subprocess.run(['systemctl', 'show', service, '--property=Result', '--value'],
+                timeout=5, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+            successful = result.returncode == 0 and result.stdout.strip() == 'success'
+        except subprocess.TimeoutExpired:
+            successful = False
+        report['oneshot_services'].append({'unit': service, 'successful': successful})
+        if not successful:
+            report['alerts'].append(f'Scheduled service {service} failed')
     host = config.get('tls_hostname')
     if host:
         try:

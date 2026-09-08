@@ -2,7 +2,7 @@
 
 ## Start here
 
-Read `docs/agents/issue-tracker.md`, then the current issue #17 body, comments and Project fields. The operator has selected Hetzner and authorized infrastructure setup. Use `docs/hosting-research.md` for the approved builder policy and cost assumptions, `docs/contracts.md` for product contracts, and `docs/hosting-validation.md` plus `probes/hosting/README.md` for the acceptance gate. Earlier provider-selection holds are superseded; live isolation and deployment acceptance are still required.
+Read `docs/agents/issue-tracker.md`, then the current issue #17 body, comments and Project fields. The [permanent-foundation acceptance report](../hosting-acceptance-2026-09-08.md) now records five-builder capacity, isolation, renewal/reboot, retention and delivered spending/host-loss alerts; older pending statements below are historical. Retain the German CPX pair and closed creator gateway. Use the [operator runbook](../../infra/README.md) for reapplication and service handoffs, `docs/hosting-research.md` for the approved builder/cost policy, and `docs/contracts.md` for product integration.
 
 ## Operator settings
 

@@ -1,0 +1,41 @@
+{
+  "clock_control": "Only the explicitly retired acceptance-00/retention-probe fixture is aged for the live janitor check.",
+  "published": {
+    "tool": "acceptance-00",
+    "release": "retention-probe",
+    "archive_sha256": "0f27491f9429b9a6b13766865c726fb4fbceedf04490f10cb063dc183db00ae7",
+    "state": "retained",
+    "changed_at": 1788868898.90574,
+    "digest": "sha256:3dabc2ccf4213788ee256bcd4d0fc96aa94fb3e3efe7654819de6c946e682b4e"
+  },
+  "registry_prune": {
+    "removed": 1
+  },
+  "registry_retry": {
+    "removed": 0
+  },
+  "retained_registry_releases": 30,
+  "all_retained_manifests_readable": true,
+  "runtime_fixture": {
+    "aged_fixture_images": [
+      "sha256:c94b0cd7a5b1505d146629be68781a3269b163f80213c51bde27b1365c38449f"
+    ]
+  },
+  "runtime_sweeps": [
+    {
+      "removed_images": 1,
+      "retained_images": 12
+    },
+    {
+      "removed_images": 0,
+      "retained_images": 12
+    }
+  ],
+  "old_tools_healthy": [
+    200,
+    200,
+    200,
+    200,
+    200
+  ]
+}

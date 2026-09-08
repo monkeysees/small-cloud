@@ -1,0 +1,133 @@
+{
+  "databases": "30",
+  "roles": "30",
+  "elevated_roles": "0",
+  "memberships": "0",
+  "runtime_checks": [
+    {
+      "tool": "acceptance-00",
+      "status": 200,
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_eb58b1a7c51afdf3bdc90d69",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "tool": "acceptance-01",
+      "status": 200,
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_a9052da1ac14ea5a84303841",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "tool": "acceptance-02",
+      "status": 200,
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_d5dc9795a13cf27bb494737a",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "tool": "acceptance-03",
+      "status": 200,
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_591171b1c489c554b8e47de0",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "tool": "acceptance-04",
+      "status": 200,
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_40facb5a8c9106be7933683e",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    }
+  ]
+}

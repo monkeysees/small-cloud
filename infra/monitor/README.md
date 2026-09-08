@@ -1,6 +1,6 @@
 # Operator monitoring
 
-`infra/monitor.py` collects disk usage, systemd service state and a verified public TLS certificate's expiry. Disk usage at 80%, an inactive service, failed TLS verification or less than 14 certificate days remaining produces an alert. Output contains statuses and provenance, never process logs or SMTP credentials. Every report is limited to 64 KiB; the root-only report directory retains at most seven days and 10 MiB. Host journals have their separate bootstrap retention policy.
+`infra/monitor.py` collects disk usage, systemd service/timer state, the last result of scheduled oneshots, peer TCP reachability and verified public TLS expiry. Disk usage at 80%, inactive service/timer, failed oneshot, unreachable peer, failed TLS verification or less than 14 certificate days remaining produces an alert. Output contains statuses and provenance, never process logs or SMTP credentials. Every report is limited to 64 KiB; the root-only report directory retains at most seven days and 10 MiB. Host journals have their separate bootstrap retention policy.
 
 Install the script at `/opt/small-cloud/infra/monitor.py`. Put configuration at `/etc/small-cloud/monitor.json`, owned by root with mode 0600:
 
@@ -8,6 +8,8 @@ Install the script at `/opt/small-cloud/infra/monitor.py`. Put configuration at 
 {
   "disks": ["/"],
   "services": ["docker.service"],
+  "oneshot_services": ["small-cloud-runtime-images.service"],
+  "peers": [{"name": "control", "host": "10.42.0.2", "port": 5432}],
   "tls_hostname": "small-cloud.monkeysees.one",
   "smtp": {
     "host": "SMTP_HOST",
@@ -27,7 +29,9 @@ sudo python3 /opt/small-cloud/infra/monitor.py --config /etc/small-cloud/monitor
 sudo python3 /opt/small-cloud/infra/monitor.py --config /etc/small-cloud/monitor.json --send --delivery-check
 ```
 
-The first command collects evidence without sending. The second explicitly requests a real delivery check. An SMTP acceptance response is not recipient receipt: independently confirm the received message before recording delivery as verified. Provider error text is withheld because it can contain credentials. The workstation SMTP path has verified recipient receipt; deployed host delivery remains to be exercised after provisioning.
+The first command collects evidence without sending. The second explicitly requests a real delivery check. SMTP acceptance, provider delivery and human receipt are distinct. The original workstation test has human-confirmed receipt; Resend reports delivered for both later host-loss alerts and all three threshold tests, with no claim that those later messages were read. Provider error text is withheld because it can contain credentials. See [delivery evidence](../../docs/evidence/alert-delivery-2026-09-08.json).
+
+`configure` installs reciprocal private TCP probes: control observes runtime SSH (22), and runtime observes control PostgreSQL (5432), each with an independent timer and SMTP authority. Probes use configured numeric IPs with a five-second connection bound and do not add firewall exceptions. The surviving host detected and sent an alert during each separate shutdown. An hourly schedule permits up to roughly one hour of detection delay; this is single-host-loss coverage, not a regional observer or recovery service. Reconcile expired builders manually during control-host loss. Managed cleanup/reconciliation/spending timers are monitored as active; their oneshot services are checked by `Result`, so a successfully completed inactive oneshot is healthy and a failed last run alerts.
 
 The operator approved API-based cost estimates on 2026-09-08; an invoice is no longer a prerequisite for alerting. `spending.py` runs on the trusted control host every five minutes using the existing Hetzner token. The runtime host never receives provider credentials and sends health alerts only. Enable the estimator after configuring the hosts and SMTP:
 

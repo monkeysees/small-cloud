@@ -1,0 +1,164 @@
+[
+  {
+    "time": "2026-09-08T11:40:18.363264+00:00",
+    "host": "small-cloud-control",
+    "disks": [
+      {
+        "path": "/",
+        "used_percent": 2.5,
+        "free_bytes": 150332551168
+      }
+    ],
+    "services": [
+      {
+        "unit": "postgresql@16-main.service",
+        "active": true
+      },
+      {
+        "unit": "caddy.service",
+        "active": true
+      },
+      {
+        "unit": "docker-registry.service",
+        "active": true
+      }
+    ],
+    "alerts": [
+      "estimated_usd reached USD 50 threshold",
+      "forecast_usd reached USD 50 threshold"
+    ],
+    "peers": [
+      {
+        "name": "runtime",
+        "reachable": true
+      }
+    ],
+    "tls": {
+      "hostname": "small-cloud.monkeysees.one",
+      "expires": "2026-12-07T10:23:28+00:00",
+      "days_remaining": 89
+    },
+    "spending": {
+      "basis": "api-resource-estimate",
+      "estimated_usd": 50,
+      "forecast_usd": 50,
+      "as_of": "2026-09-08T11:40:18.291578+00:00",
+      "source": "OPERATOR ACCEPTANCE TEST: synthetic threshold input, NOT current spending",
+      "fx_source": "Acceptance fixture USD identity rate",
+      "fx_as_of": "2026-09-08T11:40:18.291578+00:00",
+      "warnings": [],
+      "assumptions": [
+        "Synthetic test only; production spending evidence is unchanged."
+      ]
+    },
+    "delivery": "SMTP accepted; recipient receipt unverified"
+  },
+  {
+    "time": "2026-09-08T11:40:20.075326+00:00",
+    "host": "small-cloud-control",
+    "disks": [
+      {
+        "path": "/",
+        "used_percent": 2.5,
+        "free_bytes": 150332559360
+      }
+    ],
+    "services": [
+      {
+        "unit": "postgresql@16-main.service",
+        "active": true
+      },
+      {
+        "unit": "caddy.service",
+        "active": true
+      },
+      {
+        "unit": "docker-registry.service",
+        "active": true
+      }
+    ],
+    "alerts": [
+      "estimated_usd reached USD 80 threshold",
+      "forecast_usd reached USD 80 threshold"
+    ],
+    "peers": [
+      {
+        "name": "runtime",
+        "reachable": true
+      }
+    ],
+    "tls": {
+      "hostname": "small-cloud.monkeysees.one",
+      "expires": "2026-12-07T10:23:28+00:00",
+      "days_remaining": 89
+    },
+    "spending": {
+      "basis": "api-resource-estimate",
+      "estimated_usd": 80,
+      "forecast_usd": 80,
+      "as_of": "2026-09-08T11:40:20.014157+00:00",
+      "source": "OPERATOR ACCEPTANCE TEST: synthetic threshold input, NOT current spending",
+      "fx_source": "Acceptance fixture USD identity rate",
+      "fx_as_of": "2026-09-08T11:40:20.014157+00:00",
+      "warnings": [],
+      "assumptions": [
+        "Synthetic test only; production spending evidence is unchanged."
+      ]
+    },
+    "delivery": "SMTP accepted; recipient receipt unverified"
+  },
+  {
+    "time": "2026-09-08T11:40:21.749647+00:00",
+    "host": "small-cloud-control",
+    "disks": [
+      {
+        "path": "/",
+        "used_percent": 2.5,
+        "free_bytes": 150332555264
+      }
+    ],
+    "services": [
+      {
+        "unit": "postgresql@16-main.service",
+        "active": true
+      },
+      {
+        "unit": "caddy.service",
+        "active": true
+      },
+      {
+        "unit": "docker-registry.service",
+        "active": true
+      }
+    ],
+    "alerts": [
+      "estimated_usd reached USD 100 threshold",
+      "forecast_usd reached USD 100 threshold"
+    ],
+    "peers": [
+      {
+        "name": "runtime",
+        "reachable": true
+      }
+    ],
+    "tls": {
+      "hostname": "small-cloud.monkeysees.one",
+      "expires": "2026-12-07T10:23:28+00:00",
+      "days_remaining": 89
+    },
+    "spending": {
+      "basis": "api-resource-estimate",
+      "estimated_usd": 100,
+      "forecast_usd": 100,
+      "as_of": "2026-09-08T11:40:21.680037+00:00",
+      "source": "OPERATOR ACCEPTANCE TEST: synthetic threshold input, NOT current spending",
+      "fx_source": "Acceptance fixture USD identity rate",
+      "fx_as_of": "2026-09-08T11:40:21.680037+00:00",
+      "warnings": [],
+      "assumptions": [
+        "Synthetic test only; production spending evidence is unchanged."
+      ]
+    },
+    "delivery": "SMTP accepted; recipient receipt unverified"
+  }
+]
