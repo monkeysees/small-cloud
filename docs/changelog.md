@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Verify live Google administrator sign-in, separate creator privileges, retained CLI authentication and immediate credential revocation; leave the workstation signed in with a tested replacement credential.
 - Fix browser CLI approval by preserving the form's Origin header with a strict-origin referrer policy, while retaining exact-origin and CSRF checks.
 - Deploy Google identity routes on the control host, bootstrap the confirmed administrator, install the local CLI and redact OAuth callback details from proxy-error logs; keep app publishing routes closed.
 - Add #4 Google browser approval, retained revocable CLI credentials, explicit administrator admission and separate five-creator grants, with CLI/HTTPS acceptance checks and an identity-service runbook; live Google verification remains pending.

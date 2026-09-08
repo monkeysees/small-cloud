@@ -122,7 +122,18 @@
     "authorization_leaked": false,
     "cookie_leaked": false
   },
-  "google_browser_login": "pending administrator approval",
+  "google_browser_login": {
+    "verified_at": "2026-09-08T22:20:54.286270+00:00",
+    "email": "monkeyseesone@gmail.com",
+    "user_id": "usr_800a3dde642a45d5902244808a2e2f5c",
+    "roles": [
+      "member",
+      "creator",
+      "administrator"
+    ],
+    "retained_cli_status": "passed",
+    "replacement_login": "passed"
+  },
   "scope": "Identity routes deployed; app publishing remains closed.",
   "application_base_commit": "ddfd0875cce3052313329952a84b99d2bc125d1a",
   "installed_source_sha256": {
@@ -141,7 +152,7 @@
     "policy": "strict-origin",
     "regression_test": "passed",
     "null_and_foreign_origins": "still rejected",
-    "real_browser_retry": "pending"
+    "real_browser_retry": "passed; operator saw approval and CLI received credential"
   },
   "local_validation": {
     "identity_tests": 12,
@@ -149,5 +160,22 @@
     "hosting_fixture_tests": 4,
     "pyright_errors": 0,
     "independent_review": "no outstanding implementation findings; live acceptance pending"
-  }
+  },
+  "live_administrator_actions": {
+    "existing_member_admission": "successful no-op",
+    "separate_creator_grant": "passed",
+    "updated_roles_on_existing_credential": "passed"
+  },
+  "live_revocation": {
+    "original_credential_id": "cred_a5b0d1d08b424ac2a0665fdafe2759c2",
+    "replacement_credential_id": "cred_4f500ba8a89a4642a4aecec068e5d513",
+    "revoke": "passed",
+    "repeated_revoke": "passed",
+    "revoked_status": {
+      "status": 401,
+      "code": "CREDENTIAL_REVOKED"
+    },
+    "replacement_remains_authorized": true
+  },
+  "remaining_acceptance": "Other real Google identities have not been exercised in the deployed environment; the local signed-provider suite covers the full role/identity matrix and five-creator boundary."
 }
