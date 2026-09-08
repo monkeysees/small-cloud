@@ -4,6 +4,8 @@ Implementation in progress for [#17](https://github.com/monkeysees/small-cloud/i
 
 ## Prerequisites and scope
 
+The operator-authorized [CX watcher](CX-WATCH.md) now checks German capacity every minute and automatically procures the approved permanent pair within fixed price ceilings. Its frozen workstation installation runs independently of this checkout. Stop the watcher before any manual `apply` operation to avoid competing provisioning controllers.
+
 Use Python 3.11+, OpenSSH and the documented owner-only [Hetzner/Cloudflare token files](../docs/agents/cloud-access.md). The automation has no Python package dependencies. Hosts use Ubuntu 24.04 amd64 signed distribution packages; capture actual package/kernel versions during deployment. gVisor requires an explicit versioned official artifact URL and verified SHA256, with no `latest` install. See each host directory for reviewed upstream references.
 
 The operator identifies the Hetzner token's project as `small-cloud`; the API does not independently establish the project display name. The permanent CX33/CX43 pair stays in Germany (`nbg1`, `fsn1`). Builders may use EU locations, including Helsinki (`hel1`), as authorized by the operator. Inspect live account prices and availability before creating resources:
@@ -76,7 +78,7 @@ Pyright is a pinned development check, not a host runtime dependency. The databa
 
 ## Maintenance and teardown
 
-Check disk/service/TLS health using [monitoring](monitor/README.md). SMTP sending authority and a source of actual billing evidence must be configured before enabling spending notifications. No notification delivery has been verified. A separate observer is still needed to detect complete control-host loss.
+Check disk/service/TLS health using [monitoring](monitor/README.md). Resend sender authority and operator receipt were verified on 2026-09-08. After configuring the new foundation, run `python3 infra/remote.py enable-alerts` to install the protected local SMTP settings on both verified hosts. Actual billing evidence remains a separate prerequisite for spending notifications; missing evidence generates an unavailable-monitoring alert. A separate observer is still needed to detect complete control-host loss.
 
 Patch one host at a time after recording installed package/kernel/runsc versions and draining affected work. Re-run isolation probes after kernel, gVisor, Docker, network policy or PostgreSQL changes. Do not patch a builder in place: create a fresh VM. For a gVisor change, supply a reviewed new immutable URL/hash, reinstall and re-run the gate. PostgreSQL minor upgrades use signed Ubuntu updates; major upgrades require an explicit data migration and fresh privilege/persistence probes. Package rollback does not imply database rollback.
 

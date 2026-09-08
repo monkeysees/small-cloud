@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a persistent German CX availability watcher with automatic bounded procurement, durable create reconciliation and operator notifications for #17.
+- Add verified-host SMTP installation and alert activation; record confirmed delivery while billing evidence and deployed acceptance remain pending.
 - Record verified Resend sending domain, protected SMTP configuration and operator-confirmed test delivery for #17; deployed alert automation remains pending.
 - Add reproducible Hetzner provisioning, gVisor runtime, disposable EU builders, database isolation, retention and health monitoring for #17; record temporary live validation and keep creator admission closed pending acceptance.
 - Document agent access to Hetzner and Cloudflare, operator settings, local credential paths and outstanding provisioning checks.

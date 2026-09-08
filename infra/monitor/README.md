@@ -20,14 +20,14 @@ Install the script at `/opt/small-cloud/infra/monitor.py`. Put configuration at 
 }
 ```
 
-Use `postgresql@16-main.service`, `caddy.service` and `docker-registry.service` on the control host; verify the deployed inventory first. SMTP supports certificate-verified STARTTLS or implicit TLS (`security: "tls"`, typically port 465). The fixed recipient is `monkeyseesone@gmail.com`. Sending authority is not yet supplied: placeholders cannot deliver mail. `remote.configure` installs a collection-only systemd override without `--send`, so the health timer is useful before sender access exists. It preserves existing private monitor configuration. Remove the collection-only override only after sending authority is configured and delivery testing is authorized.
+Use `postgresql@16-main.service`, `caddy.service` and `docker-registry.service` on the control host; verify the deployed inventory first. SMTP supports certificate-verified STARTTLS or implicit TLS (`security: "tls"`, typically port 465). The fixed recipient is `monkeyseesone@gmail.com`. The operator verified receipt of a Resend test on 2026-09-08. Protected workstation configuration is recorded in [cloud access](../../docs/agents/cloud-access.md); the example above remains a placeholder. `remote.configure` installs a collection-only systemd override without `--send`, so the health timer is useful before sender access exists. It preserves existing private monitor configuration. After foundation configuration, run `python3 infra/remote.py enable-alerts` from the workstation. This checks both live server identities, ownership, German location and addresses against the protected inventory before transferring SMTP settings over SSH. It preserves existing health settings, removes the collection-only override and enables both timers. It does not send another delivery-check message. Reapplying `configure` restores collection-only mode; run `enable-alerts` again afterward.
 
 ```bash
 sudo python3 /opt/small-cloud/infra/monitor.py --config /etc/small-cloud/monitor.json
 sudo python3 /opt/small-cloud/infra/monitor.py --config /etc/small-cloud/monitor.json --send --delivery-check
 ```
 
-The first command collects evidence without sending. The second explicitly requests a real delivery check. An SMTP acceptance response is not recipient receipt: independently confirm the received message before recording delivery as verified. Provider error text is withheld because it can contain credentials. No live delivery has been exercised by implementing these files.
+The first command collects evidence without sending. The second explicitly requests a real delivery check. An SMTP acceptance response is not recipient receipt: independently confirm the received message before recording delivery as verified. Provider error text is withheld because it can contain credentials. The workstation SMTP path has verified recipient receipt; deployed host delivery remains to be exercised after provisioning.
 
 Spending alerts require a separately computed, redacted evidence file supplied with `--spend`. For example (replace amounts, sources and timestamps with observed evidence):
 

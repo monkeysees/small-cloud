@@ -18,7 +18,7 @@ import sys
 import time
 import tempfile
 
-from cloud import API, Failure, OWNER, SECRET_DIR, SELECTOR, state_directory
+from cloud import API, Failure, OWNER, SECRET_DIR, SELECTOR, private_file, state_directory
 
 HERE = Path(__file__).resolve().parent
 
@@ -196,6 +196,63 @@ def configure(args: argparse.Namespace) -> dict:
     return {"configured": True, "workload_admission": "closed", "live_acceptance": "not run"}
 
 
+def enable_alerts(args: argparse.Namespace) -> dict:
+    """Install sending authority only after matching live hosts to local inventory."""
+    smtp = json.loads(private_file(args.smtp_config))['smtp']
+    if (smtp.get('security') not in ('starttls', 'tls')
+            or not isinstance(smtp.get('port'), int) or not 1 <= smtp['port'] <= 65535
+            or any(not isinstance(smtp.get(key), str) or not smtp[key]
+                   for key in ('host', 'sender', 'username', 'password'))):
+        raise Failure('Invalid private SMTP configuration')
+    installed = json.loads(private_file(state_directory() / 'foundation.json'))['servers']
+    current = API('hetzner').items('servers', label_selector=SELECTOR)
+    hosts = []
+    for role in ('control', 'runtime'):
+        expected = installed[role]
+        matches = [server for server in current if server['id'] == expected['id']]
+        if len(matches) != 1:
+            raise Failure('Foundation inventory drift; configure current hosts first')
+        server = matches[0]
+        if (any(server.get('labels', {}).get(key) != value
+                for key, value in {**OWNER, 'role': role}.items())
+                or server['public_net']['ipv4']['ip'] != expected['ipv4']
+                or server['server_type']['name'] != expected['type']
+                or server['location']['name'] not in ('nbg1', 'fsn1')):
+            raise Failure('Foundation identity mismatch; refusing credential transfer')
+        hosts.append(Host(expected['ipv4'], f"small-cloud-{server['id']}"))
+    # Transfer over SSH, never through command arguments or persistent local staging.
+    with tempfile.TemporaryDirectory(dir=state_directory(), prefix='.smtp-') as directory:
+        source = Path(directory) / 'smtp.json'
+        with open(source, 'x', opener=lambda p, f: os.open(p, f, 0o600)) as output:
+            json.dump({'smtp': smtp}, output)
+        for host in hosts:
+            host.command('test', '-f', '/etc/small-cloud/monitor.json')
+            destination = host.command('mktemp', '/run/small-cloud-smtp.XXXXXXXX').strip()
+            if not destination.startswith('/run/small-cloud-smtp.') or '/' in destination[5:]:
+                raise Failure('Unexpected remote temporary path')
+            try:
+                host.upload(source, destination)
+                host.command('python3', '-c',
+                    'import json,os,pathlib,stat,sys,tempfile\n'
+                    'p=pathlib.Path("/etc/small-cloud/monitor.json"); i=p.lstat()\n'
+                    'assert stat.S_ISREG(i.st_mode) and i.st_uid==0 and stat.S_IMODE(i.st_mode)==0o600\n'
+                    'd=json.loads(p.read_text()); d["smtp"]=json.loads(pathlib.Path(sys.argv[1]).read_text())["smtp"]\n'
+                    'fd,name=tempfile.mkstemp(dir=p.parent,prefix=".monitor-")\n'
+                    'try:\n'
+                    ' with os.fdopen(fd,"w") as f:\n'
+                    '  json.dump(d,f); f.flush(); os.fsync(f.fileno())\n'
+                    ' os.replace(name,p)\n'
+                    'finally:\n'
+                    ' pathlib.Path(name).unlink(missing_ok=True)\n', destination)
+                host.command('rm', '-f', '/etc/systemd/system/small-cloud-monitor.service.d/10-collect-only.conf')
+                host.command('systemctl', 'daemon-reload')
+                host.command('systemctl', 'enable', '--now', 'small-cloud-monitor.timer')
+            finally:
+                host.command('rm', '-f', '--', destination)
+    return {'alerts_enabled': True, 'hosts': ['control', 'runtime'],
+            'billing_evidence': 'separate input required', 'delivery_check': 'not sent'}
+
+
 def management_addresses() -> list[str]:
     config = Path("/etc/small-cloud/controller.json")
     info = config.lstat()
@@ -280,6 +337,8 @@ def main() -> int:
     config = commands.add_parser("configure")
     config.add_argument("--runsc-url", required=True)
     config.add_argument("--runsc-sha256", required=True)
+    alerts = commands.add_parser('enable-alerts', help='Install protected SMTP settings on verified foundation hosts')
+    alerts.add_argument('--smtp-config', type=Path, default=SECRET_DIR / 'monitor-smtp.json')
     execute = commands.add_parser("build")
     execute.add_argument("--context", type=Path, required=True)
     execute.add_argument("--output", type=Path, required=True)
@@ -287,7 +346,8 @@ def main() -> int:
     execute.add_argument("--job", required=True)
     args = parser.parse_args()
     try:
-        print(json.dumps(configure(args) if args.command == "configure" else build(args), indent=2))
+        operation = {'configure': configure, 'build': build, 'enable-alerts': enable_alerts}[args.command]
+        print(json.dumps(operation(args), indent=2))
         return 0
     except KeyboardInterrupt:
         print('Interrupted; inspect teardown evidence or independent reconciliation.', file=sys.stderr)

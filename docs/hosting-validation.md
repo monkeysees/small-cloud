@@ -32,7 +32,7 @@ The deployment exposed and corrected real compatibility failures: Docker 29's st
 | Thirty deployed tools | Partial | 30 databases are allocated; 30 stored release/image records and product lifecycle are not demonstrated |
 | EU residency | Resource placement observed | Source, images, database, encrypted credentials and logs on German hosts; builders restricted to supported EU locations; full telemetry/replication review still required |
 | Health monitoring | Live collection pass | Service, disk and TLS checks; external host-loss observer remains absent |
-| Spending estimate and delivery | Partial | Current EUR prices and rounding sensitivity documented; actual billing/FX ingestion and SMTP sender unavailable; no email sent |
+| Spending estimate and delivery | Partial | Current EUR prices and rounding sensitivity documented; actual billing/FX ingestion remains pending; Resend workstation test delivered and operator-confirmed on 2026-09-08, deployed spending alerts untested |
 | Two-week timebox | Not established | Initial foundation validation does not prove end-to-end pilot delivery or adoption |
 
 The retained runtime settings are 0.5 CPU, 512 MiB memory without swap, 128 guest tasks and a 1 GiB `/tmp` ceiling. Tmpfs pages consume the same memory budget, so the observed memory limit takes effect before a tool can fill that disk ceiling. Builder configuration uses two CPUs, 3,500 MiB without swap, 512 host tasks, a 10 GiB filesystem and a ten-minute watchdog. The memory setting preserves host headroom on the approved 4 GiB builder; full build exhaustion still needs separate validation.
@@ -76,7 +76,7 @@ No blocking static findings remained after the final review. Corrections include
 
 ### Spec
 
-The runtime image-inventory admission/cleanup defect was fixed and re-reviewed. A single fixed, validated, read-only public resolver file is the documented gVisor DNS exception; no host directory or credentials are exposed. The remaining acceptance gaps are explicit: account quota, sender authority and billing evidence, complete adversarial isolation, stored-release capacity, renewal execution and integrated product handoffs. Static review does not turn these missing live results into passes.
+The runtime image-inventory admission/cleanup defect was fixed and re-reviewed. A single fixed, validated, read-only public resolver file is the documented gVisor DNS exception; no host directory or credentials are exposed. The remaining acceptance gaps are explicit: account quota and billing evidence, complete adversarial isolation, stored-release capacity, renewal execution and integrated product handoffs. Static review does not turn these missing live results into passes.
 
 ## Gate to admit creator workloads
 

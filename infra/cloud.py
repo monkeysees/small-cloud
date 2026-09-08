@@ -157,16 +157,19 @@ def ssh_key(api: API) -> dict:
     return row
 
 
-def foundation(api: API, admin_cidr: str, validation: bool = False) -> dict:
+def foundation(api: API, admin_cidr: str, validation: bool = False, location: str | None = None) -> dict:
     cidr = str(ipaddress.ip_network(admin_cidr, strict=True))
     kinds = ("cpx32", "cpx42") if validation else ("cx33", "cx43")
     quoted = quote(api)
-    location = next((loc for loc in LOCATIONS if all(any(r["type"] == kind and r["location"] == loc and r["available"] for r in quoted["servers"]) for kind in kinds)), None)
+    pinned_location = location
+    location = location or next((loc for loc in LOCATIONS if all(any(r["type"] == kind and r["location"] == loc and r["available"] for r in quoted["servers"]) for kind in kinds)), None)
     existing = api.items("servers", label_selector=SELECTOR)
     if existing:
         locations = {s["location"]["name"] for s in existing if s.get("labels", {}).get("role") in ("control", "runtime")}
         if len(locations) == 1:
             location = locations.pop()
+    if pinned_location is not None and location != pinned_location:
+        raise Failure("Existing foundation location differs from pinned location")
     if location not in LOCATIONS:
         raise Failure("CAPACITY_UNAVAILABLE: selected host pair unavailable in Germany; no resources created, no permanent SKU substitution")
     extra_labels = {}
