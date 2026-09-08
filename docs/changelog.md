@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add reproducible Hetzner provisioning, gVisor runtime, disposable EU builders, database isolation, retention and health monitoring for #17; record temporary live validation and keep creator admission closed pending acceptance.
 - Document agent access to Hetzner and Cloudflare, operator settings, local credential paths and outstanding provisioning checks.
 - Record approved Hetzner setup and per-build CX23 → CPX22 fallback across Germany without an initial prewarmed pool; retain the live deployment acceptance gate.
 - Define CLI and platform contracts for #3, including authentication, trusted identity, build accounting, bounded logs, lifecycle failures and acceptance examples.

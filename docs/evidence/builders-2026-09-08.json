@@ -1,0 +1,552 @@
+{
+  "recorded_at": "2026-09-08T02:39:42Z",
+  "scope": "Issue17 disposable builder deployment validation; creator admission remains closed",
+  "successful_build": {
+    "result": {
+      "ok": true,
+      "image_archive_sha256": "a52b89ef9acd0d204c30b37668ae8b4d0eaf35cd8410f25e35500dd81ec1912c",
+      "image_bytes": 187204608,
+      "dropped_log_bytes": 0
+    },
+    "network": {
+      "phase": "build",
+      "utc": "2026-09-08T01:40:50Z",
+      "checks": [
+        {
+          "name": "public-https",
+          "expected": "allow",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "connected": true,
+          "http_status": 200,
+          "observed": "connected",
+          "phase": "http",
+          "elapsed_ms": 258,
+          "result": "pass"
+        },
+        {
+          "name": "public-https",
+          "expected": "allow",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "connected": true,
+          "http_status": 200,
+          "observed": "connected",
+          "phase": "http",
+          "elapsed_ms": 156,
+          "result": "pass"
+        },
+        {
+          "name": "metadata-ipv4",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3003,
+          "result": "pass"
+        },
+        {
+          "name": "private-database",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3003,
+          "result": "pass"
+        },
+        {
+          "name": "private-control-canary",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3003,
+          "result": "pass"
+        },
+        {
+          "name": "public-ipv6",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv6",
+          "observed": "unreachable",
+          "phase": "connect",
+          "elapsed_ms": 0,
+          "result": "inconclusive"
+        },
+        {
+          "name": "public-control",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3005,
+          "result": "pass"
+        },
+        {
+          "name": "public-runtime-ssh",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3006,
+          "result": "pass"
+        }
+      ],
+      "ipv6_interface_count": 1,
+      "proxy_environment_present": false,
+      "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+    },
+    "teardown": {
+      "id": 165057573,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    },
+    "docker_version": "29.1.3-0ubuntu3~24.04.2",
+    "location": "fsn1",
+    "type": "cx23"
+  },
+  "capacity": {
+    "requested_concurrent_builds": 5,
+    "observed_concurrent_allocations": 1,
+    "second_concurrent_admission": "Hetzner HTTP403 resource_limit_exceeded",
+    "five_way_overlap": "blocked by provider resource quota",
+    "sixth_build_busy": "not run; five allocations could not be established",
+    "isolated_completed_results": [
+      {
+        "ok": true,
+        "image_archive_sha256": "2f683a8dc4e436c00313a53952c6cea3d042223f096bfd1e18a8e218d814520f",
+        "image_bytes": 187208192,
+        "dropped_log_bytes": 0,
+        "execution_started_at": "2026-09-08T01:51:19Z",
+        "execution_completed_at": "2026-09-08T01:53:59Z",
+        "execution_duration_seconds": 160.456
+      },
+      {
+        "ok": true,
+        "image_archive_sha256": "002d1bd4dab2fa524f7864908d5309aac02adbd7f1c23691e2aa50a0b6eda29d",
+        "image_bytes": 187208192,
+        "dropped_log_bytes": 0,
+        "execution_started_at": "2026-09-08T01:58:32Z",
+        "execution_completed_at": "2026-09-08T02:01:06Z",
+        "execution_duration_seconds": 154.667
+      }
+    ],
+    "failed_admission_source_removed": true
+  },
+  "failed_dockerfile": {
+    "observed_run_exit_code": 23,
+    "result": {
+      "ok": false,
+      "error": "RuntimeError",
+      "execution_started_at": "2026-09-08T02:03:28Z",
+      "execution_completed_at": "2026-09-08T02:03:36Z",
+      "execution_duration_seconds": 8.556
+    },
+    "teardown": {
+      "id": 165058999,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    }
+  },
+  "cancellation": {
+    "observation": {
+      "builder": 165059145,
+      "run_sleep_observed": true,
+      "signal_sent_at": "2026-09-08T02:05:53Z",
+      "signal": "SIGTERM",
+      "target": "controller-main",
+      "execution_started_at": "2026-09-08T02:05:36Z"
+    },
+    "after": {
+      "utc": "2026-09-08T02:06:43Z",
+      "teardown": {
+        "id": 165059145,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      },
+      "source_removed": true,
+      "service": "ExecMainStatus=130\nActiveState=failed\nSubState=failed"
+    },
+    "teardown": {
+      "id": 165059145,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    }
+  },
+  "independent_expiry": {
+    "started_at": "2026-09-08T02:07:38Z",
+    "created": {
+      "id": 165059337,
+      "job": "expiry-proof",
+      "ipv4": "2.28.60.91",
+      "type": "cx23",
+      "location": "nbg1",
+      "expires": 1788835058,
+      "hourly_net": "0.0088000000",
+      "currency": "EUR"
+    },
+    "primary_ips": [
+      148557192
+    ],
+    "expired_at": "2026-09-08T02:07:55Z",
+    "independent_deletion": true,
+    "observed_absent_at": "2026-09-08T02:08:45Z",
+    "reconciler": "ExecMainStartTimestamp=Tue 2026-09-08 02:08:27 UTC\nExecMainStatus=0"
+  },
+  "deadline": {
+    "configured_seconds": 600,
+    "fixture_run": "sleep900",
+    "result": {
+      "ok": false,
+      "error": "ExecutionNotCompleted",
+      "execution_started_at": "2026-09-08T02:11:34Z",
+      "execution_completed_at": null,
+      "execution_duration_seconds": null
+    },
+    "teardown": {
+      "id": 165059539,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    },
+    "control_unit": "ExecMainStartTimestamp=Tue 2026-09-08 02:10:07 UTC\nExecMainExitTimestamp=Tue 2026-09-08 02:21:52 UTC\nExecMainStatus=1\nActiveState=failed",
+    "exact_watchdog_and_empty_cgroup_proof": "inconclusive; transient observer result was not captured before deletion"
+  },
+  "cost": {
+    "allocations": [
+      {
+        "job": "validation-1",
+        "id": 165056567,
+        "observed_type": null,
+        "recorded_location": null,
+        "hourly_net_eur": null,
+        "teardown": {
+          "id": 165056567,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "validation-2",
+        "id": 165057009,
+        "observed_type": "cx23",
+        "recorded_location": "fsn1",
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165057009,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "evidence_source": "hosting-2026-09-08.json resources API snapshot"
+      },
+      {
+        "job": "validation-3",
+        "id": 165057288,
+        "observed_type": "cx23",
+        "recorded_location": null,
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165057288,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "validation-4",
+        "id": 165057573,
+        "observed_type": "cx23",
+        "recorded_location": "fsn1",
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165057573,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "capacity-1",
+        "id": 165058209,
+        "observed_type": "cx23",
+        "recorded_location": "fsn1",
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165058209,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "capacity-2",
+        "id": 165058638,
+        "observed_type": "cx23",
+        "recorded_location": "fsn1",
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165058638,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "failure-proof",
+        "id": 165058999,
+        "observed_type": "cx23",
+        "recorded_location": null,
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165058999,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "cancel-proof",
+        "id": 165059145,
+        "observed_type": "cx23",
+        "recorded_location": null,
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165059145,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "expiry-proof",
+        "id": 165059337,
+        "observed_type": "cx23",
+        "recorded_location": "nbg1",
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "independent_deletion": true,
+          "observed_absent_at": "2026-09-08T02:08:45Z",
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "timeout-proof",
+        "id": 165059539,
+        "observed_type": "cx23",
+        "recorded_location": "nbg1",
+        "hourly_net_eur": "0.0088",
+        "teardown": {
+          "id": 165059539,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      },
+      {
+        "job": "timeout-observed",
+        "id": 165060818,
+        "observed_type": "cx23",
+        "recorded_location": "nbg1",
+        "hourly_net_eur": "0.0088000000",
+        "teardown": {
+          "id": 165060818,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        }
+      }
+    ],
+    "invoice_verified": false,
+    "notes": "All eleven allocations were deleted within one estimated billed hour each. Ten are recorded as CX23 at EUR 0.0088/hour; the first missing type is bounded by the approved CPX22 maximum of EUR 0.0312/hour. Net compute estimate: EUR 0.0968\u20130.1192, excluding IPv4, tax and traffic. Unrecorded locations and the first type are not inferred. Invoice not verified."
+  },
+  "final_inventory": {
+    "recorded_at": "2026-09-08T02:39:42Z",
+    "owned_builders": [],
+    "remaining_primary_ips": [
+      {
+        "id": 148552877,
+        "assignee_id": 165056008
+      },
+      {
+        "id": 148552966,
+        "assignee_id": 165056157
+      }
+    ],
+    "unexpected_primary_ips": [],
+    "pending_builder_deletion_journals": []
+  },
+  "remaining_gates": [
+    "Provider resource quota prevents five concurrent builder validation",
+    "Build exhaustion, controlled public nonce correlation, proxy and DNS rebinding probes incomplete",
+    "Invoice charges unverified"
+  ],
+  "deadline_repeat": {
+    "started_at": "2026-09-08T02:27:58Z",
+    "canary_before": {
+      "utc": "2026-09-08T02:27:58Z",
+      "http_status": 200
+    },
+    "builder": {
+      "id": 165060818,
+      "job": "timeout-observed",
+      "ipv4": "2.28.60.91",
+      "type": "cx23",
+      "location": "nbg1",
+      "expires": 1788836279,
+      "hourly_net": "0.0088000000",
+      "currency": "EUR"
+    },
+    "initial": {
+      "utc": "2026-09-08T02:29:07Z",
+      "monotonic": 51.506109097,
+      "kernel": "6.8.0-138-generic",
+      "cgroup_path": "/small.slice/small-cloud.slice/small-cloud-build.slice",
+      "cgroup": {
+        "cpu.max": "200000 100000",
+        "memory.max": "3670016000",
+        "memory.swap.max": "0",
+        "pids.max": "512",
+        "pids.current": "49",
+        "cgroup.events": "populated 1\nfrozen 0"
+      },
+      "timer": {
+        "LastTriggerUSec": "",
+        "ActiveState": "active",
+        "SubState": "waiting",
+        "ActiveEnterTimestampMonotonic": "39347411"
+      },
+      "watchdog": {
+        "ExecMainStartTimestampMonotonic": "0",
+        "ExecMainExitTimestampMonotonic": "0",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "worker": {
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "runner": {
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "sleep_pids": [
+        "3300"
+      ],
+      "watchdog_journal": []
+    },
+    "after": {
+      "utc": "2026-09-08T02:38:56Z",
+      "monotonic": 640.611207524,
+      "kernel": "6.8.0-138-generic",
+      "cgroup_path": "/small.slice/small-cloud.slice/small-cloud-build.slice",
+      "cgroup": {
+        "cpu.max": "200000 100000",
+        "memory.max": "3670016000",
+        "memory.swap.max": "0",
+        "pids.max": "512",
+        "pids.current": "0",
+        "cgroup.events": "populated 0\nfrozen 0"
+      },
+      "timer": {
+        "LastTriggerUSec": "",
+        "ActiveState": "inactive",
+        "SubState": "dead",
+        "ActiveEnterTimestampMonotonic": "0"
+      },
+      "watchdog": {
+        "ExecMainStartTimestampMonotonic": "0",
+        "ExecMainExitTimestampMonotonic": "0",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      },
+      "worker": {
+        "ExecMainCode": "2",
+        "ExecMainStatus": "9",
+        "ActiveState": "failed",
+        "SubState": "failed"
+      },
+      "runner": {
+        "ExecMainCode": "1",
+        "ExecMainStatus": "255",
+        "ActiveState": "failed",
+        "SubState": "failed"
+      },
+      "sleep_pids": [],
+      "watchdog_journal": [
+        {
+          "monotonic_us": "639353641",
+          "message": "Started sc-build-deadline.service - /usr/bin/python3 /opt/small-cloud-builder/worker.py terminate."
+        },
+        {
+          "monotonic_us": "639417318",
+          "message": "sc-build-deadline.service: Deactivated successfully."
+        }
+      ]
+    },
+    "canary_after": {
+      "utc": "2026-09-08T02:38:56Z",
+      "http_status": 200
+    },
+    "delete_status": 0,
+    "finished_at": "2026-09-08T02:39:13Z",
+    "watchdog_elapsed_seconds": 600.00623,
+    "empty_build_cgroup": true,
+    "actual_run_process_gone": true,
+    "precise_cutoff_verified": true,
+    "teardown": {
+      "id": 165060818,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    },
+    "result": {
+      "ok": false,
+      "error": "ExecutionNotCompleted",
+      "execution_started_at": "2026-09-08T02:28:55Z",
+      "execution_completed_at": null,
+      "execution_duration_seconds": null
+    },
+    "redirect": {
+      "probe": "public-redirect-to-private",
+      "initial_status": 302,
+      "follow_observed": "timeout",
+      "result": "pass"
+    }
+  }
+}

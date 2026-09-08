@@ -1,0 +1,20 @@
+[Unit]
+Description=Small Cloud operator health and spending evidence
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/small-cloud/infra/monitor.py --config /etc/small-cloud/monitor.json --spend /var/lib/small-cloud/spending.json --send
+TimeoutStartSec=120
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+StateDirectory=small-cloud-monitor
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/small-cloud-monitor
+StandardOutput=null
+StandardError=journal

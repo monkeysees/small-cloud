@@ -1,0 +1,19 @@
+[Unit]
+Description=Prune tracked expired Small Cloud derived runtime images
+After=docker.service
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/small-cloud/runtime/sandbox.py --config /etc/small-cloud/runtime.json prune-images
+TimeoutStartSec=300
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+StateDirectory=small-cloud-runtime
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/small-cloud-runtime /run
+StandardOutput=journal
+StandardError=journal

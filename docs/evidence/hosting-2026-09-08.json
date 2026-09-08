@@ -1,0 +1,679 @@
+{
+  "utc": "2026-09-08T01:30:30.547183+00:00",
+  "resources": [
+    {
+      "id": 165056008,
+      "name": "small-cloud-control",
+      "location": "nbg1",
+      "country": "DE",
+      "type": "cpx32",
+      "created": "2026-09-08T01:17:27Z",
+      "labels": {
+        "issue": "17",
+        "managed-by": "small-cloud",
+        "role": "control",
+        "validation": "true",
+        "validation-expires": "1788836546"
+      },
+      "backups": null,
+      "public_ipv6": null
+    },
+    {
+      "id": 165056157,
+      "name": "small-cloud-runtime",
+      "location": "nbg1",
+      "country": "DE",
+      "type": "cpx42",
+      "created": "2026-09-08T01:18:32Z",
+      "labels": {
+        "issue": "17",
+        "managed-by": "small-cloud",
+        "role": "runtime",
+        "validation": "true",
+        "validation-expires": "1788836546"
+      },
+      "backups": null,
+      "public_ipv6": null
+    },
+    {
+      "id": 165057009,
+      "name": "small-cloud-build-validation-2",
+      "location": "fsn1",
+      "country": "DE",
+      "type": "cx23",
+      "created": "2026-09-08T01:30:12Z",
+      "labels": {
+        "attempt": "eefc432ce638476295ead63acccff2d6",
+        "expires": "1788832812",
+        "issue": "17",
+        "job": "validation-2",
+        "managed-by": "small-cloud",
+        "role": "builder",
+        "validation": "true",
+        "validation-expires": "1788836546"
+      },
+      "backups": null,
+      "public_ipv6": null
+    }
+  ],
+  "creator_admission": "closed",
+  "smtp_delivery": "not run: sender unavailable",
+  "gateway_https_status": 503,
+  "database_restart_row_preserved": true,
+  "validation1": {
+    "id": 165056567,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  },
+  "updated_utc": "2026-09-08T02:40:47.725546+00:00",
+  "validation2": {
+    "id": 165057009,
+    "deleted": true,
+    "addresses_removed": true,
+    "estimated_billed_hours": 1,
+    "invoice_verified": false
+  },
+  "runtime": {
+    "runsc": "release-20260831.0",
+    "docker": "29.1.3",
+    "kernel": "6.8.0-138-generic",
+    "smoke_guest_kernel": "4.19.0-gvisor",
+    "smoke_uid": 65532
+  },
+  "tls": {
+    "hostname": "small-cloud.monkeysees.one",
+    "verified": true,
+    "expires": "2026-12-07T00:22:40Z",
+    "automatic_renewal_configured": true,
+    "renewal_execution": "not run"
+  },
+  "checks": [
+    {
+      "name": "foundation reapply",
+      "result": "pass"
+    },
+    {
+      "name": "control/runtime configure reapply",
+      "result": "pass"
+    },
+    {
+      "name": "database row survives reconfigure",
+      "result": "pass"
+    },
+    {
+      "name": "public HTTPS gateway stays closed",
+      "result": "pass",
+      "status": 503
+    },
+    {
+      "name": "host monitor health",
+      "result": "pass",
+      "delivery": "not requested"
+    },
+    {
+      "name": "trusted metadata canary",
+      "result": "pass",
+      "status": 200
+    },
+    {
+      "name": "trusted private canary",
+      "result": "pass"
+    }
+  ],
+  "build_attempts": {
+    "probe-result-1": {
+      "result.json": {
+        "ok": false,
+        "error": "RuntimeError"
+      },
+      "teardown.json": {
+        "id": 165056567,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    },
+    "probe-result-2": {
+      "result.json": {
+        "ok": false,
+        "error": "RuntimeError"
+      },
+      "teardown.json": {
+        "id": 165057009,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    },
+    "probe-result-3": {
+      "result.json": {
+        "ok": false,
+        "error": "RuntimeError"
+      },
+      "teardown.json": {
+        "id": 165057288,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    },
+    "probe-result-4": {
+      "result.json": {
+        "ok": true,
+        "image_archive_sha256": "a52b89ef9acd0d204c30b37668ae8b4d0eaf35cd8410f25e35500dd81ec1912c",
+        "image_bytes": 187204608,
+        "dropped_log_bytes": 0
+      },
+      "teardown.json": {
+        "id": 165057573,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    }
+  },
+  "build_network": [
+    {
+      "phase": "build",
+      "utc": "2026-09-08T01:40:50Z",
+      "checks": [
+        {
+          "name": "public-https",
+          "expected": "allow",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "connected": true,
+          "http_status": 200,
+          "observed": "connected",
+          "phase": "http",
+          "elapsed_ms": 258,
+          "result": "pass"
+        },
+        {
+          "name": "public-https",
+          "expected": "allow",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "connected": true,
+          "http_status": 200,
+          "observed": "connected",
+          "phase": "http",
+          "elapsed_ms": 156,
+          "result": "pass"
+        },
+        {
+          "name": "metadata-ipv4",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3003,
+          "result": "pass"
+        },
+        {
+          "name": "private-database",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3003,
+          "result": "pass"
+        },
+        {
+          "name": "private-control-canary",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3003,
+          "result": "pass"
+        },
+        {
+          "name": "public-ipv6",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv6",
+          "observed": "unreachable",
+          "phase": "connect",
+          "elapsed_ms": 0,
+          "result": "inconclusive"
+        },
+        {
+          "name": "public-control",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3005,
+          "result": "pass"
+        },
+        {
+          "name": "public-runtime-ssh",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3006,
+          "result": "pass"
+        }
+      ],
+      "ipv6_interface_count": 1,
+      "proxy_environment_present": false,
+      "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+    }
+  ],
+  "account_quote": {
+    "utc": "2026-09-08T02:04:00.058767+00:00",
+    "currency": "EUR",
+    "vat_rate": "0.000000",
+    "servers": [
+      {
+        "type": "cx33",
+        "location": "nbg1",
+        "available": false,
+        "cores": 4,
+        "memory_gib": 8,
+        "disk_gb": 80,
+        "hourly_net": "0.0136000000",
+        "monthly_net": "8.4900000000"
+      },
+      {
+        "type": "cx33",
+        "location": "fsn1",
+        "available": false,
+        "cores": 4,
+        "memory_gib": 8,
+        "disk_gb": 80,
+        "hourly_net": "0.0136000000",
+        "monthly_net": "8.4900000000"
+      },
+      {
+        "type": "cx33",
+        "location": "hel1",
+        "available": false,
+        "cores": 4,
+        "memory_gib": 8,
+        "disk_gb": 80,
+        "hourly_net": "0.0136000000",
+        "monthly_net": "8.4900000000"
+      },
+      {
+        "type": "cx43",
+        "location": "nbg1",
+        "available": false,
+        "cores": 8,
+        "memory_gib": 16,
+        "disk_gb": 160,
+        "hourly_net": "0.0256000000",
+        "monthly_net": "15.9900000000"
+      },
+      {
+        "type": "cx43",
+        "location": "fsn1",
+        "available": false,
+        "cores": 8,
+        "memory_gib": 16,
+        "disk_gb": 160,
+        "hourly_net": "0.0256000000",
+        "monthly_net": "15.9900000000"
+      },
+      {
+        "type": "cx43",
+        "location": "hel1",
+        "available": false,
+        "cores": 8,
+        "memory_gib": 16,
+        "disk_gb": 160,
+        "hourly_net": "0.0256000000",
+        "monthly_net": "15.9900000000"
+      },
+      {
+        "type": "cx23",
+        "location": "nbg1",
+        "available": true,
+        "cores": 2,
+        "memory_gib": 4,
+        "disk_gb": 40,
+        "hourly_net": "0.0088000000",
+        "monthly_net": "5.4900000000"
+      },
+      {
+        "type": "cx23",
+        "location": "fsn1",
+        "available": true,
+        "cores": 2,
+        "memory_gib": 4,
+        "disk_gb": 40,
+        "hourly_net": "0.0088000000",
+        "monthly_net": "5.4900000000"
+      },
+      {
+        "type": "cx23",
+        "location": "hel1",
+        "available": true,
+        "cores": 2,
+        "memory_gib": 4,
+        "disk_gb": 40,
+        "hourly_net": "0.0088000000",
+        "monthly_net": "5.4900000000"
+      },
+      {
+        "type": "cpx22",
+        "location": "nbg1",
+        "available": true,
+        "cores": 2,
+        "memory_gib": 4,
+        "disk_gb": 80,
+        "hourly_net": "0.0312000000",
+        "monthly_net": "19.4900000000"
+      },
+      {
+        "type": "cpx22",
+        "location": "fsn1",
+        "available": true,
+        "cores": 2,
+        "memory_gib": 4,
+        "disk_gb": 80,
+        "hourly_net": "0.0312000000",
+        "monthly_net": "19.4900000000"
+      },
+      {
+        "type": "cpx22",
+        "location": "hel1",
+        "available": true,
+        "cores": 2,
+        "memory_gib": 4,
+        "disk_gb": 80,
+        "hourly_net": "0.0312000000",
+        "monthly_net": "19.4900000000"
+      },
+      {
+        "type": "cpx32",
+        "location": "nbg1",
+        "available": true,
+        "cores": 4,
+        "memory_gib": 8,
+        "disk_gb": 160,
+        "hourly_net": "0.0569000000",
+        "monthly_net": "35.4900000000"
+      },
+      {
+        "type": "cpx32",
+        "location": "fsn1",
+        "available": true,
+        "cores": 4,
+        "memory_gib": 8,
+        "disk_gb": 160,
+        "hourly_net": "0.0569000000",
+        "monthly_net": "35.4900000000"
+      },
+      {
+        "type": "cpx32",
+        "location": "hel1",
+        "available": true,
+        "cores": 4,
+        "memory_gib": 8,
+        "disk_gb": 160,
+        "hourly_net": "0.0569000000",
+        "monthly_net": "35.4900000000"
+      },
+      {
+        "type": "cpx42",
+        "location": "nbg1",
+        "available": true,
+        "cores": 8,
+        "memory_gib": 16,
+        "disk_gb": 320,
+        "hourly_net": "0.1114000000",
+        "monthly_net": "69.4900000000"
+      },
+      {
+        "type": "cpx42",
+        "location": "fsn1",
+        "available": true,
+        "cores": 8,
+        "memory_gib": 16,
+        "disk_gb": 320,
+        "hourly_net": "0.1114000000",
+        "monthly_net": "69.4900000000"
+      },
+      {
+        "type": "cpx42",
+        "location": "hel1",
+        "available": true,
+        "cores": 8,
+        "memory_gib": 16,
+        "disk_gb": 320,
+        "hourly_net": "0.1114000000",
+        "monthly_net": "69.4900000000"
+      }
+    ],
+    "primary_ips": [
+      {
+        "type": "ipv4",
+        "prices": [
+          {
+            "location": "fsn1",
+            "price_hourly": {
+              "net": "0.0008000000",
+              "gross": "0.0008000000000000"
+            },
+            "price_monthly": {
+              "net": "0.5000000000",
+              "gross": "0.5000000000000000"
+            }
+          },
+          {
+            "location": "nbg1",
+            "price_hourly": {
+              "net": "0.0008000000",
+              "gross": "0.0008000000000000"
+            },
+            "price_monthly": {
+              "net": "0.5000000000",
+              "gross": "0.5000000000000000"
+            }
+          },
+          {
+            "location": "hel1",
+            "price_hourly": {
+              "net": "0.0008000000",
+              "gross": "0.0008000000000000"
+            },
+            "price_monthly": {
+              "net": "0.5000000000",
+              "gross": "0.5000000000000000"
+            }
+          },
+          {
+            "location": "ash",
+            "price_hourly": {
+              "net": "0.0008000000",
+              "gross": "0.0008000000000000"
+            },
+            "price_monthly": {
+              "net": "0.5000000000",
+              "gross": "0.5000000000000000"
+            }
+          },
+          {
+            "location": "hil",
+            "price_hourly": {
+              "net": "0.0008000000",
+              "gross": "0.0008000000000000"
+            },
+            "price_monthly": {
+              "net": "0.5000000000",
+              "gross": "0.5000000000000000"
+            }
+          },
+          {
+            "location": "sin",
+            "price_hourly": {
+              "net": "0.0008000000",
+              "gross": "0.0008000000000000"
+            },
+            "price_monthly": {
+              "net": "0.5000000000",
+              "gross": "0.5000000000000000"
+            }
+          }
+        ]
+      }
+    ],
+    "volume": {
+      "price_per_gb_month": {
+        "net": "0.0572000000",
+        "gross": "0.0572000000000000"
+      }
+    }
+  },
+  "verification": {
+    "utc": "2026-09-08T02:12:56.685517+00:00",
+    "infra_cli_tests": {
+      "passed": 59,
+      "failed": 0
+    },
+    "network_fixture_tests": {
+      "passed": 3,
+      "failed": 0
+    },
+    "postgres16_privilege_checks": {
+      "passed": 8,
+      "failed": 0,
+      "disposable_container_removed": true
+    },
+    "pyright": {
+      "version": "1.1.413",
+      "errors": 0,
+      "warnings": 0
+    },
+    "shell_syntax": "pass",
+    "diff_whitespace": "pass",
+    "review": {
+      "standards": "no remaining blocking static findings",
+      "spec": "static defects corrected; live acceptance gaps remain"
+    }
+  },
+  "build_redirect_trusted_after": {
+    "utc": "2026-09-08T02:33:12.353072+00:00",
+    "private_canary_http_status": 200
+  },
+  "final_cleanup": {
+    "started_utc": "2026-09-08T02:40:08.016124+00:00",
+    "foundation_before": [
+      {
+        "id": 165056008,
+        "role": "control",
+        "created": "2026-09-08T01:17:27Z",
+        "type": "cpx32",
+        "location": "nbg1",
+        "primary_ipv4_id": 148552877
+      },
+      {
+        "id": 165056157,
+        "role": "runtime",
+        "created": "2026-09-08T01:18:32Z",
+        "type": "cpx42",
+        "location": "nbg1",
+        "primary_ipv4_id": 148552966
+      }
+    ],
+    "validation_cleanup": {
+      "removed": [
+        165056008,
+        165056157
+      ],
+      "remaining_servers": 0,
+      "failures": []
+    },
+    "ancillary_removed": [
+      {
+        "resource": "firewalls",
+        "id": 11589688,
+        "name": "small-cloud-control"
+      },
+      {
+        "resource": "firewalls",
+        "id": 11589692,
+        "name": "small-cloud-runtime"
+      },
+      {
+        "resource": "firewalls",
+        "id": 11589698,
+        "name": "small-cloud-builder"
+      },
+      {
+        "resource": "networks",
+        "id": 12627416,
+        "name": "small-cloud-private"
+      },
+      {
+        "resource": "ssh_keys",
+        "id": 118490497,
+        "name": "small-cloud-operator"
+      }
+    ],
+    "dns": {
+      "owned_platform_a_removed": true,
+      "unrelated_wildcard_preserved": true
+    },
+    "remaining_account_counts": {
+      "servers": 0,
+      "primary_ips": 0,
+      "volumes": 0,
+      "networks": 0,
+      "firewalls": 0,
+      "ssh_keys": 0
+    },
+    "remaining_owned_counts": {
+      "servers": 0,
+      "volumes": 0,
+      "networks": 0,
+      "firewalls": 0,
+      "ssh_keys": 0
+    },
+    "completed_utc": "2026-09-08T02:40:47.725546+00:00",
+    "invoice_verified": false,
+    "independent_timer_stopped": true,
+    "expired_session_authorization_file_removed": true,
+    "deleted_foundation_host_key_entries_removed": true
+  },
+  "temporary_session_cost_estimate": {
+    "currency": "EUR",
+    "net": true,
+    "invoice_verified": false,
+    "foundation": [
+      {
+        "id": 165056008,
+        "estimated_billed_hours": 2,
+        "hourly_compute_net_eur": "0.0569000000",
+        "compute_net_eur": "0.1138000000"
+      },
+      {
+        "id": 165056157,
+        "estimated_billed_hours": 2,
+        "hourly_compute_net_eur": "0.1114000000",
+        "compute_net_eur": "0.2228000000"
+      }
+    ],
+    "builder_compute_lower": "0.0968",
+    "builder_compute_upper": "0.1192",
+    "primary_ipv4_estimated_billed_hours": 15,
+    "primary_ipv4_cost": "0.0120",
+    "compute_and_ipv4_lower": "0.4454000000",
+    "compute_and_ipv4_upper": "0.4678000000",
+    "limitations": "List prices and rounded observed lifetimes, not invoice charges. First builder type unrecorded; bounded by approved CX23/CPX22 rates. Excludes any additional traffic/tax or service charges; account quote VAT was zero. No extra volumes observed."
+  }
+}

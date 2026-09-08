@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly Small Cloud staging retention
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=120
+Persistent=true
+Unit=small-cloud-artifacts.service
+
+[Install]
+WantedBy=timers.target

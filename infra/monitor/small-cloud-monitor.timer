@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly Small Cloud operator monitoring
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=120
+Persistent=true
+Unit=small-cloud-monitor.service
+
+[Install]
+WantedBy=timers.target

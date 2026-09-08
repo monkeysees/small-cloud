@@ -1,0 +1,11 @@
+[Unit]
+Description=Independent Small Cloud builder expiry reconciliation
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+AccuracySec=1s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

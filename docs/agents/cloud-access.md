@@ -9,7 +9,8 @@ Read `docs/agents/issue-tracker.md`, then the current issue #17 body, comments a
 | Setting | Value |
 | --- | --- |
 | Hetzner project | `small-cloud` (operator-confirmed) |
-| Hosting locations | Germany only: `nbg1` or `fsn1` |
+| Control/runtime locations | Germany: `nbg1` or `fsn1` |
+| Builder locations | EU: `nbg1`, `fsn1` or `hel1`; operator expanded builder placement to any EU location on 2026-09-08 |
 | Platform domain | `small-cloud.monkeysees.one` |
 | Cloudflare zone | `monkeysees.one` |
 | Alert recipient | `monkeyseesone@gmail.com` (operator-confirmed; use instead of the checkout's placeholder Git email) |
@@ -30,7 +31,7 @@ Hetzner needs a project-bound Read & Write token. Cloudflare needs DNS Edit and 
 
 ## Verify before provisioning
 
-1. Authenticate to Hetzner and inspect existing project resources before creating anything. Read server types, German locations and current prices. Apply the approved CX23 → CPX22 builder policy from the hosting notes; recheck availability at creation time.
+1. Authenticate to Hetzner and inspect existing project resources before creating anything. Read server types, permitted locations and current prices. Apply the approved CX23 → CPX22 builder policy across EU locations from the hosting notes; recheck availability at creation time. Keep the permanent control/runtime pair in Germany.
 2. Verify the Cloudflare token, look up `zones?name=monkeysees.one`, and inspect the returned zone permissions and relevant DNS records. Discover the zone ID from this lookup. Preserve unrelated records, including the existing proxied `*.monkeysees.one` wildcard; use explicit platform records as needed.
 3. Generate/register a dedicated SSH key during bootstrap if none exists. Confirm provisioning permissions, account quotas, SSH connectivity, DNS/TLS and renewal through actual implementation checks. Keep platform API credentials outside untrusted builds and tool runtimes.
 4. Configure alerts to the recipient above and verify delivery as part of #17. An email address alone supplies no SMTP/API sending authority; establish an actual delivery mechanism during implementation and report any required access precisely.
@@ -39,4 +40,4 @@ Hetzner needs a project-bound Read & Write token. Cloudflare needs DNS Edit and 
 
 Both token files were readable with the expected permissions. Hetzner authenticated successfully; inspected server, network, volume, firewall and SSH-key collections were empty. The operator identified the token's project as `small-cloud`; authentication alone did not independently establish its display name. Cloudflare reported an active token, an active zone, DNS Edit and Zone Read; public nameservers matched Cloudflare. The chosen platform hostname had no explicit record and resolved through the existing wildcard.
 
-These checks were read-only. Hetzner write permission, provisioning quotas, SSH, TLS and alert delivery remain untested. No infrastructure implementation existed when this handoff was recorded. Refresh this status as #17 produces evidence; successful account access does not establish build/runtime isolation or permission to admit creator workloads.
+Subsequent operator-authorized validation provisioned temporary CPX32/CPX42 hosts in Nuremberg, exercised SSH, private networking, configuration reapplication, public TLS and fresh EU builders. The dedicated explicit platform A record preserved the existing wildcard. Validation ended at 02:40 UTC: all 13 task-created VMs, primary IPs, network, firewalls, registered SSH key and owned platform A record were removed; the unrelated wildcard was preserved. Final account inventory was empty and the independent cleanup timer stopped. See `docs/evidence/hosting-2026-09-08.json` for teardown and estimated charges. Permanent CX33/CX43 capacity remains unavailable in the recorded German quote, and a second concurrent builder was refused with `resource_limit_exceeded`; increase account quota before retesting five builders. SMTP sender authority is unavailable, so delivery remains untested. Creator admission stays closed; consult `docs/hosting-validation.md` for the acceptance gaps.

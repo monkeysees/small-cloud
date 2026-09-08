@@ -1,0 +1,2457 @@
+{
+  "date": "2026-09-08",
+  "environment": "temporary authorized German CPX validation hosts",
+  "admission": "closed",
+  "image_id": "sha256:1a39d6033093690e66f2731a6d25e48a775ccee9f1d8250281deccfa4812e744",
+  "initial_failure": "Public DNS failed against Docker embedded 127.0.0.11 resolver under gVisor. Fixed with a single readonly public resolver file; all six known fixtures recreated before recorded checks.",
+  "trusted_before": {
+    "utc": "2026-09-08T02:02:25Z",
+    "from": "trusted runtime host",
+    "checks": [
+      {
+        "name": "metadata",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "private-canary",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "database",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "public-control",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "public-runtime-ssh",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "host-gateway",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "peer-tool",
+        "tcp_listener_reachable": false
+      }
+    ]
+  },
+  "http_matrix": [
+    {
+      "port": 18080,
+      "path": "/database",
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_2405b321c2ce1d1b3e63cb0a",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "port": 18080,
+      "path": "/probes",
+      "result": {
+        "phase": "runtime",
+        "utc": "2026-09-08T02:02:39Z",
+        "checks": [
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 899,
+            "result": "pass"
+          },
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 698,
+            "result": "pass"
+          },
+          {
+            "name": "metadata-ipv4",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          },
+          {
+            "name": "private-database",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "observed": "connected",
+            "phase": "connect",
+            "elapsed_ms": 3,
+            "result": "pass"
+          },
+          {
+            "name": "private-control-canary",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-ipv6",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv6",
+            "observed": "unreachable",
+            "phase": "connect",
+            "elapsed_ms": 0,
+            "result": "inconclusive"
+          },
+          {
+            "name": "public-control",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-runtime-ssh",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          }
+        ],
+        "ipv6_interface_count": 1,
+        "proxy_environment_present": false,
+        "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+      }
+    },
+    {
+      "port": 18080,
+      "path": "/_small-cloud/ready",
+      "result": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18081,
+      "path": "/database",
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "port": 18081,
+      "path": "/probes",
+      "result": {
+        "phase": "runtime",
+        "utc": "2026-09-08T02:02:39Z",
+        "checks": [
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 839,
+            "result": "pass"
+          },
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 602,
+            "result": "pass"
+          },
+          {
+            "name": "metadata-ipv4",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          },
+          {
+            "name": "private-database",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "observed": "connected",
+            "phase": "connect",
+            "elapsed_ms": 1,
+            "result": "pass"
+          },
+          {
+            "name": "private-control-canary",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-ipv6",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv6",
+            "observed": "unreachable",
+            "phase": "connect",
+            "elapsed_ms": 0,
+            "result": "inconclusive"
+          },
+          {
+            "name": "public-control",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-runtime-ssh",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          }
+        ],
+        "ipv6_interface_count": 1,
+        "proxy_environment_present": false,
+        "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+      }
+    },
+    {
+      "port": 18081,
+      "path": "/_small-cloud/ready",
+      "result": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18082,
+      "path": "/database",
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "port": 18082,
+      "path": "/probes",
+      "result": {
+        "phase": "runtime",
+        "utc": "2026-09-08T02:02:39Z",
+        "checks": [
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 991,
+            "result": "pass"
+          },
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 571,
+            "result": "pass"
+          },
+          {
+            "name": "metadata-ipv4",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "private-database",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "observed": "connected",
+            "phase": "connect",
+            "elapsed_ms": 1,
+            "result": "pass"
+          },
+          {
+            "name": "private-control-canary",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-ipv6",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv6",
+            "observed": "unreachable",
+            "phase": "connect",
+            "elapsed_ms": 0,
+            "result": "inconclusive"
+          },
+          {
+            "name": "public-control",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-runtime-ssh",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          }
+        ],
+        "ipv6_interface_count": 1,
+        "proxy_environment_present": false,
+        "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+      }
+    },
+    {
+      "port": 18082,
+      "path": "/_small-cloud/ready",
+      "result": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18083,
+      "path": "/database",
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "port": 18083,
+      "path": "/probes",
+      "result": {
+        "phase": "runtime",
+        "utc": "2026-09-08T02:02:41Z",
+        "checks": [
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 705,
+            "result": "pass"
+          },
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 528,
+            "result": "pass"
+          },
+          {
+            "name": "metadata-ipv4",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          },
+          {
+            "name": "private-database",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "observed": "connected",
+            "phase": "connect",
+            "elapsed_ms": 1,
+            "result": "pass"
+          },
+          {
+            "name": "private-control-canary",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-ipv6",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv6",
+            "observed": "unreachable",
+            "phase": "connect",
+            "elapsed_ms": 0,
+            "result": "inconclusive"
+          },
+          {
+            "name": "public-control",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          },
+          {
+            "name": "public-runtime-ssh",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          }
+        ],
+        "ipv6_interface_count": 1,
+        "proxy_environment_present": false,
+        "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+      }
+    },
+    {
+      "port": 18083,
+      "path": "/_small-cloud/ready",
+      "result": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18084,
+      "path": "/database",
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "port": 18084,
+      "path": "/probes",
+      "result": {
+        "phase": "runtime",
+        "utc": "2026-09-08T02:02:42Z",
+        "checks": [
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 442,
+            "result": "pass"
+          },
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 236,
+            "result": "pass"
+          },
+          {
+            "name": "metadata-ipv4",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "private-database",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "observed": "connected",
+            "phase": "connect",
+            "elapsed_ms": 1,
+            "result": "pass"
+          },
+          {
+            "name": "private-control-canary",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-ipv6",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv6",
+            "observed": "unreachable",
+            "phase": "connect",
+            "elapsed_ms": 0,
+            "result": "inconclusive"
+          },
+          {
+            "name": "public-control",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          },
+          {
+            "name": "public-runtime-ssh",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          }
+        ],
+        "ipv6_interface_count": 1,
+        "proxy_environment_present": false,
+        "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+      }
+    },
+    {
+      "port": 18084,
+      "path": "/_small-cloud/ready",
+      "result": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18085,
+      "path": "/database",
+      "result": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_2405b321c2ce1d1b3e63cb0a",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      }
+    },
+    {
+      "port": 18085,
+      "path": "/probes",
+      "result": {
+        "phase": "runtime",
+        "utc": "2026-09-08T02:02:43Z",
+        "checks": [
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 398,
+            "result": "pass"
+          },
+          {
+            "name": "public-https",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "http_status": 200,
+            "observed": "connected",
+            "phase": "http",
+            "elapsed_ms": 207,
+            "result": "pass"
+          },
+          {
+            "name": "metadata-ipv4",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "private-database",
+            "expected": "allow",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "connected": true,
+            "observed": "connected",
+            "phase": "connect",
+            "elapsed_ms": 1,
+            "result": "pass"
+          },
+          {
+            "name": "private-control-canary",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          },
+          {
+            "name": "public-ipv6",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv6",
+            "observed": "unreachable",
+            "phase": "connect",
+            "elapsed_ms": 0,
+            "result": "inconclusive"
+          },
+          {
+            "name": "public-control",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3002,
+            "result": "pass"
+          },
+          {
+            "name": "public-runtime-ssh",
+            "expected": "deny",
+            "proxy": "bypassed",
+            "family": "ipv4",
+            "observed": "timeout",
+            "phase": "connect",
+            "elapsed_ms": 3001,
+            "result": "pass"
+          }
+        ],
+        "ipv6_interface_count": 1,
+        "proxy_environment_present": false,
+        "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+      }
+    },
+    {
+      "port": 18085,
+      "path": "/_small-cloud/ready",
+      "result": {
+        "ready": true
+      }
+    }
+  ],
+  "trusted_after": {
+    "utc": "2026-09-08T02:02:47Z",
+    "from": "trusted runtime host",
+    "checks": [
+      {
+        "name": "metadata",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "private-canary",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "database",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "public-control",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "public-runtime-ssh",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "host-gateway",
+        "tcp_listener_reachable": true
+      },
+      {
+        "name": "peer-tool",
+        "tcp_listener_reachable": false
+      }
+    ]
+  },
+  "ipv6_host": "net.ipv6.conf.all.disable_ipv6 = 1\nnet.ipv6.conf.default.disable_ipv6 = 1",
+  "networks": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "allocations": [
+    {
+      "name": "/sc-probe-a-active",
+      "runtime": "runsc",
+      "memory": 536870912,
+      "memory_swap": 536870912,
+      "nano_cpus": 500000000,
+      "pids_limit": 128,
+      "readonly_root": true,
+      "ulimits": [
+        {
+          "Hard": 1024,
+          "Name": "nofile",
+          "Soft": 1024
+        },
+        {
+          "Hard": 128,
+          "Name": "nproc",
+          "Soft": 128
+        }
+      ],
+      "tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      },
+      "mounts": [
+        {
+          "Destination": "/etc/resolv.conf",
+          "Mode": "",
+          "Propagation": "rprivate",
+          "RW": false,
+          "Source": "/etc/small-cloud/runtime-resolv.conf",
+          "Type": "bind"
+        }
+      ]
+    },
+    {
+      "name": "/sc-probe-b-active",
+      "runtime": "runsc",
+      "memory": 536870912,
+      "memory_swap": 536870912,
+      "nano_cpus": 500000000,
+      "pids_limit": 128,
+      "readonly_root": true,
+      "ulimits": [
+        {
+          "Hard": 1024,
+          "Name": "nofile",
+          "Soft": 1024
+        },
+        {
+          "Hard": 128,
+          "Name": "nproc",
+          "Soft": 128
+        }
+      ],
+      "tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      },
+      "mounts": [
+        {
+          "Destination": "/etc/resolv.conf",
+          "Mode": "",
+          "Propagation": "rprivate",
+          "RW": false,
+          "Source": "/etc/small-cloud/runtime-resolv.conf",
+          "Type": "bind"
+        }
+      ]
+    },
+    {
+      "name": "/sc-probe-c-active",
+      "runtime": "runsc",
+      "memory": 536870912,
+      "memory_swap": 536870912,
+      "nano_cpus": 500000000,
+      "pids_limit": 128,
+      "readonly_root": true,
+      "ulimits": [
+        {
+          "Hard": 1024,
+          "Name": "nofile",
+          "Soft": 1024
+        },
+        {
+          "Hard": 128,
+          "Name": "nproc",
+          "Soft": 128
+        }
+      ],
+      "tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      },
+      "mounts": [
+        {
+          "Destination": "/etc/resolv.conf",
+          "Mode": "",
+          "Propagation": "rprivate",
+          "RW": false,
+          "Source": "/etc/small-cloud/runtime-resolv.conf",
+          "Type": "bind"
+        }
+      ]
+    },
+    {
+      "name": "/sc-probe-d-active",
+      "runtime": "runsc",
+      "memory": 536870912,
+      "memory_swap": 536870912,
+      "nano_cpus": 500000000,
+      "pids_limit": 128,
+      "readonly_root": true,
+      "ulimits": [
+        {
+          "Hard": 1024,
+          "Name": "nofile",
+          "Soft": 1024
+        },
+        {
+          "Hard": 128,
+          "Name": "nproc",
+          "Soft": 128
+        }
+      ],
+      "tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      },
+      "mounts": [
+        {
+          "Destination": "/etc/resolv.conf",
+          "Mode": "",
+          "Propagation": "rprivate",
+          "RW": false,
+          "Source": "/etc/small-cloud/runtime-resolv.conf",
+          "Type": "bind"
+        }
+      ]
+    },
+    {
+      "name": "/sc-probe-e-active",
+      "runtime": "runsc",
+      "memory": 536870912,
+      "memory_swap": 536870912,
+      "nano_cpus": 500000000,
+      "pids_limit": 128,
+      "readonly_root": true,
+      "ulimits": [
+        {
+          "Hard": 1024,
+          "Name": "nofile",
+          "Soft": 1024
+        },
+        {
+          "Hard": 128,
+          "Name": "nproc",
+          "Soft": 128
+        }
+      ],
+      "tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      },
+      "mounts": [
+        {
+          "Destination": "/etc/resolv.conf",
+          "Mode": "",
+          "Propagation": "rprivate",
+          "RW": false,
+          "Source": "/etc/small-cloud/runtime-resolv.conf",
+          "Type": "bind"
+        }
+      ]
+    },
+    {
+      "name": "/sc-probe-a-candidate",
+      "runtime": "runsc",
+      "memory": 536870912,
+      "memory_swap": 536870912,
+      "nano_cpus": 500000000,
+      "pids_limit": 128,
+      "readonly_root": true,
+      "ulimits": [
+        {
+          "Hard": 1024,
+          "Name": "nofile",
+          "Soft": 1024
+        },
+        {
+          "Hard": 128,
+          "Name": "nproc",
+          "Soft": 128
+        }
+      ],
+      "tmpfs": {
+        "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+      },
+      "mounts": [
+        {
+          "Destination": "/etc/resolv.conf",
+          "Mode": "",
+          "Propagation": "rprivate",
+          "RW": false,
+          "Source": "/etc/small-cloud/runtime-resolv.conf",
+          "Type": "bind"
+        }
+      ]
+    }
+  ],
+  "capacity_refusal": {
+    "exit_code": 1,
+    "sixth_active_refused": true,
+    "credential_output": false
+  },
+  "pressure": [
+    {
+      "resource": "cpu",
+      "before": {
+        "running": true,
+        "oom_killed": false,
+        "exit_code": 0,
+        "pid": 14069,
+        "cgroup": {
+          "cpu.stat": "usage_usec 2178172\nuser_usec 1288380\nsystem_usec 889791\ncore_sched.force_idle_usec 0\nnr_periods 751\nnr_throttled 29\nthrottled_usec 3031730\nnr_bursts 0\nburst_usec 0",
+          "memory.current": "37154816",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "memory.max": "536870912",
+          "pids.current": "31",
+          "pids.max": "128"
+        }
+      },
+      "execution": {
+        "exit_code": 0,
+        "elapsed_ms": 10598,
+        "result": {
+          "resource": "cpu",
+          "observed": "cpu_seconds_over_ten_wall_seconds",
+          "value": 8.83,
+          "rlimit_nproc": [
+            128,
+            128
+          ]
+        }
+      },
+      "after": {
+        "running": true,
+        "oom_killed": false,
+        "exit_code": 0,
+        "pid": 14069,
+        "cgroup": {
+          "cpu.stat": "usage_usec 7452293\nuser_usec 6447775\nsystem_usec 1004517\ncore_sched.force_idle_usec 0\nnr_periods 863\nnr_throttled 134\nthrottled_usec 12415509\nnr_bursts 0\nburst_usec 0",
+          "memory.current": "37400576",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "memory.max": "536870912",
+          "pids.current": "31",
+          "pids.max": "128"
+        }
+      },
+      "neighbor_samples": [
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 22
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 22
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ]
+      ],
+      "neighbor_after": [
+        {
+          "port": 18080,
+          "ready": true,
+          "elapsed_ms": 19
+        },
+        {
+          "port": 18081,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18082,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18083,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18084,
+          "ready": true,
+          "elapsed_ms": 4
+        }
+      ]
+    },
+    {
+      "resource": "pids",
+      "before": {
+        "running": true,
+        "oom_killed": false,
+        "exit_code": 0,
+        "pid": 14069,
+        "cgroup": {
+          "cpu.stat": "usage_usec 7453821\nuser_usec 6449098\nsystem_usec 1004723\ncore_sched.force_idle_usec 0\nnr_periods 864\nnr_throttled 134\nthrottled_usec 12415509\nnr_bursts 0\nburst_usec 0",
+          "memory.current": "37400576",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "memory.max": "536870912",
+          "pids.current": "31",
+          "pids.max": "128"
+        }
+      },
+      "execution": {
+        "exit_code": 128,
+        "elapsed_ms": 4610,
+        "result": {
+          "structured_result": false
+        }
+      },
+      "after": {
+        "running": false,
+        "oom_killed": true,
+        "exit_code": 137,
+        "pid": 0
+      },
+      "neighbor_samples": [
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 23
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 6
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ]
+      ],
+      "neighbor_after": [
+        {
+          "port": 18080,
+          "ready": true,
+          "elapsed_ms": 21
+        },
+        {
+          "port": 18081,
+          "ready": true,
+          "elapsed_ms": 3
+        },
+        {
+          "port": 18082,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18083,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18084,
+          "ready": true,
+          "elapsed_ms": 4
+        }
+      ]
+    },
+    {
+      "resource": "disk",
+      "before": {
+        "running": true,
+        "oom_killed": false,
+        "exit_code": 0,
+        "pid": 15811,
+        "cgroup": {
+          "cpu.stat": "usage_usec 380041\nuser_usec 208010\nsystem_usec 172030\ncore_sched.force_idle_usec 0\nnr_periods 8\nnr_throttled 7\nthrottled_usec 990421\nnr_bursts 0\nburst_usec 0",
+          "memory.current": "27713536",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "memory.max": "536870912",
+          "pids.current": "26",
+          "pids.max": "128"
+        }
+      },
+      "execution": {
+        "exit_code": 128,
+        "elapsed_ms": 1390,
+        "result": {
+          "structured_result": false
+        }
+      },
+      "after": {
+        "running": false,
+        "oom_killed": true,
+        "exit_code": 137,
+        "pid": 0
+      },
+      "neighbor_samples": [
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 22
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 4
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ]
+      ],
+      "neighbor_after": [
+        {
+          "port": 18080,
+          "ready": true,
+          "elapsed_ms": 20
+        },
+        {
+          "port": 18081,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18082,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18083,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18084,
+          "ready": true,
+          "elapsed_ms": 4
+        }
+      ]
+    },
+    {
+      "resource": "memory",
+      "before": {
+        "running": true,
+        "oom_killed": false,
+        "exit_code": 0,
+        "pid": 16434,
+        "cgroup": {
+          "cpu.stat": "usage_usec 382514\nuser_usec 240009\nsystem_usec 142505\ncore_sched.force_idle_usec 0\nnr_periods 7\nnr_throttled 6\nthrottled_usec 495751\nnr_bursts 0\nburst_usec 0",
+          "memory.current": "28815360",
+          "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+          "memory.max": "536870912",
+          "pids.current": "26",
+          "pids.max": "128"
+        }
+      },
+      "execution": {
+        "exit_code": 128,
+        "elapsed_ms": 2342,
+        "result": {
+          "structured_result": false
+        }
+      },
+      "after": {
+        "running": false,
+        "oom_killed": true,
+        "exit_code": 137,
+        "pid": 0
+      },
+      "neighbor_samples": [
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 20
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 2
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ],
+        [
+          {
+            "port": 18080,
+            "ready": true,
+            "elapsed_ms": 19
+          },
+          {
+            "port": 18081,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18082,
+            "ready": true,
+            "elapsed_ms": 4
+          },
+          {
+            "port": 18083,
+            "ready": true,
+            "elapsed_ms": 3
+          },
+          {
+            "port": 18084,
+            "ready": true,
+            "elapsed_ms": 3
+          }
+        ]
+      ],
+      "neighbor_after": [
+        {
+          "port": 18080,
+          "ready": true,
+          "elapsed_ms": 20
+        },
+        {
+          "port": 18081,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18082,
+          "ready": true,
+          "elapsed_ms": 4
+        },
+        {
+          "port": 18083,
+          "ready": true,
+          "elapsed_ms": 3
+        },
+        {
+          "port": 18084,
+          "ready": true,
+          "elapsed_ms": 4
+        }
+      ]
+    }
+  ],
+  "additional_network": {
+    "proxy_before": {
+      "proxy_CONNECT_status": "HTTP/1.0 200 OK"
+    },
+    "peer_before": {
+      "peer_ready": {
+        "ready": true
+      }
+    },
+    "network": {
+      "phase": "runtime",
+      "utc": "2026-09-08T02:07:40Z",
+      "checks": [
+        {
+          "name": "host-bridge-gateway-ssh",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3001,
+          "result": "pass"
+        },
+        {
+          "name": "peer-tool-direct",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3001,
+          "result": "pass"
+        },
+        {
+          "name": "public-management-via-DNS",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3001,
+          "result": "pass"
+        },
+        {
+          "name": "private-proxy-CONNECT",
+          "expected": "deny",
+          "proxy": "bypassed",
+          "family": "ipv4",
+          "observed": "timeout",
+          "phase": "connect",
+          "elapsed_ms": 3002,
+          "result": "pass"
+        }
+      ],
+      "ipv6_interface_count": 1,
+      "proxy_environment_present": false,
+      "limitation": "Healthy forbidden endpoints must be verified independently before and after; no proxy, redirect, or rebinding claim."
+    },
+    "proxy_after": {
+      "proxy_CONNECT_status": "HTTP/1.0 200 OK"
+    },
+    "peer_after": {
+      "peer_ready": {
+        "ready": true
+      }
+    },
+    "redirect_trusted": {
+      "initial_status": 403,
+      "redirect_location": null,
+      "follow_error": "HTTPError"
+    },
+    "redirect_guest": {
+      "initial_status": 403,
+      "redirect_location": null,
+      "follow_error": "HTTPError"
+    }
+  },
+  "redirect": {
+    "trusted_before": {
+      "initial_status": 302,
+      "redirect_location": "http://10.42.0.2:18000/",
+      "follow_status": 200
+    },
+    "guest": {
+      "initial_status": 302,
+      "redirect_location": "http://10.42.0.2:18000/",
+      "follow_error": "URLError",
+      "reason_class": "TimeoutError"
+    },
+    "trusted_after": {
+      "initial_status": 302,
+      "redirect_location": "http://10.42.0.2:18000/",
+      "follow_status": 200
+    }
+  },
+  "proxy_connect": {
+    "trusted_before": {
+      "tunnel_established": true
+    },
+    "guest": {
+      "tunnel_established": false,
+      "failure_class": "TimeoutError"
+    },
+    "trusted_after": {
+      "tunnel_established": true
+    }
+  },
+  "five_busy_and_update": {
+    "cpu_loads": [
+      {
+        "name": "sc-probe-a-active",
+        "exit_code": 0,
+        "result": {
+          "resource": "cpu",
+          "observed": "cpu_seconds_over_ten_wall_seconds",
+          "value": 8.5,
+          "rlimit_nproc": [
+            128,
+            128
+          ]
+        },
+        "elapsed_ms": 10376
+      },
+      {
+        "name": "sc-probe-b-active",
+        "exit_code": 0,
+        "result": {
+          "resource": "cpu",
+          "observed": "cpu_seconds_over_ten_wall_seconds",
+          "value": 8.75,
+          "rlimit_nproc": [
+            128,
+            128
+          ]
+        },
+        "elapsed_ms": 10316
+      },
+      {
+        "name": "sc-probe-c-active",
+        "exit_code": 0,
+        "result": {
+          "resource": "cpu",
+          "observed": "cpu_seconds_over_ten_wall_seconds",
+          "value": 8.13,
+          "rlimit_nproc": [
+            128,
+            128
+          ]
+        },
+        "elapsed_ms": 10381
+      },
+      {
+        "name": "sc-probe-d-active",
+        "exit_code": 0,
+        "result": {
+          "resource": "cpu",
+          "observed": "cpu_seconds_over_ten_wall_seconds",
+          "value": 8.18,
+          "rlimit_nproc": [
+            128,
+            128
+          ]
+        },
+        "elapsed_ms": 10261
+      },
+      {
+        "name": "sc-probe-e-active",
+        "exit_code": 0,
+        "result": {
+          "resource": "cpu",
+          "observed": "cpu_seconds_over_ten_wall_seconds",
+          "value": 8.41,
+          "rlimit_nproc": [
+            128,
+            128
+          ]
+        },
+        "elapsed_ms": 10253
+      }
+    ],
+    "candidate": {
+      "container": "sc-probe-a-candidate",
+      "role": "candidate",
+      "private_port": 18085
+    },
+    "candidate_and_all_neighbor_ready_ms": 2849,
+    "readiness_under_load": [
+      {
+        "port": 18080,
+        "ready": {
+          "ready": true
+        }
+      },
+      {
+        "port": 18081,
+        "ready": {
+          "ready": true
+        }
+      },
+      {
+        "port": 18082,
+        "ready": {
+          "ready": true
+        }
+      },
+      {
+        "port": 18083,
+        "ready": {
+          "ready": true
+        }
+      },
+      {
+        "port": 18084,
+        "ready": {
+          "ready": true
+        }
+      },
+      {
+        "port": 18085,
+        "ready": {
+          "ready": true
+        }
+      }
+    ]
+  },
+  "filesystem": {
+    "tmpfs_total_bytes": 1073741824,
+    "tmpfs_available_bytes": 1073741824,
+    "root_write_denied": true,
+    "resolver_write_denied": true,
+    "root_write_denied_errno": 13,
+    "resolver_write_denied_errno": 13
+  },
+  "guest_root_readonly": {
+    "root": {
+      "denied": true,
+      "errno": 30
+    },
+    "resolver": {
+      "denied": true,
+      "errno": 30
+    }
+  },
+  "ingress_binding": {
+    "runtime": "runsc",
+    "port_bindings": {
+      "8080/tcp": [
+        {
+          "HostIp": "10.42.0.3",
+          "HostPort": "18080"
+        }
+      ]
+    },
+    "cap_drop": [
+      "ALL"
+    ],
+    "security_opt": [
+      "no-new-privileges"
+    ],
+    "user": "65532:65532"
+  },
+  "guest_thread_limit": {
+    "exit_code": 0,
+    "result": {
+      "resource": "guest_threads",
+      "started": 126,
+      "failure_class": "RuntimeError",
+      "rlimit_nproc": [
+        128,
+        128
+      ]
+    }
+  },
+  "cpu_interpretation": {
+    "host_cgroup_cpu_seconds_delta": 5.274121,
+    "probe_execution_wall_seconds": 10.598,
+    "throttled_periods_delta": 105,
+    "guest_cpu_clock_is_not_enforcement_evidence": true
+  },
+  "versions": {
+    "docker": "29.1.3",
+    "runsc": "runsc version release-20260831.0\nspec: 1.2.1",
+    "kernel": "6.8.0-138-generic"
+  },
+  "after_pressure_database_and_readiness": [
+    {
+      "port": 18080,
+      "database": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_2405b321c2ce1d1b3e63cb0a",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      },
+      "ready": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18081,
+      "database": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      },
+      "ready": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18082,
+      "database": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      },
+      "ready": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18083,
+      "database": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      },
+      "ready": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18084,
+      "database": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_7c2e45ebaa67296485576dbf",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      },
+      "ready": {
+        "ready": true
+      }
+    },
+    {
+      "port": 18085,
+      "database": {
+        "configured": true,
+        "checks": [
+          {
+            "name": "own-database-create-write-read",
+            "pass": true
+          },
+          {
+            "name": "deny-tool_2405b321c2ce1d1b3e63cb0a",
+            "pass": true
+          },
+          {
+            "name": "deny-postgres",
+            "pass": true
+          },
+          {
+            "name": "deny-template1",
+            "pass": true
+          }
+        ]
+      },
+      "ready": {
+        "ready": true
+      }
+    }
+  ],
+  "limitations": [
+    "Creator admission remains closed; this is a temporary infrastructure probe, not product admission or gateway readiness.",
+    "IPv6 global target health was not independently verified. Its per-target denial remains inconclusive; host disable flags, six Docker IPv6-disabled networks, explicit nftables IPv6 drops and guest unreachable result are separately recorded. Guest loopback IPv6 remains present.",
+    "DNS-resolved public-management denial and public-to-private redirect were exercised; controlled DNS rebinding was not.",
+    "Public HTTPS responses and redirect headers were observed from third-party test services; independent public endpoint access-log correlation was not available.",
+    "Fork, memory and temporary-file pressure killed only the candidate through its memory limit. The 1 GiB tmpfs size was observed but ENOSPC was not reached because the 512 MiB memory limit applies first.",
+    "Guest thread creation reached 126 additional threads then failed with RLIMIT_NPROC 128; fork-specific pressure reached OOM before producing its final task count.",
+    "No host reboot or certificate-renewal cycle was performed in this runtime acceptance subtask.",
+    "Candidate failure preserved all five existing tools and their database operations; automatic gateway switching/rollback is not implemented by this operator harness."
+  ],
+  "cleanup": {
+    "status": "complete",
+    "containers_removed": [
+      "sc-probe-a-candidate",
+      "sc-probe-a-active",
+      "sc-probe-b-active",
+      "sc-probe-c-active",
+      "sc-probe-d-active",
+      "sc-probe-e-active"
+    ],
+    "remaining_labeled_containers": 0,
+    "remaining_known_runtime_env_files": 0,
+    "private_connect_canary_stopped": true,
+    "hosts_deleted": false,
+    "utc": "2026-09-08T02:15:42Z",
+    "additional_fixture_removed": "sc-probe-public-ingress-active"
+  },
+  "external_public_ingress": {
+    "utc": "2026-09-08T02:15:26Z",
+    "source": "operator workstation outside provider private network",
+    "public_address": "2.28.77.46",
+    "private_listener": "10.42.0.3:18080",
+    "checks": [
+      {
+        "public_port": 18080,
+        "observation": "timeout",
+        "elapsed_ms": 5008
+      },
+      {
+        "public_port": 8080,
+        "observation": "timeout",
+        "elapsed_ms": 5004
+      }
+    ],
+    "allocation": {
+      "container": "sc-probe-public-ingress-active",
+      "role": "active",
+      "private_port": 18080
+    },
+    "private_before": {
+      "ready": true
+    },
+    "private_after": {
+      "ready": true
+    },
+    "fixture_removed": true,
+    "remaining_labeled_containers": 0,
+    "interpretation": "Public address could not reach either the published private port or application port while control-to-private readiness remained healthy before and after; no public access-log correlation claim."
+  }
+}

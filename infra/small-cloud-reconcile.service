@@ -1,0 +1,15 @@
+[Unit]
+Description=Remove expired Small Cloud builders and interrupted deletion artifacts
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/small-cloud/infra/builders.py reconcile
+User=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/root/.local/state/small-cloud/infra
+TimeoutStartSec=15min

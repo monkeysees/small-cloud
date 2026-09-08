@@ -1,0 +1,7 @@
+{
+  "include": ["infra", "probes"],
+  "exclude": ["infra/tests", "**/__pycache__"],
+  "typeCheckingMode": "basic",
+  "extraPaths": ["infra"],
+  "pythonVersion": "3.11"
+}

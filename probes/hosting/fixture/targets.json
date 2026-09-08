@@ -1,0 +1,9 @@
+{
+  "targets": [
+    {"name": "public-https", "host": "example.com", "port": 443, "kind": "https", "family": "ipv4", "build": "allow", "runtime": "allow"},
+    {"name": "metadata-ipv4", "host": "169.254.169.254", "port": 80, "build": "deny", "runtime": "deny", "control_verified": false},
+    {"name": "private-database", "host": "10.42.0.2", "port": 5432, "build": "deny", "runtime": "allow", "control_verified": false},
+    {"name": "private-control-canary", "host": "10.42.0.2", "port": 18000, "build": "deny", "runtime": "deny", "control_verified": false},
+    {"name": "public-ipv6", "host": "2606:4700:4700::1111", "port": 443, "build": "deny", "runtime": "deny", "control_verified": false}
+  ]
+}

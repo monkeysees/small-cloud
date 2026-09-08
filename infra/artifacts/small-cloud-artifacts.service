@@ -1,0 +1,18 @@
+[Unit]
+Description=Prune expired Small Cloud operator staging artifacts
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/small-cloud/infra/artifacts.py
+TimeoutStartSec=60
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/small-cloud/source
+MemoryMax=64M
+TasksMax=8
+StandardOutput=journal
+StandardError=journal

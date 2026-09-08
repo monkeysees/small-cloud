@@ -1,0 +1,547 @@
+{
+  "utc": "2026-09-08T01:59:58.094207+00:00",
+  "control_ipv4": "2.28.67.62",
+  "database": {
+    "roles": [
+      {
+        "name": "tool_1ae617450d85fa8e531ce0ef",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_1b88cf0dcc85f1ba615ab7dd",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_7c2e45ebaa67296485576dbf",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_2405b321c2ce1d1b3e63cb0a",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_e31df2ae94c8a6fa8785dbd5",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_bd5bbd54558b48905d19e699",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_fbe75151f336da5b25110b91",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_15d8353f9d72f45e232d0524",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_bb6d10688311ccc52143adb8",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_1c3b187c793ff8aa0407006e",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_2786af20f4b1c8713d7be5f4",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_899ebf56facb55d7a6110411",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_5fa6a3b416210ca63fcdb981",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_da18273d8856b210caafa60d",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_f38e6ecd200308713b04e4a6",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_c546a99d298730d6cd5c81fc",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_c292463bae111bbd342e5fef",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_504796b833fbb656cf346a7d",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_299e6506724e20c2fbbbede2",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_614660e2009d94c8dcbb4007",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_f147383cad8754487993bda1",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_393d3fc425e07cd3feb39920",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_d67620a1b5ab6c105b8576ae",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_1804bf59bac69d299e945fa6",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_0bd9706ca3ae6f8ee4274c30",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_9fc041b192ee719dfb9f2d43",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_b73a6566e3161cbc849587b0",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_6fa9b8440c6b91b521d64f0d",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_395e81267cf711135cdb9c3c",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      },
+      {
+        "name": "tool_3989417c01d180680d30181d",
+        "login": true,
+        "superuser": false,
+        "create_database": false,
+        "create_role": false,
+        "replication": false,
+        "bypass_rls": false,
+        "connection_limit": 10,
+        "memberships": 0
+      }
+    ],
+    "databases": [
+      {
+        "name": "tool_fbe75151f336da5b25110b91",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_1ae617450d85fa8e531ce0ef",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_15d8353f9d72f45e232d0524",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_395e81267cf711135cdb9c3c",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_bb6d10688311ccc52143adb8",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_299e6506724e20c2fbbbede2",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_1b88cf0dcc85f1ba615ab7dd",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_1c3b187c793ff8aa0407006e",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_2786af20f4b1c8713d7be5f4",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_7c2e45ebaa67296485576dbf",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_d67620a1b5ab6c105b8576ae",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_f38e6ecd200308713b04e4a6",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_2405b321c2ce1d1b3e63cb0a",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_899ebf56facb55d7a6110411",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_e31df2ae94c8a6fa8785dbd5",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_bd5bbd54558b48905d19e699",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_614660e2009d94c8dcbb4007",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_5fa6a3b416210ca63fcdb981",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_c546a99d298730d6cd5c81fc",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_da18273d8856b210caafa60d",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_c292463bae111bbd342e5fef",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_9fc041b192ee719dfb9f2d43",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_f147383cad8754487993bda1",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_504796b833fbb656cf346a7d",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_1804bf59bac69d299e945fa6",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_393d3fc425e07cd3feb39920",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_6fa9b8440c6b91b521d64f0d",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_0bd9706ca3ae6f8ee4274c30",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_b73a6566e3161cbc849587b0",
+        "owner": "postgres"
+      },
+      {
+        "name": "tool_3989417c01d180680d30181d",
+        "owner": "postgres"
+      }
+    ],
+    "replication_connections": 0,
+    "replication_slots": 0,
+    "archive_enabled": false,
+    "upstream_configured": false
+  },
+  "registry_listener": "LISTEN 0      4096   127.0.0.1:5000 0.0.0.0:*",
+  "storage": [
+    {
+      "path": "/srv/small-cloud/postgresql",
+      "permissions": "700 postgres postgres",
+      "filesystem": [
+        {
+          "target": "/",
+          "source": "/dev/sda1",
+          "fstype": "ext4"
+        }
+      ]
+    },
+    {
+      "path": "/srv/small-cloud/registry",
+      "permissions": "700 docker-registry docker-registry",
+      "filesystem": [
+        {
+          "target": "/",
+          "source": "/dev/sda1",
+          "fstype": "ext4"
+        }
+      ]
+    },
+    {
+      "path": "/srv/small-cloud/source",
+      "permissions": "700 root root",
+      "filesystem": [
+        {
+          "target": "/",
+          "source": "/dev/sda1",
+          "fstype": "ext4"
+        }
+      ]
+    },
+    {
+      "path": "/srv/small-cloud/secrets",
+      "permissions": "700 root root",
+      "filesystem": [
+        {
+          "target": "/",
+          "source": "/dev/sda1",
+          "fstype": "ext4"
+        }
+      ]
+    },
+    {
+      "path": "/srv/small-cloud/logs",
+      "permissions": "700 root root",
+      "filesystem": [
+        {
+          "target": "/",
+          "source": "/dev/sda1",
+          "fstype": "ext4"
+        }
+      ]
+    },
+    {
+      "path": "/srv/small-cloud/caddy",
+      "permissions": "700 caddy caddy",
+      "filesystem": [
+        {
+          "target": "/",
+          "source": "/dev/sda1",
+          "fstype": "ext4"
+        }
+      ]
+    }
+  ],
+  "provider_control": [
+    {
+      "id": 165056008,
+      "location": "nbg1",
+      "country": "DE",
+      "backup_window": null,
+      "protection": {
+        "delete": false,
+        "rebuild": false
+      }
+    }
+  ],
+  "project_snapshots": [],
+  "telemetry_limitations": "No PostgreSQL streaming replication, replication slots, archive or upstream configuration observed if counters/flags are zero/false. This is not a complete outbound telemetry audit; service package telemetry and provider internals are not independently verified."
+}
