@@ -2,7 +2,9 @@
 
 2026-09-07 — [issue #2](https://github.com/monkeysees/small-cloud/issues/2).
 
-**Infrastructure selection remains blocked.** No candidate has sufficient evidence to meet the accepted contract. The [provider assessment and cost model](hosting-research.md) identify a VM sandbox candidate for a bounded EU trial, but do not establish its feasibility. This is an explicit no-go under currently available evidence, not proof that every possible provider is infeasible. Do not begin production infrastructure implementation or mark deployment acceptance checks passed on the strength of this report.
+**Hetzner setup is authorized; deployment acceptance remains unverified.** The operator's decision in [#17](https://github.com/monkeysees/small-cloud/issues/17) supersedes this report's original selection hold. The approved [builder provisioning policy](hosting-research.md#approved-implementation-direction--2026-09-08) uses fresh CX23 VMs with CPX22 fallback across Germany, initially without a prewarmed pool. Implementation may proceed, but creator workloads must not be admitted on the strength of this report.
+
+Read-only account checks on 2026-09-08 confirmed Hetzner API authentication and Cloudflare DNS edit/zone read access for the active `monkeysees.one` zone. The inspected Hetzner project resource collections were empty. CX23/CX33/CX43 were reported unavailable in Germany at that check; availability is temporary and must be rechecked. No VMs or DNS records were created, and Hetzner write permission, quotas, SSH, TLS and alert delivery were not exercised. These access checks do not establish the deployment evidence below.
 
 ## Evidence obtained
 
@@ -40,6 +42,6 @@ The probe used an ephemeral local Docker container with no published ports and n
 PROBE_POSTGRES_IMAGE='postgres@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280' bash probes/hosting/database.sh
 ```
 
-## Gate to reopen selection
+## Gate to admit creator workloads
 
 Use the retained [acceptance procedures](../probes/hosting/README.md) in the operator's identified EU test environment. Obtain an available-host quote, run the build and runtime matrices independently, export redacted residency configuration, demonstrate resource/update behavior, and deliver an alert notification. Attach observed results, immutable versions, charges and teardown confirmation here. Any failed or inconclusive mandatory boundary keeps the gate closed; do not substitute low-permission metadata access for metadata denial.

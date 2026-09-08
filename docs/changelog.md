@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Record approved Hetzner setup and per-build CX23 → CPX22 fallback across Germany without an initial prewarmed pool; retain the live deployment acceptance gate.
 - Define CLI and platform contracts for #3, including authentication, trusted identity, build accounting, bounded logs, lifecycle failures and acceptance examples.
 - Migrate all pilot issues into GitHub Project with execution order, phases and readiness, and replace the superseded hosting dependency with infrastructure #17.
 - Evaluate pilot hosting for #2, retain database and deployment isolation probes, record the unresolved selection gate, and clarify the $100/month spending target.

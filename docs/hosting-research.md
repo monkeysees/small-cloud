@@ -1,6 +1,20 @@
 # Hosting feasibility research
 
-Research date: 2026-09-07. Scope: [issue #2](https://github.com/monkeysees/small-cloud/issues/2), [specification](spec.md), and ADRs 0001, 0003, 0007, and 0008. This is a documented feasibility assessment, not deployment evidence or hosting selection. No cloud resources were created. Prices exclude tax; account-specific availability and quotes still need verification.
+Research date: 2026-09-07. Scope: [issue #2](https://github.com/monkeysees/small-cloud/issues/2), [specification](spec.md), and ADRs 0001, 0003, 0007, and 0008. This is a documented feasibility assessment, not deployment evidence. No cloud resources were created during the assessment.
+
+## Approved implementation direction — 2026-09-08
+
+The operator selected Hetzner and authorized infrastructure setup in [#17](https://github.com/monkeysees/small-cloud/issues/17). This supersedes the selection hold in the historical assessment below; isolation, residency, capacity and cost acceptance remain unproven. Use the operator's `small-cloud` project in Germany and `small-cloud.monkeysees.one`, with DNS managed in the existing Cloudflare zone.
+
+For each build, create a fresh x86 VM, preferring CX23 across the German locations (`nbg1`, `fsn1`) before falling back to CPX22 across those locations. Both sizes provide 2 vCPUs and 4 GiB RAM. Do not fall back outside Germany or to another architecture. Start without a prewarmed pool or shared build cache. A prepared, secret-free builder image may reduce bootstrap work, but does not reserve provider capacity.
+
+Use bounded provisioning retries with clear capacity-failure feedback. Reconcile ambiguous create outcomes before retrying so a timeout cannot silently create duplicate builders. Each VM executes only one build; delete it and its temporary resources after success, failure, timeout or cancellation, with independent reconciliation for controller failure. Apply the same externally enforced isolation and resource limits to both sizes and retain the existing build-accounting contract. Exact provisioning deadline/backoff and live bootstrap timing must be defined and tested in #17.
+
+The account API quote obtained on 2026-09-08 was EUR 0.0088/hour net for CX23 and EUR 0.0312/hour net for CPX22. At one billed hour per VM, 100 CPX22 builds cost EUR 3.12 in compute; 1,000 cost EUR 31.20. These examples exclude addresses, storage, traffic and tax; provisioning, cleanup delays and hourly rounding affect charges. Recheck prices and capacity before creating resources. The fallback applies to disposable builders, not automatic replacement of the long-lived CX33 control and CX43 runtime sizing candidates.
+
+Only consider one unused prewarmed builder after measuring startup delays. That would consume idle budget and still need replenishment; it is not part of the initial implementation.
+
+## Historical assessment
 
 ## Finding
 
