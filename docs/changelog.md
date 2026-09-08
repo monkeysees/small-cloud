@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove the CX watcher and support explicitly approved permanent CPX32/CPX42 provisioning in Germany; defer cost optimization.
+
 - Add a persistent German CX availability watcher with automatic bounded procurement, durable create reconciliation and operator notifications for #17.
 - Add verified-host SMTP installation and alert activation; record confirmed delivery while billing evidence and deployed acceptance remain pending.
 - Record verified Resend sending domain, protected SMTP configuration and operator-confirmed test delivery for #17; deployed alert automation remains pending.

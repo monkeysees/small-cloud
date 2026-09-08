@@ -157,19 +157,18 @@ def ssh_key(api: API) -> dict:
     return row
 
 
-def foundation(api: API, admin_cidr: str, validation: bool = False, location: str | None = None) -> dict:
+def foundation(api: API, admin_cidr: str, validation: bool = False, permanent_cpx: bool = False) -> dict:
     cidr = str(ipaddress.ip_network(admin_cidr, strict=True))
-    kinds = ("cpx32", "cpx42") if validation else ("cx33", "cx43")
+    if validation and permanent_cpx:
+        raise Failure('Choose temporary validation or permanent CPX, not both')
+    kinds = ("cpx32", "cpx42") if validation or permanent_cpx else ("cx33", "cx43")
     quoted = quote(api)
-    pinned_location = location
-    location = location or next((loc for loc in LOCATIONS if all(any(r["type"] == kind and r["location"] == loc and r["available"] for r in quoted["servers"]) for kind in kinds)), None)
+    location = next((loc for loc in LOCATIONS if all(any(r["type"] == kind and r["location"] == loc and r["available"] for r in quoted["servers"]) for kind in kinds)), None)
     existing = api.items("servers", label_selector=SELECTOR)
     if existing:
         locations = {s["location"]["name"] for s in existing if s.get("labels", {}).get("role") in ("control", "runtime")}
         if len(locations) == 1:
             location = locations.pop()
-    if pinned_location is not None and location != pinned_location:
-        raise Failure("Existing foundation location differs from pinned location")
     if location not in LOCATIONS:
         raise Failure("CAPACITY_UNAVAILABLE: selected host pair unavailable in Germany; no resources created, no permanent SKU substitution")
     extra_labels = {}
@@ -250,13 +249,14 @@ def main() -> int:
     apply = sub.add_parser("apply", help="Create/reconcile the approved CX33/CX43 foundation")
     apply.add_argument("--admin-cidr", required=True, help="Operator public IP/CIDR allowed SSH access")
     apply.add_argument("--validation", action="store_true", help="Operator-authorized temporary CPX pair with scheduled expiry")
+    apply.add_argument('--cpx', action='store_true', help='Explicit permanent CPX32/CPX42 pair at the approved higher cost')
     record = sub.add_parser("dns", help="Create/reconcile only the explicit platform A record")
     record.add_argument("--control-ipv4", required=True)
     args = parser.parse_args()
     try:
         api = API("cloudflare" if args.command == "dns" else "hetzner")
         result = {"inventory": lambda: inventory(api), "quote": lambda: quote(api),
-                  "apply": lambda: foundation(api, args.admin_cidr, args.validation), "dns": lambda: dns(api, args.control_ipv4)}[args.command]()
+                  "apply": lambda: foundation(api, args.admin_cidr, args.validation, args.cpx), "dns": lambda: dns(api, args.control_ipv4)}[args.command]()
         print(json.dumps(result, indent=2))
         return 0
     except (Failure, ValueError, OSError, subprocess.CalledProcessError) as error:

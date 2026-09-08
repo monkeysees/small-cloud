@@ -1,0 +1,107 @@
+{
+  "checked_at": "2026-09-08T10:32:27.551536+00:00",
+  "authorization": "Permanent CPX32/CPX42 approved; CX watcher cancelled; optimization deferred",
+  "watcher": "Cron and installed code removed; no watcher active",
+  "foundation": {
+    "project": "small-cloud (operator identified)",
+    "location": "nbg1",
+    "servers": {
+      "control": {
+        "id": 165120313,
+        "ipv4": "2.28.60.91",
+        "private_ipv4": "10.42.0.2",
+        "type": "cpx32"
+      },
+      "runtime": {
+        "id": 165120370,
+        "ipv4": "2.28.67.62",
+        "private_ipv4": "10.42.0.3",
+        "type": "cpx42"
+      }
+    }
+  },
+  "monthly_net_eur": {
+    "compute": 104.98,
+    "two_ipv4": 1,
+    "subtotal": 105.98,
+    "excludes": [
+      "builders",
+      "extra usage",
+      "tax if applicable"
+    ]
+  },
+  "hosts": {
+    "control": {
+      "time": "2026-09-08T10:32:28.370717+00:00",
+      "host": "small-cloud-control",
+      "disks": [
+        {
+          "path": "/",
+          "used_percent": 1.2,
+          "free_bytes": 152470261760
+        }
+      ],
+      "services": [
+        {
+          "unit": "postgresql@16-main.service",
+          "active": true
+        },
+        {
+          "unit": "caddy.service",
+          "active": true
+        },
+        {
+          "unit": "docker-registry.service",
+          "active": true
+        }
+      ],
+      "alerts": [],
+      "tls": {
+        "hostname": "small-cloud.monkeysees.one",
+        "expires": "2026-12-07T09:32:26+00:00",
+        "days_remaining": 89
+      },
+      "delivery": "not requested"
+    },
+    "runtime": {
+      "time": "2026-09-08T10:32:29.329137+00:00",
+      "host": "small-cloud-runtime",
+      "disks": [
+        {
+          "path": "/",
+          "used_percent": 0.7,
+          "free_bytes": 306879012864
+        }
+      ],
+      "services": [
+        {
+          "unit": "docker.service",
+          "active": true
+        }
+      ],
+      "alerts": [],
+      "tls": {
+        "hostname": "small-cloud.monkeysees.one",
+        "expires": "2026-12-07T09:32:26+00:00",
+        "days_remaining": 89
+      },
+      "delivery": "not requested",
+      "gvisor": "runsc version release-20260831.0\nspec: 1.2.1",
+      "docker": "29.1.3"
+    }
+  },
+  "creator_admission": "closed",
+  "billing_evidence": "Invoice not yet available",
+  "https_status": 503,
+  "https_tls_verified": true,
+  "monitoring": {
+    "timers": "active on both hosts",
+    "smtp_enabled_runs": "completed successfully on both hosts",
+    "actual_billing": "unavailable; explicitly reported by monitor",
+    "recipient_receipt": "workstation test previously confirmed; new host messages not independently confirmed"
+  },
+  "verification": {
+    "infra_tests_passed": 64,
+    "pyright": "0 errors"
+  }
+}

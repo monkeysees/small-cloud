@@ -1,22 +1,22 @@
 # Hetzner operator infrastructure
 
-Implementation in progress for [#17](https://github.com/monkeysees/small-cloud/issues/17). The scripts were exercised on an operator-authorized temporary CPX pair in Germany, including configuration reapplication, TLS, database isolation and a disposable EU build. The temporary hosts and associated resources were deleted after validation. Creator admission and the live acceptance gate remain closed. Read [hosting validation](../docs/hosting-validation.md) before use.
+Implementation in progress for [#17](https://github.com/monkeysees/small-cloud/issues/17). The permanent CPX32 control and CPX42 runtime foundation is deployed in Nuremberg with explicit operator authorization. DNS/TLS, PostgreSQL, private registry, gVisor and monitoring are configured; creator admission and the full live acceptance gate remain closed. Read [hosting validation](../docs/hosting-validation.md) before use.
 
 ## Prerequisites and scope
 
-The operator-authorized [CX watcher](CX-WATCH.md) now checks German capacity every minute and automatically procures the approved permanent pair within fixed price ceilings. Its frozen workstation installation runs independently of this checkout. Stop the watcher before any manual `apply` operation to avoid competing provisioning controllers.
+The CX watcher was removed at the operator’s request. The approved permanent deployment now uses CPX32 control and CPX42 runtime in Germany; use `apply --cpx` explicitly. Cost optimization back to CX is deferred and requires a migration, not automatic replacement.
 
 Use Python 3.11+, OpenSSH and the documented owner-only [Hetzner/Cloudflare token files](../docs/agents/cloud-access.md). The automation has no Python package dependencies. Hosts use Ubuntu 24.04 amd64 signed distribution packages; capture actual package/kernel versions during deployment. gVisor requires an explicit versioned official artifact URL and verified SHA256, with no `latest` install. See each host directory for reviewed upstream references.
 
-The operator identifies the Hetzner token's project as `small-cloud`; the API does not independently establish the project display name. The permanent CX33/CX43 pair stays in Germany (`nbg1`, `fsn1`). Builders may use EU locations, including Helsinki (`hel1`), as authorized by the operator. Inspect live account prices and availability before creating resources:
+The operator identifies the Hetzner token's project as `small-cloud`; the API does not independently establish the project display name. The permanent CPX32/CPX42 pair stays in Germany (`nbg1`, `fsn1`). Builders may use EU locations, including Helsinki (`hel1`), as authorized by the operator. Inspect live account prices and availability before creating resources:
 
 ```bash
 python3 infra/cloud.py inventory
 python3 infra/cloud.py quote
-python3 infra/cloud.py apply --admin-cidr YOUR_PUBLIC_IPV4/32
+python3 infra/cloud.py apply --cpx --admin-cidr YOUR_PUBLIC_IPV4/32
 ```
 
-`apply` fails before creating anything if neither German location reports the approved permanent pair available. It never replaces hosts or silently changes their SKU. Creation capacity is still not guaranteed by the availability indicator. Failures leave owned partial resources visible in inventory; reapply after inspection. Unknown POST outcomes must be reconciled by resource name before any new create. Resource names carry `managed-by=small-cloud,issue=17` ownership labels; unowned name collisions are refused.
+`apply --cpx` selects CPX32/CPX42; plain `apply` retains the explicit CX33/CX43 selection for future cost optimization. Provisioning fails before creating anything if neither German location reports the selected permanent pair available. It never replaces hosts or silently changes their SKU. Creation capacity is still not guaranteed by the availability indicator. Failures leave owned partial resources visible in inventory; reapply after inspection. Unknown POST outcomes must be reconciled by resource name before any new create. Resource names carry `managed-by=small-cloud,issue=17` ownership labels; unowned name collisions are refused.
 
 Local state is under `~/.local/state/small-cloud/infra` with directory 0700. It contains a dedicated SSH key, resource metadata and known hosts; provider tokens stay in their separate credential files and are never written into cloud-init or Git. Keep state on an encrypted operator disk. SSH pins the first key seen at the API-returned address (`accept-new`) and rejects later changes; first-contact authentication is trust-on-first-use, so verify host fingerprints through a trusted provider console if stronger bootstrap assurance is required. Never delete a changed-key warning without investigating.
 

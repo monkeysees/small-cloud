@@ -4,6 +4,12 @@
 
 **Hetzner setup is authorized; deployment acceptance remains unverified.** The operator's decision in [#17](https://github.com/monkeysees/small-cloud/issues/17) supersedes this report's original selection hold. The approved [builder provisioning policy](hosting-research.md#approved-implementation-direction--2026-09-08) uses fresh CX23 VMs with CPX22 fallback across the EU, initially without a prewarmed pool. The operator expanded builder placement beyond Germany on 2026-09-08. Implementation may proceed, but creator workloads must not be admitted on the strength of this report.
 
+## Permanent CPX deployment — 2026-09-08
+
+The operator cancelled the CX watcher and approved the higher-cost permanent CPX32/CPX42 pair, with optimization deferred. Both hosts are running in Nuremberg, with no temporary-expiry labels. Initial configuration succeeded, PostgreSQL/registry/Caddy and Docker/gVisor health checks passed, and public HTTPS presents verified TLS with the intentional HTTP 503. SMTP configuration and hourly monitoring are enabled on both hosts. [Permanent deployment evidence](evidence/permanent-foundation-2026-09-08.json) records the new inventory and checks.
+
+The fixed host-plus-IPv4 quote is EUR 105.98/month net before builders and other usage. This higher baseline is explicitly accepted; the earlier USD 100 target is not currently met. Actual invoices, five-builder quota/capacity, full isolation acceptance, certificate renewal/reboot and independent host-loss observation remain outstanding. Earlier empty-inventory statements below describe the completed temporary session, not the current deployment.
+
 ## Infrastructure validation — 2026-09-08
 
 Temporary CPX32 control and CPX42 runtime hosts were provisioned in Nuremberg with explicit operator authorization for a maximum two-hour validation session. Permanent CX33/CX43 capacity was unavailable in Germany. An independent workstation timer enforces the temporary expiry; the final resource disposition is retained in [deployment evidence](evidence/hosting-2026-09-08.json). This temporary pair is not the approved permanent cost model.

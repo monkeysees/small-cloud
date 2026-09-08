@@ -216,6 +216,20 @@ class CloudCliTests(unittest.TestCase):
                              for method, path, _ in self.provider.mutations))
         self.assertFalse(any(path.endswith('/apply_to_resources') for _, path, _ in self.provider.calls))
 
+    def test_permanent_cpx_has_no_validation_expiry_and_reapplies(self):
+        args = ('apply', '--admin-cidr', '203.0.113.1/32', '--cpx')
+        code, first, _ = self.cli(cloud, *args)
+        self.assertEqual(code, 0)
+        self.assertEqual({row['type'] for row in first['servers'].values()}, {'cpx32', 'cpx42'})
+        self.assertTrue(all('validation' not in row['labels'] for row in self.provider.rows['servers']))
+        self.assertEqual(self.cli(cloud, *args)[1], first)
+        self.assertEqual(len(self.provider.rows['servers']), 2)
+
+    def test_permanent_cpx_cannot_be_temporary_validation(self):
+        code, _, _ = self.cli(cloud, 'apply', '--admin-cidr', '203.0.113.1/32', '--cpx', '--validation')
+        self.assertEqual(code, 1)
+        self.assertEqual(self.provider.mutations, [])
+
     def test_unowned_network_is_not_adopted(self):
         self.provider.rows['networks'].append({'id': 8, 'name': 'small-cloud-private', 'labels': {}})
         code, _, errors = self.apply()
