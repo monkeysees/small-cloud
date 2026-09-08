@@ -43,10 +43,10 @@ On the control host, create a dedicated `small-cloud-identity` system user, a 07
 }
 ```
 
-Install this package into `/opt/small-cloud-identity` using a Python virtual environment. Bootstrap once as the service user, substituting the operator-confirmed Google email:
+Install this package into `/opt/small-cloud-identity` using a Python virtual environment. The operator confirmed `monkeyseesone@gmail.com`, also the alert recipient, as the sole administrator. Bootstrap once as the service user:
 
 ```bash
-sudo -u small-cloud-identity /opt/small-cloud-identity/bin/small-cloud-identity --config /etc/small-cloud/identity/server.json bootstrap ADMIN_GOOGLE_EMAIL
+sudo -u small-cloud-identity /opt/small-cloud-identity/bin/small-cloud-identity --config /etc/small-cloud/identity/server.json bootstrap monkeyseesone@gmail.com
 ```
 
 Repeating the same email returns the original administrator; changing it is refused. Bootstrap does not grant creator privileges. Install [the systemd unit](small-cloud-identity.service), run `systemctl daemon-reload`, then `systemctl enable --now small-cloud-identity`. The service binds only `127.0.0.1:8765`. Merge [the Caddy fragment](Caddyfile.fragment) into the existing management site, validate the complete Caddy configuration, and reload Caddy after the service is healthy. Preserve the site's existing certificate/storage settings. Public app routes stay closed with 503. Do not re-run infrastructure `control/bootstrap.sh`, which would replace this configuration with the original closed gateway.
