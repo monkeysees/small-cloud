@@ -18,7 +18,9 @@ class Credentials:
         if not base.is_absolute():
             raise Failure('INVALID_ARGUMENT', 'XDG_STATE_HOME must be an absolute path.')
         directory = base / 'small-cloud'
-        if directory.resolve().is_relative_to(Path.cwd().resolve()):
+        resolved = directory.resolve()
+        if any((parent / '.git').exists() or (parent / 'Dockerfile').is_file()
+               for parent in (resolved, *resolved.parents)):
             raise Failure('INVALID_ARGUMENT', 'Credential storage must be outside the source folder.')
         self.directory = protected_directory(directory)
         self.path = self.directory / (digest(endpoint) + '.json')

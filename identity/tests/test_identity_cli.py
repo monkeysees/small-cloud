@@ -136,6 +136,7 @@ class IdentityAcceptance(unittest.TestCase):
                     'XDG_STATE_HOME': str(self.home / 'state'),
                     'XDG_CONFIG_HOME': str(self.home / 'config'),
                     'SSL_CERT_FILE': str(cert_path), 'SMALL_CLOUD_ENDPOINT': self.endpoint,
+                    'PYTHONPATH': os.pathsep.join([str(ROOT), os.environ.get('PYTHONPATH', '')]),
                     'PYTHON_KEYRING_BACKEND': 'keyring.backends.fail.Keyring'}
         self.browser = urllib.request.build_opener(
             urllib.request.HTTPSHandler(context=self.client_tls),
@@ -171,13 +172,13 @@ class IdentityAcceptance(unittest.TestCase):
         with self.browser.open(request, timeout=5) as response:
             self.assertEqual(response.status, 200)
 
-    def cli(self, *args):
+    def cli(self, *args, cwd=ROOT):
         return subprocess.run([sys.executable, '-m', 'identity.cli', '--json', *args],
-                              cwd=ROOT, env=self.env, capture_output=True, text=True, timeout=10)
+                              cwd=cwd, env=self.env, capture_output=True, text=True, timeout=10)
 
-    def login(self):
+    def login(self, cwd=ROOT):
         process = subprocess.Popen([sys.executable, '-m', 'identity.cli', '--json',
-                                    'auth', 'login', '--no-browser'], cwd=ROOT, env=self.env,
+                                    'auth', 'login', '--no-browser'], cwd=cwd, env=self.env,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self.addCleanup(lambda: process.poll() is None and process.kill())
         url = None
@@ -353,6 +354,37 @@ class IdentityAcceptance(unittest.TestCase):
         saved.rename(target)
         saved.symlink_to(target)
         self.assertEqual(self.cli('auth', 'status').returncode, 2)
+
+    def test_authentication_from_home_uses_default_external_state_storage(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        self.env.pop('XDG_STATE_HOME')
+        status = self.cli('auth', 'status', cwd=self.home)
+        self.assertEqual(status.returncode, 3, status.stdout)
+        logged_in = self.login(cwd=self.home)
+        status = self.cli('auth', 'status', cwd=self.home)
+        self.assertEqual(status.returncode, 0, status.stdout)
+        self.assertEqual(json.loads(status.stdout)['data'], logged_in)
+
+    def test_project_credential_storage_is_rejected_even_from_another_directory(self):
+        self.start_platform()
+        for marker in ('git-directory', 'git-worktree', 'dockerfile'):
+            with self.subTest(marker=marker):
+                project = self.home / marker
+                project.mkdir()
+                if marker == 'git-directory':
+                    (project / '.git').mkdir()
+                elif marker == 'git-worktree':
+                    (project / '.git').write_text('gitdir: /unused-fixture-path')
+                else:
+                    (project / 'Dockerfile').write_text('FROM scratch\n')
+                state = project / 'state'
+                self.env['XDG_STATE_HOME'] = str(state)
+                result = self.cli('auth', 'status', cwd=ROOT)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertEqual(json.loads(result.stdout)['error']['message'],
+                                 'Credential storage must be outside the source folder.')
+                self.assertFalse((state / 'small-cloud').exists())
 
     def test_competing_grants_cannot_exceed_five_creators(self):
         from concurrent.futures import ThreadPoolExecutor
