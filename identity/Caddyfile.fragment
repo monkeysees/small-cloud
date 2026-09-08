@@ -1,0 +1,12 @@
+# Merge inside the existing small-cloud.monkeysees.one site; keep its TLS settings.
+# Do not enable access logging: OAuth URLs contain confidential, single-use codes.
+@identity path /auth/* /api/auth/* /api/admin/member/add /api/admin/creator/grant
+handle @identity {
+    request_body {
+        max_size 16KB
+    }
+    reverse_proxy 127.0.0.1:8765
+}
+handle {
+    respond "Small Cloud app publishing is not available yet." 503
+}

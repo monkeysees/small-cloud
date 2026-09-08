@@ -1,5 +1,7 @@
 # Control host
 
+The product [identity service and admission runbook](../../identity/README.md) provides the #4 replacement for authentication routes. Its Caddy fragment preserves closed app routes; deploy only with configured Google OAuth and the documented acceptance checks. Re-running this infrastructure bootstrap replaces that fragment with the original closed gateway.
+
 `bootstrap.sh` configures a dedicated Ubuntu 24.04 amd64 host after the infrastructure provisioner has assigned private address `10.42.0.2`. Run it as root with this directory present. It installs distribution packages, persists PostgreSQL, source, registry, encrypted credentials and reserved application-log storage under `/srv/small-cloud`, and serves a closed HTTP 503 gateway at `https://small-cloud.monkeysees.one`. Re-running preserves data and credentials, restarts services and reapplies the closed gateway. Do not run it against a future authenticated production gateway without reviewing that replacement.
 
 The host disk survives service/container restart, not host deletion. No automatic host replacement or durable-data promise is provided. Caddy obtains and renews public certificates automatically; the explicit DNS record must point directly to the host and public TCP 80/443 must remain reachable for ACME. Its state is `/srv/small-cloud/caddy`. No app ingress or login bypass exists in this bootstrap; #4/#5 must replace the 503 only after authenticated gateway routing passes its acceptance gate.

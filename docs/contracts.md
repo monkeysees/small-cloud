@@ -61,7 +61,7 @@ Errors always include `code`, safe human `message`, `retryable` and object `deta
 | 2 | `INVALID_ARGUMENT`, `CONFIRMATION_REQUIRED`, `CONFIRMATION_MISMATCH`, `ACKNOWLEDGEMENT_REQUIRED`, `UPLOAD_REJECTED` | Local or server input validation; no mutation. |
 | 3 | `AUTH_REQUIRED`, `CREDENTIAL_REVOKED`, `LOGIN_EXPIRED` | Sign in again. |
 | 4 | `FORBIDDEN`, `NOT_FOUND`, `APP_DISABLED` | Permission, hidden/missing resource or disabled state. Unauthorized resource queries return `NOT_FOUND`. |
-| 5 | `BUILD_BUSY`, `ALLOWANCE_EXHAUSTED`, `ALLOWANCE_RESERVED`, `DEPLOYED_CAPACITY`, `ACTIVE_CAPACITY`, `OPERATION_CONFLICT`, `REQUEST_CONFLICT` | Conflict or quota refusal; admission refusals create no mutation. Accepted operations can subsequently fail on active capacity as described below. |
+| 5 | `BUILD_BUSY`, `ALLOWANCE_EXHAUSTED`, `ALLOWANCE_RESERVED`, `CREATOR_CAPACITY`, `DEPLOYED_CAPACITY`, `ACTIVE_CAPACITY`, `OPERATION_CONFLICT`, `REQUEST_CONFLICT` | Conflict or quota refusal; admission refusals create no mutation. Accepted operations can subsequently fail on active capacity as described below. |
 | 6 | `NETWORK_ERROR`, `WAIT_TIMEOUT` | Outcome may be pending/unknown; reconcile using request/operation ID. |
 | 130 | `INTERRUPTED` | Local interruption; accepted work continues. |
 

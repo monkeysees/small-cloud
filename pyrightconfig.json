@@ -1,6 +1,6 @@
 {
-  "include": ["infra", "probes"],
-  "exclude": ["infra/tests", "**/__pycache__"],
+  "include": ["infra", "probes", "identity"],
+  "exclude": ["infra/tests", "identity/tests", "**/__pycache__"],
   "typeCheckingMode": "basic",
   "extraPaths": ["infra"],
   "pythonVersion": "3.11"

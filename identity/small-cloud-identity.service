@@ -1,0 +1,27 @@
+[Unit]
+Description=Small Cloud identity service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=small-cloud-identity
+Group=small-cloud-identity
+ExecStart=/opt/small-cloud-identity/bin/small-cloud-identity --config /etc/small-cloud/identity/server.json serve
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/small-cloud/identity
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+LimitCORE=0
+MemoryMax=256M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
