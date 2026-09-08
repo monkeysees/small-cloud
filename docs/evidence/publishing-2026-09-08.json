@@ -1,0 +1,266 @@
+{
+  "issue": "https://github.com/monkeysees/small-cloud/issues/5",
+  "management_origin": "https://small-cloud.monkeysees.one",
+  "app": "publishing-probe",
+  "app_id": "a-9ce8504acd8242b98d681bc3",
+  "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+  "control_host": 165120313,
+  "runtime_host": 165120370,
+  "hosting_location": "nbg1",
+  "dns": {
+    "name": "*.small-cloud.monkeysees.one",
+    "type": "A",
+    "content": "2.28.60.91",
+    "proxied": false
+  },
+  "local_verification": {
+    "full_suite_before_live_fixes": {
+      "identity": 30,
+      "infrastructure": 81,
+      "hosting_fixture": 4,
+      "result": "passed"
+    },
+    "affected_tests_after_live_fixes": {
+      "publishing_http": 6,
+      "gateway_http": 5,
+      "source_cli": 7,
+      "result": "passed"
+    },
+    "pyright": "0 errors, 0 warnings",
+    "standards_review": "no unresolved findings",
+    "spec_review": "no unresolved findings",
+    "wheel_sha256": "5d0b05393dcdc5276743a811c9c793174a538dc679948ac4ca141fcc84c30441"
+  },
+  "initial_attempt": {
+    "request_id": "6e741eef-d8e3-4096-b552-5faa6047d739",
+    "operation_id": "d-e8bc7d6d04ef49d98b4b251d",
+    "builder_id": 165236725,
+    "builder_type": "cx23",
+    "builder_location": "nbg1",
+    "build_succeeded": true,
+    "builder_deleted": true,
+    "builder_addresses_removed": true,
+    "build_execution_seconds": 5.672,
+    "deployment_result": "failed safely before app routing",
+    "cause": "Docker import changed the image ID from the exported config digest; fixed by validating the fixed export tag and pinning the actual imported immutable ID",
+    "regression": "HTTP regression failed before fix and passed after it",
+    "orphan_import_removed": "sha256:b2124d9faa9024762d495e53f0061391f34eddcadb2145a6c9c0f150e8940094"
+  },
+  "initial_https_checks": {
+    "unauthenticated_root": 401,
+    "unauthenticated_asset": 401,
+    "unauthenticated_readiness": 401,
+    "public_internal_tls_route": 404
+  },
+  "live_acceptance": "CLI and authenticated HTTP verified; live browser handoff not observed because browser tools are unavailable",
+  "authenticated_http": {
+    "/identity": {
+      "status": 200,
+      "body": {
+        "fixture": "small-cloud-publishing",
+        "identity": {
+          "id": "usr_800a3dde642a45d5902244808a2e2f5c",
+          "name": "QWliZWsgS2F0aWJvdg",
+          "email": "bW9ua2V5c2Vlc29uZUBnbWFpbC5jb20"
+        }
+      }
+    },
+    "/network": {
+      "status": 200,
+      "body": {
+        "probes": {
+          "public-https": {
+            "expected": "reachable",
+            "observed": "reachable"
+          },
+          "metadata": {
+            "expected": "blocked",
+            "observed": "blocked"
+          },
+          "control-private": {
+            "expected": "blocked",
+            "observed": "blocked"
+          },
+          "runtime-private": {
+            "expected": "blocked",
+            "observed": "blocked"
+          }
+        },
+        "note": "Blocked or timed-out targets require an independently verified reachable listener to prove isolation."
+      }
+    },
+    "/_small-cloud/ready": {
+      "status": 404,
+      "body": {
+        "schema_version": 1,
+        "ok": false,
+        "request_id": null,
+        "data": null,
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Route not found.",
+          "retryable": false,
+          "details": {}
+        }
+      }
+    },
+    "local_docker_installed": true
+  },
+  "status": {
+    "app": "publishing-probe",
+    "app_id": "a-9ce8504acd8242b98d681bc3",
+    "description": "Disposable HTTP publishing acceptance probe",
+    "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+    "sharing_scope": "creator-only",
+    "availability": "running",
+    "active_deployment_id": "d-caa0fdd8914c4f58ac89f7e9",
+    "latest_operation": {
+      "id": "d-caa0fdd8914c4f58ac89f7e9",
+      "kind": "deploy",
+      "app": "publishing-probe",
+      "operation_id": "d-caa0fdd8914c4f58ac89f7e9",
+      "deployment_id": "d-caa0fdd8914c4f58ac89f7e9",
+      "state": "succeeded",
+      "request_id": "2faf2ca2-bf58-4258-8788-25b199faabea",
+      "created_at": "2026-09-08T23:26:28.657005Z",
+      "updated_at": "2026-09-08T23:28:46.983842Z",
+      "completed_at": "2026-09-08T23:28:46.983842Z",
+      "error": null,
+      "cleanup_pending": false
+    },
+    "cleanup": null
+  },
+  "runtime_limits": {
+    "Runtime": "runsc",
+    "ReadonlyRootfs": true,
+    "NanoCpus": 500000000,
+    "Memory": 536870912,
+    "MemorySwap": 536870912,
+    "PidsLimit": 128,
+    "CapDrop": [
+      "ALL"
+    ],
+    "SecurityOpt": [
+      "no-new-privileges"
+    ],
+    "PortBindings": {
+      "8080/tcp": [
+        {
+          "HostIp": "10.42.0.3",
+          "HostPort": "18080"
+        }
+      ]
+    },
+    "Tmpfs": {
+      "/tmp": "rw,nosuid,nodev,noexec,size=1073741824,mode=1777"
+    }
+  },
+  "healthy_root_listeners": {
+    "metadata": true,
+    "control-ssh": true,
+    "runtime-ssh": true
+  },
+  "runtime_public_ports": {
+    "18080": "blocked",
+    "18081": "blocked",
+    "18082": "blocked",
+    "18083": "blocked",
+    "18084": "blocked",
+    "18085": "blocked"
+  },
+  "successful_attempt": {
+    "request_id": "2faf2ca2-bf58-4258-8788-25b199faabea",
+    "operation_id": "d-caa0fdd8914c4f58ac89f7e9",
+    "builder": {
+      "id": 165237128,
+      "job": "d-caa0fdd8914c4f58ac89f7e9",
+      "ipv4": "167.235.61.82",
+      "type": "cx23",
+      "location": "nbg1",
+      "expires": 1788911789,
+      "hourly_net": "0.0088000000",
+      "currency": "EUR"
+    },
+    "build": {
+      "ok": true,
+      "image_archive_sha256": "68ab4d8949062c215e70b2ef1e58b4930483b0a34bddcb07febb74b5f1a5fe19",
+      "image_bytes": 129157120,
+      "dropped_log_bytes": 0,
+      "execution_started_at": "2026-09-08T23:28:05Z",
+      "execution_completed_at": "2026-09-08T23:28:17Z",
+      "execution_duration_seconds": 12.8
+    },
+    "teardown": {
+      "id": 165237128,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    }
+  },
+  "checked_at": "2026-09-08T23:34:53Z",
+  "final_status": {
+    "app": "publishing-probe",
+    "app_id": "a-9ce8504acd8242b98d681bc3",
+    "description": "Disposable HTTP publishing acceptance probe",
+    "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+    "sharing_scope": "creator-only",
+    "availability": "running",
+    "active_deployment_id": "d-978af46d6a18423f9e9499aa",
+    "latest_operation": {
+      "id": "d-978af46d6a18423f9e9499aa",
+      "kind": "deploy",
+      "app": "publishing-probe",
+      "operation_id": "d-978af46d6a18423f9e9499aa",
+      "deployment_id": "d-978af46d6a18423f9e9499aa",
+      "state": "succeeded",
+      "request_id": "0a2661be-0937-463f-95a5-2130ef04c62e",
+      "created_at": "2026-09-08T23:31:33.359992Z",
+      "updated_at": "2026-09-08T23:33:33.260196Z",
+      "completed_at": "2026-09-08T23:33:33.260196Z",
+      "error": null,
+      "cleanup_pending": false
+    },
+    "cleanup": null
+  },
+  "no_local_docker_publish": {
+    "PATH": "/nonexistent",
+    "request_id": "0a2661be-0937-463f-95a5-2130ef04c62e",
+    "operation_id": "d-978af46d6a18423f9e9499aa",
+    "state": "succeeded",
+    "stable_url_preserved": true,
+    "builder": {
+      "id": 165237429,
+      "job": "d-978af46d6a18423f9e9499aa",
+      "ipv4": "167.235.61.82",
+      "type": "cx23",
+      "location": "nbg1",
+      "expires": 1788912094,
+      "hourly_net": "0.0088000000",
+      "currency": "EUR"
+    },
+    "build": {
+      "ok": true,
+      "image_archive_sha256": "dd5f2ad27df4c757866eac460f30a7ad0aacd73c5a394333aaa1af3459983eb7",
+      "image_bytes": 129157120,
+      "dropped_log_bytes": 0,
+      "execution_started_at": "2026-09-08T23:32:53Z",
+      "execution_completed_at": "2026-09-08T23:33:05Z",
+      "execution_duration_seconds": 12.236
+    },
+    "teardown": {
+      "id": 165237429,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    }
+  },
+  "final_identity_matches_authenticated_creator": true,
+  "cli_credential_absent_from_build_logs": true,
+  "runtime_containers": [
+    "sc-a-9ce8504acd8242b98d681bc3-active"
+  ],
+  "services": "identity, publishing worker and Caddy active",
+  "browser_handoff": "five local HTTP gateway tests pass; no live browser connection was available"
+}

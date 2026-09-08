@@ -1,7 +1,12 @@
-# Merge inside the existing small-cloud.monkeysees.one site; keep its TLS settings.
-# Do not enable access logging: OAuth URLs contain confidential, single-use codes.
-# Also install Caddyfile.global.fragment to redact request details from proxy errors.
-@identity path /auth/* /api/auth/* /api/admin/member/add /api/admin/creator/grant
+# Merge inside the management site, preserving its TLS settings and global log filter.
+@upload path /api/deploy
+handle @upload {
+    request_body {
+        max_size 121634816
+    }
+    reverse_proxy 127.0.0.1:8765
+}
+@identity path /auth/* /api/auth/* /api/admin/member/add /api/admin/creator/grant /api/apps/* /api/operations /api/operations/*
 handle @identity {
     request_body {
         max_size 16KB
@@ -9,5 +14,5 @@ handle @identity {
     reverse_proxy 127.0.0.1:8765
 }
 handle {
-    respond "Small Cloud app publishing is not available yet." 503
+    respond "Small Cloud: publish apps with the small-cloud CLI." 200
 }

@@ -1,0 +1,8 @@
+{
+  "targets": [
+    {"name": "public-https", "host": "example.com", "port": 443, "tls": true, "expected": "reachable"},
+    {"name": "metadata", "host": "169.254.169.254", "port": 80, "expected": "blocked"},
+    {"name": "control-private", "host": "10.42.0.2", "port": 22, "expected": "blocked"},
+    {"name": "runtime-private", "host": "10.42.0.3", "port": 22, "expected": "blocked"}
+  ]
+}

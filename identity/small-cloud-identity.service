@@ -20,7 +20,7 @@ ReadWritePaths=/srv/small-cloud/identity
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 CapabilityBoundingSet=
 LimitCORE=0
-MemoryMax=256M
+MemoryMax=1G
 TasksMax=64
 
 [Install]

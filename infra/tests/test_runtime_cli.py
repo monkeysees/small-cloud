@@ -202,7 +202,7 @@ class RuntimeCLI(unittest.TestCase):
                     self.invoke_start(tool, image)
 
     def test_sixth_active_tool_and_orphan_candidate_are_refused(self):
-        entries = [{'Config': {'Labels': {'small-cloud.tool': f'tool-{i}',
+        entries = [{'Name': f'/sc-tool-{i}-active', 'Config': {'Labels': {'small-cloud.tool': f'tool-{i}',
                     'small-cloud.role': 'active', 'small-cloud.slot': str(i)}}} for i in range(5)]
         with self.assertRaisesRegex(ValueError, 'five active'):
             self.invoke_start(entries=entries)
@@ -220,3 +220,31 @@ class RuntimeCLI(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class PromotionCLI(unittest.TestCase):
+    setUp = RuntimeCLI.setUp
+    def test_ready_candidate_is_promoted_without_recreating_its_process(self):
+        entries = [
+            {'Name': '/sc-app-a-active', 'State': {'Running': True},
+             'Config': {'Labels': {'small-cloud.tool': 'app-a', 'small-cloud.role': 'active'}}},
+            {'Name': '/sc-app-a-candidate', 'State': {'Running': True},
+             'Config': {'Labels': {'small-cloud.tool': 'app-a', 'small-cloud.role': 'candidate'}}}]
+        calls = []
+        def process(argv, **kwargs):
+            calls.append(list(argv))
+            if list(argv[:3]) == ['docker', 'ps', '-aq']:
+                return subprocess.CompletedProcess(argv, 0, 'old new')
+            if list(argv[:2]) == ['docker', 'inspect']:
+                return subprocess.CompletedProcess(argv, 0, json.dumps(entries))
+            return subprocess.CompletedProcess(argv, 0, '')
+        original_open = builtins.open
+        def open_boundary(path, *args, **kwargs):
+            return original_open(self.root / 'lock' if path == '/run/small-cloud-runtime.lock' else path, *args, **kwargs)
+        with patch.object(sys, 'argv', ['sandbox', '--config', str(self.config), 'promote', 'app-a']), \
+                patch.object(runtime.os, 'geteuid', return_value=0), \
+                patch.object(builtins, 'open', side_effect=open_boundary), \
+                patch.object(runtime.subprocess, 'run', side_effect=process):
+            runtime.main()
+        self.assertEqual(calls[-2:], [['docker', 'rm', '-f', 'sc-app-a-active'],
+                                    ['docker', 'rename', 'sc-app-a-candidate', 'sc-app-a-active']])
+        self.assertFalse(any(call[:2] == ['docker', 'create'] for call in calls))

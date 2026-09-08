@@ -3,11 +3,13 @@ import argparse
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import sys
 import time
 import urllib.request
 import urllib.error
+import urllib.parse
 import uuid
 import webbrowser
 
@@ -31,6 +33,32 @@ def parser():
     root.add_argument('--request-id')
     root.add_argument('--version', action='version', version='small-cloud 0.1.0')
     commands = root.add_subparsers(dest='command', required=True)
+    deploy = commands.add_parser('deploy', help='Publish a local Dockerfile source folder',
+                                epilog='Example: small-cloud deploy . --name example --description demo --dry-run')
+    deploy.set_defaults(action='deploy')
+    deploy.add_argument('folder')
+    deploy.add_argument('--name', required=True)
+    deploy.add_argument('--description')
+    deploy.add_argument('--dry-run', action='store_true')
+    deploy.add_argument('--wait', action='store_true')
+    deploy.add_argument('--timeout', type=int, default=900)
+    status = commands.add_parser('status', help='Show app deployment status',
+                                 epilog='Example: small-cloud status example --json')
+    status.set_defaults(action='status')
+    status.add_argument('app')
+    operation = commands.add_parser('operation', help='Inspect an accepted operation',
+                                    epilog='Example: small-cloud operation status op_ID')
+    operation_status = operation.add_subparsers(dest='action', required=True).add_parser('status',
+                                    epilog='Example: small-cloud operation status --request-id UUID')
+    operation_status.add_argument('id', nargs='?')
+    logs = commands.add_parser('logs', help='Read bounded deployment logs',
+                               epilog='Example: small-cloud logs example --source build')
+    logs.set_defaults(action='logs')
+    logs.add_argument('app')
+    logs.add_argument('--source', choices=['build', 'runtime'], required=True)
+    logs.add_argument('--deployment')
+    logs.add_argument('--since')
+    logs.add_argument('--limit', type=int, default=100)
     auth = commands.add_parser('auth', help='Sign in and manage CLI credentials', epilog='Example: small-cloud auth status')
     actions = auth.add_subparsers(dest='action', required=True)
     login = actions.add_parser('login', help='Approve Google sign-in in your browser', epilog='Example: small-cloud auth login --no-browser')
@@ -93,17 +121,17 @@ class Client:
         self.endpoint = endpoint
         self.opener = urllib.request.build_opener(NoRedirect())
 
-    def request(self, path, body=None, token=None, request_id=None):
-        headers = {'Content-Type': 'application/json'}
+    def request(self, path, body=None, token=None, request_id=None, timeout=30):
+        headers = {'Content-Type': 'application/x-tar' if isinstance(body, bytes) else 'application/json'}
         if token:
             headers['Authorization'] = 'Bearer ' + token
         if request_id:
             headers['X-Request-ID'] = request_id
         request = urllib.request.Request(self.endpoint + path,
-                   data=None if body is None else json.dumps(body).encode(), headers=headers)
+                   data=None if body is None else body if isinstance(body, bytes) else json.dumps(body).encode(), headers=headers)
         try:
             try:
-                response = self.opener.open(request, timeout=30)
+                response = self.opener.open(request, timeout=timeout)
             except urllib.error.HTTPError as exc:
                 response = exc
             with response:
@@ -122,6 +150,41 @@ class Client:
 
 
 def execute(args, request_id):
+    if args.command == 'deploy':
+        from .upload import package
+        if (not re.fullmatch(r'[a-z][a-z0-9-]{0,62}', args.name)
+                or args.description is not None and len(args.description) > 500
+                or args.timeout <= 0):
+            raise Failure('INVALID_ARGUMENT', 'Supply a valid app name, description up to 500 characters and positive timeout.')
+        summary, archive = package(args.folder)
+        if args.dry_run:
+            return summary
+        client = Client(endpoint(args))
+        credentials = Credentials(client.endpoint)
+        with credentials.locked():
+            token = credentials.read()
+            metadata = {'name': args.name}
+            if args.description is not None:
+                metadata['description'] = args.description
+            result = client.request('/api/deploy?' + urllib.parse.urlencode(metadata), archive, token, request_id)
+            if not args.wait:
+                return result
+            deadline = time.monotonic() + args.timeout
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise Failure('WAIT_TIMEOUT', 'Deployment continues; inspect its operation status.', 503,
+                                  operation_id=result['operation_id'])
+                operation = client.request('/api/operations/' + urllib.parse.quote(result['operation_id'], safe=''),
+                                           token=token, timeout=min(30, remaining))
+                if operation['state'] == 'succeeded':
+                    return {**result, 'state': 'succeeded', 'active_deployment_id': operation['deployment_id']}
+                if operation['state'] == 'failed':
+                    error = operation['error']
+                    code = error['code']
+                    raise Failure(code, error['message'], 409 if code == 'ACTIVE_CAPACITY' else 500,
+                                  operation_id=result['operation_id'])
+                time.sleep(min(2, max(0, deadline - time.monotonic())))
     client = Client(endpoint(args))
     credentials = Credentials(client.endpoint)
     with credentials.locked():
@@ -157,6 +220,24 @@ def authenticated_command(args, request_id, client, credentials):
             interval = max(5, min(result.get('interval', 5), 60))
         raise Failure('LOGIN_EXPIRED', 'Login expired; start again.', 401)
     token = credentials.read()
+    if args.command == 'status':
+        return client.request('/api/apps/' + urllib.parse.quote(args.app, safe=''), token=token)
+    if args.command == 'operation':
+        if bool(args.id) == bool(request_id):
+            raise Failure('INVALID_ARGUMENT', 'Supply an operation ID or --request-id, exclusively.')
+        path = ('/api/operations/' + urllib.parse.quote(args.id, safe='') if args.id
+                else '/api/operations?request_id=' + request_id)
+        return client.request(path, token=token)
+    if args.command == 'logs':
+        if not 1 <= args.limit <= 1000:
+            raise Failure('INVALID_ARGUMENT', 'Log limit must be between 1 and 1000.')
+        query = {'source': args.source, 'limit': str(args.limit)}
+        if args.deployment:
+            query['deployment'] = args.deployment
+        if args.since:
+            query['since'] = args.since
+        return client.request('/api/apps/' + urllib.parse.quote(args.app, safe='') + '/logs?'
+                              + urllib.parse.urlencode(query), token=token)
     if args.command == 'admin':
         body = {'email': args.email} if args.resource == 'member' else {'user_id': args.user_id}
         return client.request('/api/admin/' + args.resource + '/' + args.action, body, token, request_id)
@@ -182,9 +263,11 @@ def main(argv=None):
             current.print_help()
             return 0
         args = root.parse_args(global_first(argv))
-        if args.request_id:
+        if getattr(args, 'dry_run', False):
+            request_id = None
+        elif args.request_id:
             request_id = str(uuid.UUID(args.request_id))
-        elif args.action != 'status':
+        elif args.action not in ('status', 'logs') and not getattr(args, 'dry_run', False):
             request_id = str(uuid.uuid4())
         if request_id:
             print('Request ID: ' + request_id, file=sys.stderr, flush=True)

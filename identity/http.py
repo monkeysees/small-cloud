@@ -21,6 +21,12 @@ class Application:
         self.origin = origin(config['origin'])
         self.store = Store(config['state_directory'])
         self.google = google or Google(config['google_client_id'], config['google_client_secret'])
+        from .publishing import Publishing
+        self.publishing = Publishing(self.store, self.origin)
+        self.upload_slots = threading.BoundedSemaphore(1)
+        from .gateway import Gateway
+        self.gateway = Gateway(self.store, self.google, self.origin,
+                               urllib.parse.urlsplit(self.origin).hostname, self.publishing)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -91,9 +97,26 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.dispatch()
 
+    def __getattr__(self, name):
+        if name.startswith('do_'):
+            return self.dispatch
+        raise AttributeError(name)
+
     def dispatch(self):
         self.request_id = None
         try:
+            if len(self.headers.get_all('Host', [])) != 1:
+                raise Failure('FORBIDDEN', 'One Host header is required.', 403)
+            if (self.command == 'GET' and self.headers['Host'] == '127.0.0.1:' + str(self.server.server_port)
+                    and urllib.parse.urlsplit(self.path).path == '/internal/tls'):
+                domain = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get('domain', [''])[0]
+                if not self.app.publishing.certificate_allowed(domain):
+                    raise Failure('FORBIDDEN', 'Certificate hostname not admitted.', 403)
+                self.respond(200, envelope({'allowed': True}))
+                return
+            if self.app.gateway.app_id(self.headers.get('Host', '')):
+                self.app.gateway.route(self)
+                return
             if self.headers.get('Host') != urllib.parse.urlsplit(self.app.origin).netloc:
                 raise Failure('FORBIDDEN', 'Unexpected management origin.', 403)
             if self.command == 'POST' and self.path.startswith('/api/') and self.path not in ('/api/auth/login', '/api/auth/poll'):
@@ -111,7 +134,7 @@ class Handler(BaseHTTPRequestHandler):
     def route(self):
         parsed = urllib.parse.urlsplit(self.path)
         path, store = parsed.path, self.app.store
-        query = urllib.parse.parse_qs(parsed.query)
+        query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
         if self.command == 'GET' and path == '/health':
             self.respond(200, envelope({'ready': True}))
         elif self.command == 'POST' and path == '/api/auth/login':
@@ -128,6 +151,9 @@ class Handler(BaseHTTPRequestHandler):
             self.respond(302, '', 'text/html', {'Location': url,
                          'Set-Cookie': self.set_cookie(FLOW_COOKIE, browser_secret, 600)})
         elif self.command == 'GET' and path == '/auth/callback':
+            if self.app.gateway.has_oauth_state(query['state'][0]):
+                self.app.gateway.callback(self)
+                return
             flow = store.take_oauth(query['state'][0], self.cookie(FLOW_COOKIE))
             claims = self.app.google.exchange(query['code'][0], self.app.origin + '/auth/callback', flow['nonce'], flow['pkce'])
             session = store.bind_google(claims)
@@ -152,6 +178,45 @@ class Handler(BaseHTTPRequestHandler):
             self.respond(200, '<!doctype html><title>Sign-in approved</title><p>Approved. Return to your terminal.</p>', 'text/html')
         elif self.command == 'GET' and path == '/api/auth/status':
             self.respond(200, envelope(store.status(self.bearer())))
+        elif self.command == 'POST' and path == '/api/deploy':
+            token = self.bearer()
+            identity = store.status(token)
+            if 'creator' not in identity['roles']:
+                raise Failure('FORBIDDEN', 'Creator privileges required.', 403)
+            if (self.headers.get('Transfer-Encoding') or len(self.headers.get_all('Content-Length', [])) != 1
+                    or self.headers.get_content_type() != 'application/x-tar'):
+                raise Failure('UPLOAD_REJECTED', 'Expected a bounded uncompressed tar archive.')
+            size = int(self.headers['Content-Length'])
+            if not 0 < size <= 116 * 1024 * 1024:
+                raise Failure('UPLOAD_REJECTED', 'Upload exceeds archive size limit.')
+            if not self.app.upload_slots.acquire(blocking=False):
+                raise Failure('BUILD_BUSY', 'Upload capacity is occupied; retry later.', 409)
+            try:
+                archive = self.rfile.read(size)
+                if len(archive) != size:
+                    raise Failure('UPLOAD_REJECTED', 'Upload was incomplete.')
+                if any(len(values) != 1 for values in query.values()) or set(query) - {'name', 'description'}:
+                    raise Failure('INVALID_ARGUMENT', 'Invalid deployment metadata.')
+                result = self.app.publishing.deploy(token, {key: values[0] for key, values in query.items()},
+                                                    archive, self.request_id)
+                self.respond(202, envelope(result, request_id=self.request_id))
+            finally:
+                self.app.upload_slots.release()
+        elif self.command == 'GET' and path == '/api/operations':
+            result = self.app.publishing.operation(self.bearer(), request_id=query['request_id'][0])
+            self.respond(200, envelope(result))
+        elif self.command == 'GET' and path.startswith('/api/operations/'):
+            result = self.app.publishing.operation(self.bearer(), operation_id=path.removeprefix('/api/operations/'))
+            self.respond(200, envelope(result))
+        elif self.command == 'GET' and path.startswith('/api/apps/'):
+            target = urllib.parse.unquote(path.removeprefix('/api/apps/'))
+            if target.endswith('/logs'):
+                result = self.app.publishing.logs(self.bearer(), target.removesuffix('/logs'),
+                    source=query['source'][0], deployment=query.get('deployment', [None])[0],
+                    since=query.get('since', [None])[0], limit=int(query.get('limit', ['100'])[0]))
+            else:
+                result = self.app.publishing.status(self.bearer(), target)
+            self.respond(200, envelope(result))
         elif self.command == 'POST' and path in ('/api/auth/logout', '/api/auth/revoke', '/api/admin/member/add', '/api/admin/creator/grant'):
             action = path.removeprefix('/api/').removeprefix('auth/')
             result = store.mutate(self.bearer(), action, self.body(), self.request_id)

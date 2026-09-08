@@ -21,7 +21,7 @@ class Failure(Exception):
             return 4
         if self.status == 409 or self.status == 429:
             return 5
-        if self.code == 'NETWORK_ERROR':
+        if self.code in ('NETWORK_ERROR', 'WAIT_TIMEOUT'):
             return 6
         return 2 if self.status == 400 else 1
 

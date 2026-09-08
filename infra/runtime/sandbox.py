@@ -261,6 +261,38 @@ def resolver_file():
     return str(RESOLVER_FILE)
 
 
+class ActiveCapacity(ValueError):
+    pass
+
+
+def allocation_role(entry):
+    # Docker labels are immutable; the root-controlled name follows promotion.
+    prefix = '/sc-' + entry['Config']['Labels']['small-cloud.tool'] + '-'
+    name = entry['Name']
+    if name not in (prefix + 'active', prefix + 'candidate'):
+        raise ValueError('unknown app allocation name requires operator reconciliation')
+    return name[len(prefix):]
+
+
+def promote(tool):
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,31}', tool):
+        raise ValueError('invalid app identifier')
+    own = [entry for entry in containers() if entry['Config']['Labels']['small-cloud.tool'] == tool]
+    candidate = next((entry for entry in own if allocation_role(entry) == 'candidate'), None)
+    active = next((entry for entry in own if allocation_role(entry) == 'active'), None)
+    if candidate is None:
+        if active is not None and active['State']['Running']:
+            print(json.dumps({'container': 'sc-' + tool + '-active'}))
+            return
+        raise ValueError('no running allocation to promote')
+    if not candidate['State']['Running']:
+        raise ValueError('candidate must be running before promotion')
+    if active is not None:
+        run('docker', 'rm', '-f', 'sc-' + tool + '-active')
+    run('docker', 'rename', 'sc-' + tool + '-candidate', 'sc-' + tool + '-active')
+    print(json.dumps({'container': 'sc-' + tool + '-active'}))
+
+
 def launch(config, tool, image, candidate=False, env_file=None):
     environment = []
     if env_file is not None:
@@ -274,13 +306,15 @@ def launch(config, tool, image, candidate=False, env_file=None):
         raise ValueError('database CA must be a PEM certificate')
     entries = containers()
     own = [entry for entry in entries if entry['Config']['Labels']['small-cloud.tool'] == tool]
-    candidates = [entry for entry in entries if entry['Config']['Labels']['small-cloud.role'] == 'candidate']
-    active = [entry for entry in entries if entry['Config']['Labels']['small-cloud.role'] == 'active']
+    candidates = [entry for entry in entries if allocation_role(entry) == 'candidate']
+    active = [entry for entry in entries if allocation_role(entry) == 'active']
     if candidate:
-        if candidates or len(own) != 1 or own[0]['Config']['Labels']['small-cloud.role'] != 'active':
+        if candidates or len(own) != 1 or allocation_role(own[0]) != 'active':
             raise ValueError('one update candidate requires exactly one existing active allocation')
-    elif own or len(active) >= 5:
-        raise ValueError('app already allocated or five active allocations reserved')
+    elif own:
+        raise ValueError('app already allocated')
+    elif len(active) >= 5:
+        raise ActiveCapacity('five active allocations reserved')
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,31}', tool):
         raise ValueError('app must be 1–32 lowercase letters, digits or hyphens')
     if not re.fullmatch(r'(?:[^\s]+@)?sha256:[0-9a-f]{64}', image):
@@ -353,6 +387,8 @@ def main():
     forget = commands.add_parser('forget-release', help='release a stored image after a one-hour grace period')
     forget.add_argument('tool', metavar='app')
     forget.add_argument('release')
+    promotion = commands.add_parser('promote', help='promote a candidate after the trusted controller verified readiness')
+    promotion.add_argument('tool', metavar='app')
     start = commands.add_parser('start')
     start.add_argument('tool', metavar='app')
     start.add_argument('image')
@@ -374,6 +410,8 @@ def main():
             prune_images()
         elif args.command == 'retain-image':
             retain_release(args.tool, args.release, args.image)
+        elif args.command == 'promote':
+            promote(args.tool)
         elif args.command == 'forget-release':
             retain_release(args.tool, args.release)
         else:
@@ -381,4 +419,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except ActiveCapacity:
+        print(json.dumps({'error': {'code': 'ACTIVE_CAPACITY'}}))
+        raise SystemExit(5)

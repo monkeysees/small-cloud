@@ -1,0 +1,14 @@
+# Add on_demand_tls { ask http://127.0.0.1:8765/internal/tls } to global options.
+# Point *.small-cloud.monkeysees.one directly at the control host (DNS only).
+# Certificate authorization admits only durable app hostnames; no DNS token is needed here.
+https:// {
+    tls {
+        on_demand
+    }
+    @internal path /internal/*
+    respond @internal "Not found" 404
+    request_body {
+        max_size 16777216
+    }
+    reverse_proxy 127.0.0.1:8765
+}

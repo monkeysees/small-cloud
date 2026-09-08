@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #5 local source validation, durable remote publishing, creator-only authenticated app ingress, bounded build-log/status commands and a reusable HTTP acceptance fixture on the EU hosting foundation.
+
 - Complete #4 acceptance with operator-confirmed macOS creator sign-in, administrator-command denials and unadmitted Google-account rejection.
 
 - Allow CLI authentication from the home directory while rejecting credential storage within Git checkouts, worktrees and Dockerfile source roots independently of the current directory.
