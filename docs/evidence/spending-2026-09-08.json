@@ -1,0 +1,42 @@
+{
+  "estimate": {
+    "estimated_usd": 0.74,
+    "forecast_usd": 107.57,
+    "estimated_eur_net": 0.6377,
+    "forecast_eur_net": 92.5536,
+    "basis": "api-resource-estimate",
+    "as_of": "2026-09-08T10:49:59.124975+00:00",
+    "source": "Hetzner project inventory, current price API, creation times, traffic counters and builder deletion archives",
+    "fx_source": "ECB EUR/USD reference rate 1.1622; https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+    "fx_as_of": "2026-09-07T00:00:00+00:00",
+    "vat_percent": "0.000000",
+    "month": "2026-09",
+    "resource_count": 4,
+    "opening_estimate": {
+      "month": "2026-09",
+      "amount_eur": "0.4678",
+      "source": "docs/evidence/hosting-2026-09-08.json; upper bound of temporary validation estimate, not invoice"
+    },
+    "warnings": [],
+    "assumptions": [
+      "Estimate, not an invoice; current account prices and quoted VAT are used",
+      "Forecast retains currently live resources until month end; future new builds and future traffic excluded",
+      "Resources deleted outside this controller between polls may be missed; deletion detection can overestimate lifetime",
+      "Project-only scope; other projects, support, domains and external services excluded"
+    ]
+  },
+  "monitor": {
+    "time": "2026-09-08T10:51:04.998660+00:00",
+    "alerts": [
+      "forecast_usd reached USD 100 threshold"
+    ],
+    "delivery": "SMTP accepted; recipient receipt unverified"
+  },
+  "verification": {
+    "tests_passed": 75,
+    "pyright_errors": 0,
+    "collector_timer": "active",
+    "collector_service": "success"
+  },
+  "invoice_verified": false
+}

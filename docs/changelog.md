@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Enable Hetzner API-based estimated spending alerts with retained builder costs, monthly caps, traffic, quoted VAT, ECB conversion and explicit coverage/staleness warnings.
+
 - Remove the CX watcher and support explicitly approved permanent CPX32/CPX42 provisioning in Germany; defer cost optimization.
 
 - Add a persistent German CX availability watcher with automatic bounded procurement, durable create reconciliation and operator notifications for #17.

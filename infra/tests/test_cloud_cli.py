@@ -311,6 +311,10 @@ class CloudCliTests(unittest.TestCase):
         self.assertTrue(deleted['addresses_removed'])
         self.assertEqual(self.provider.rows['servers'], [])
         self.assertEqual(self.provider.rows['primary_ips'], [])
+        archive = json.loads((self.state / f"builder-cost-{created['id']}.json").read_text())
+        self.assertEqual(archive['cost_snapshot']['id'], created['id'])
+        self.assertEqual(len(archive['cost_addresses']), 1)
+        self.assertIn('deleted_at', archive)
 
     def test_reconcile_finishes_addresses_after_lost_server_delete_response(self):
         self.assertEqual(self.create()[0], 0)

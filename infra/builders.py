@@ -42,6 +42,10 @@ def write_journal(path: Path, payload: dict) -> None:
 
 
 def finish_journal(path: Path) -> None:
+    pending = json.loads(path.read_text())
+    if 'cost_snapshot' in pending:
+        write_journal(path.parent / f"builder-cost-{pending['server']}.json",
+                      {**pending, 'deleted_at': datetime.now(timezone.utc).isoformat()})
     path.unlink()
     sync_directory(path.parent)
 
@@ -121,7 +125,13 @@ def remove(api: API, server: dict) -> dict:
     addresses = [value["id"] for value in server["public_net"].values() if isinstance(value, dict) and value.get("id")]
     journal = state_directory() / f"deleting-builder-{server['id']}.json"
     # Durable resource IDs survive a controller crash after successful VM deletion.
-    write_journal(journal, {"server": server["id"], "addresses": addresses})
+    snapshot = {key: server[key] for key in ('id', 'created', 'server_type', 'location')}
+    snapshot['server_type'] = {'name': server['server_type']['name']}
+    snapshot['location'] = {'name': server['location']['name']}
+    snapshot.update(outgoing_traffic=server.get('outgoing_traffic'), included_traffic=server.get('included_traffic'))
+    ipv4 = server['public_net'].get('ipv4')
+    write_journal(journal, {"server": server["id"], "addresses": addresses,
+                           'cost_addresses': [ipv4['id']] if ipv4 else [], 'cost_snapshot': snapshot})
     api.wait(api.call("DELETE", f"servers/{server['id']}"))
     remaining = {s["id"] for s in api.items("servers")}
     if server["id"] in remaining:

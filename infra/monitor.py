@@ -38,20 +38,27 @@ def timestamp(value):
 
 def spend_evidence(path, now):
     evidence = json.loads(path.read_text())
-    if evidence['actual_basis'] not in ('provider-metered', 'invoice'):
+    estimated = evidence.get('basis') == 'api-resource-estimate'
+    if not estimated and evidence['actual_basis'] not in ('provider-metered', 'invoice'):
         raise ValueError('actual spend requires provider-metered or invoice evidence, not a price estimate')
     if not evidence['source'] or not evidence['fx_source']:
         raise ValueError('spending and FX sources are required')
-    if not timedelta(0) <= now - timestamp(evidence['as_of']) <= timedelta(hours=48):
-        raise ValueError('spending evidence must be at most 48 hours old')
+    maximum_age = timedelta(minutes=15) if estimated else timedelta(hours=48)
+    if not timedelta(0) <= now - timestamp(evidence['as_of']) <= maximum_age:
+        raise ValueError('spending evidence is stale')
     if not timedelta(0) <= now - timestamp(evidence['fx_as_of']) <= timedelta(days=7):
         raise ValueError('FX evidence must be at most seven days old')
     values = {}
-    for key in ('actual_usd', 'forecast_usd'):
+    for key in ('estimated_usd' if estimated else 'actual_usd', 'forecast_usd'):
         value = evidence[key]
         if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value < 1e9:
             raise ValueError('spending totals must be finite nonnegative USD numbers')
         values[key] = value
+    if estimated:
+        for key in ('warnings', 'assumptions'):
+            if not isinstance(evidence[key], list) or any(not isinstance(x, str) for x in evidence[key]):
+                raise ValueError('Estimate explanations must be string lists')
+        return {**{key: value for key, value in evidence.items() if key not in ('actual_usd', 'actual_basis')}, **values}
     return {**values, **{key: evidence[key] for key in
             ('actual_basis', 'as_of', 'source', 'fx_source', 'fx_as_of')}}
 
@@ -134,7 +141,7 @@ def send_alert(smtp, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, required=True, help='root-owned mode-0600 health/SMTP JSON')
-    parser.add_argument('--spend', type=Path, help='redacted provider/invoice totals and forecast with FX provenance')
+    parser.add_argument('--spend', type=Path, help='redacted observed-cost estimates or verified totals with FX provenance')
     parser.add_argument('--output', type=Path, default=Path('/var/lib/small-cloud-monitor'))
     parser.add_argument('--send', action='store_true', help='send actual alerts using configured SMTP authority')
     parser.add_argument('--delivery-check', action='store_true', help='include an explicit delivery-check alert')
@@ -146,10 +153,13 @@ def main():
     if args.spend:
         try:
             report['spending'] = spend_evidence(args.spend, now)
-            for kind in ('actual_usd', 'forecast_usd'):
+            estimated = report['spending'].get('basis') == 'api-resource-estimate'
+            for kind in ('estimated_usd' if estimated else 'actual_usd', 'forecast_usd'):
                 thresholds = [value for value in (50, 80, 100) if report['spending'][kind] >= value]
                 if thresholds:
                     report['alerts'].append(f'{kind} reached USD {max(thresholds)} threshold')
+            for warning in report['spending'].get('warnings', []):
+                report['alerts'].append('Cost estimate coverage: ' + warning)
         except (OSError, ValueError, KeyError, TypeError):
             report['alerts'].append('Spending evidence missing, invalid or stale; cost monitoring unavailable')
     if args.delivery_check:

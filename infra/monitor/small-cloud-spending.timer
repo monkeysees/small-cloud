@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh Small Cloud spending estimates every five minutes
+
+[Timer]
+OnCalendar=*:0/5
+Persistent=true
+RandomizedDelaySec=10
+Unit=small-cloud-spending.service
+
+[Install]
+WantedBy=timers.target

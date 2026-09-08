@@ -196,14 +196,7 @@ def configure(args: argparse.Namespace) -> dict:
     return {"configured": True, "workload_admission": "closed", "live_acceptance": "not run"}
 
 
-def enable_alerts(args: argparse.Namespace) -> dict:
-    """Install sending authority only after matching live hosts to local inventory."""
-    smtp = json.loads(private_file(args.smtp_config))['smtp']
-    if (smtp.get('security') not in ('starttls', 'tls')
-            or not isinstance(smtp.get('port'), int) or not 1 <= smtp['port'] <= 65535
-            or any(not isinstance(smtp.get(key), str) or not smtp[key]
-                   for key in ('host', 'sender', 'username', 'password'))):
-        raise Failure('Invalid private SMTP configuration')
+def verified_hosts() -> list[Host]:
     installed = json.loads(private_file(state_directory() / 'foundation.json'))['servers']
     current = API('hetzner').items('servers', label_selector=SELECTOR)
     hosts = []
@@ -220,6 +213,18 @@ def enable_alerts(args: argparse.Namespace) -> dict:
                 or server['location']['name'] not in ('nbg1', 'fsn1')):
             raise Failure('Foundation identity mismatch; refusing credential transfer')
         hosts.append(Host(expected['ipv4'], f"small-cloud-{server['id']}"))
+    return hosts
+
+
+def enable_alerts(args: argparse.Namespace) -> dict:
+    """Install sending authority only after matching live hosts to local inventory."""
+    smtp = json.loads(private_file(args.smtp_config))['smtp']
+    if (smtp.get('security') not in ('starttls', 'tls')
+            or not isinstance(smtp.get('port'), int) or not 1 <= smtp['port'] <= 65535
+            or any(not isinstance(smtp.get(key), str) or not smtp[key]
+                   for key in ('host', 'sender', 'username', 'password'))):
+        raise Failure('Invalid private SMTP configuration')
+    hosts = verified_hosts()
     # Transfer over SSH, never through command arguments or persistent local staging.
     with tempfile.TemporaryDirectory(dir=state_directory(), prefix='.smtp-') as directory:
         source = Path(directory) / 'smtp.json'
@@ -271,6 +276,32 @@ def management_addresses() -> list[str]:
         addresses.add(str(ipaddress.IPv4Address(installed[role]["ipv4"])))
         addresses.add(str(ipaddress.IPv4Address(server["public_net"]["ipv4"]["ip"])))
     return sorted(addresses)
+
+
+def enable_spending(args: argparse.Namespace) -> dict:
+    control, runtime = verified_hosts()
+    config = json.loads(args.config.read_text())
+    if set(config) - {'opening_estimate'}:
+        raise Failure('Unexpected spending configuration field')
+    for host in (control, runtime):
+        host.upload(HERE / 'monitor.py', '/opt/small-cloud/infra/monitor.py')
+        host.upload(HERE / 'monitor/small-cloud-monitor.service', '/etc/systemd/system/small-cloud-monitor.service')
+    for name in ('spending.py', 'builders.py', 'cloud.py'):
+        control.upload(HERE / name, '/opt/small-cloud/infra/' + name)
+    control.command('install', '-d', '-m', '0700', '/var/lib/small-cloud')
+    control.command('python3', '-c',
+                    'import os,pathlib,sys; os.umask(0o077); '
+                    'pathlib.Path("/etc/small-cloud/spending-estimator.json").write_text(sys.argv[1])',
+                    json.dumps(config))
+    for name in ('small-cloud-spending.service', 'small-cloud-spending.timer'):
+        control.upload(HERE / 'monitor' / name, '/etc/systemd/system/' + name)
+    control.upload(HERE / 'monitor/05-spending.conf', '/etc/systemd/system/small-cloud-monitor.service.d/05-spending.conf')
+    for host in (control, runtime):
+        host.command('systemctl', 'daemon-reload')
+    control.command('systemctl', 'start', 'small-cloud-spending.service', timeout=200)
+    control.command('systemctl', 'enable', '--now', 'small-cloud-spending.timer')
+    return {'estimate_collection': 'enabled every five minutes on control',
+            'spending_alerts': 'control host only; uses existing SMTP authority', 'basis': 'estimate, not invoice'}
 
 
 def build(args: argparse.Namespace) -> dict:
@@ -339,6 +370,8 @@ def main() -> int:
     config.add_argument("--runsc-sha256", required=True)
     alerts = commands.add_parser('enable-alerts', help='Install protected SMTP settings on verified foundation hosts')
     alerts.add_argument('--smtp-config', type=Path, default=SECRET_DIR / 'monitor-smtp.json')
+    spending = commands.add_parser('enable-spending', help='Install API-based spending estimation on the verified control host')
+    spending.add_argument('--config', type=Path, required=True, help='JSON with optional documented opening_estimate')
     execute = commands.add_parser("build")
     execute.add_argument("--context", type=Path, required=True)
     execute.add_argument("--output", type=Path, required=True)
@@ -346,7 +379,8 @@ def main() -> int:
     execute.add_argument("--job", required=True)
     args = parser.parse_args()
     try:
-        operation = {'configure': configure, 'build': build, 'enable-alerts': enable_alerts}[args.command]
+        operation = {'configure': configure, 'build': build, 'enable-alerts': enable_alerts,
+                     'enable-spending': enable_spending}[args.command]
         print(json.dumps(operation(args), indent=2))
         return 0
     except KeyboardInterrupt:

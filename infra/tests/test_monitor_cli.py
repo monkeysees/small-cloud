@@ -88,6 +88,28 @@ class MonitorCLI(unittest.TestCase):
             self.invoke()
         self.assertFalse(self.output.exists())
 
+    def test_api_estimates_alert_at_each_threshold_without_claiming_actual_cost(self):
+        self.evidence.pop('actual_usd')
+        self.evidence.pop('actual_basis')
+        self.evidence.update(basis='api-resource-estimate', warnings=[], assumptions=['not an invoice'])
+        for value in (49, 50, 80, 100):
+            self.evidence.update(estimated_usd=value, forecast_usd=value)
+            report = self.invoke()
+            self.assertNotIn('actual_usd', report['spending'])
+            self.assertEqual(len(report['alerts']), 0 if value < 50 else 2)
+            if value >= 50:
+                self.assertIn(f'estimated_usd reached USD {value}', report['alerts'][0])
+                self.assertIn(f'forecast_usd reached USD {value}', report['alerts'][1])
+
+    def test_estimate_staleness_and_incomplete_coverage_are_visible(self):
+        self.evidence.update(basis='api-resource-estimate', estimated_usd=0, warnings=['Snapshots excluded'], assumptions=[])
+        report = self.invoke()
+        self.assertIn('Cost estimate coverage: Snapshots excluded', report['alerts'])
+        self.evidence['as_of'] = (datetime.now(timezone.utc) - timedelta(minutes=16)).isoformat()
+        report = self.invoke()
+        self.assertNotIn('spending', report)
+        self.assertIn('cost monitoring unavailable', report['alerts'][0])
+
     def test_symlink_configuration_is_refused(self):
         link = self.root / 'linked.json'
         link.symlink_to(self.config)

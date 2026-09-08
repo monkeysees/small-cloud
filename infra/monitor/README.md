@@ -29,20 +29,32 @@ sudo python3 /opt/small-cloud/infra/monitor.py --config /etc/small-cloud/monitor
 
 The first command collects evidence without sending. The second explicitly requests a real delivery check. An SMTP acceptance response is not recipient receipt: independently confirm the received message before recording delivery as verified. Provider error text is withheld because it can contain credentials. The workstation SMTP path has verified recipient receipt; deployed host delivery remains to be exercised after provisioning.
 
-Spending alerts require a separately computed, redacted evidence file supplied with `--spend`. For example (replace amounts, sources and timestamps with observed evidence):
+The operator approved API-based cost estimates on 2026-09-08; an invoice is no longer a prerequisite for alerting. `spending.py` runs on the trusted control host every five minutes using the existing Hetzner token. The runtime host never receives provider credentials and sends health alerts only. Enable the estimator after configuring the hosts and SMTP:
+
+```bash
+python3 infra/remote.py enable-spending --config /path/to/spending-estimator.json
+```
+
+The configuration may be `{}` or contain a documented historical opening estimate:
 
 ```json
 {
-  "actual_usd": 0,
-  "forecast_usd": 0,
-  "actual_basis": "provider-metered",
-  "as_of": "2026-09-08T12:00:00Z",
-  "source": "REPLACE: provider metering export identifier and billing month",
-  "fx_source": "REPLACE: observed FX source, pair and conversion rate; identity conversion for USD",
-  "fx_as_of": "2026-09-08T12:00:00Z"
+  "opening_estimate": {
+    "month": "2026-09",
+    "amount_eur": "0.4678",
+    "source": "Retained temporary-validation estimate upper bound; not an invoice"
+  }
 }
 ```
 
-`actual_basis` must be `provider-metered` or `invoice`; list-price estimates do not establish actual spend. The producer must include compute, hourly rounding, addresses, storage, traffic and applicable tax, explain forecast assumptions in its source artifact, and convert to USD with the recorded FX rate. This script checks structure/freshness, not the truth of external metering. The data must be at most 48 hours old and FX evidence at most seven days old; unavailable or stale data alerts that cost monitoring is unavailable. Actual and forecast totals independently alert at USD 50, 80 and 100, reporting the highest crossed threshold. Quotes and estimates must remain labeled in separate planning artifacts until actual billing evidence exists.
+The installed configuration is `/etc/small-cloud/spending-estimator.json`. September's opening amount covers the temporary resources already deleted before collection began. It applies only to the named month; it is never carried into later months.
+
+The collector reads all servers and primary IPv4 addresses in the project, including stopped servers and unassigned addresses. It estimates rounded resource-hours with each resource's monthly cap, plus reported outgoing traffic above its included allowance, using the current account price list. Completed builder deletion journals retain the VM's creation timestamp, type, location, final traffic counters and IPv4 IDs so short-lived builds are counted between polls. A lost deletion response retains the journal for reconciliation; completed archives are retained through the following month. The month ledger is under the controller's root-only infrastructure state directory.
+
+Amounts include the API-quoted VAT percentage and use a dated ECB EUR/USD reference rate. Current EUR account prices are required. The output at `/var/lib/small-cloud/spending.json` explicitly uses `basis: api-resource-estimate`, `estimated_usd` and `forecast_usd`; it does not claim actual invoiced charges. Month-to-date estimates and month-end forecasts independently trigger USD 50/80/100 alerts. The forecast retains currently live resources until month end; future unallocated builds and future traffic are excluded. An idle or leaked builder therefore remains in the forecast until deletion is observed.
+
+Unsupported billable resources (volumes, snapshots, backups, floating IPs or load balancers) generate explicit coverage alerts. Estimates may miss resources created and deleted outside this controller between polls; detecting deletion on a later poll can overestimate its lifetime. The provider price API may not reflect grandfathered tariffs, credits or final invoice adjustments. Other projects, support, domains and external services are outside scope. These limits appear in the estimate report rather than being presented as a spending cap.
+
+Evidence older than 15 minutes or FX older than seven days is rejected. Collection gaps over 15 minutes remain flagged for that month even after recovery. On collection failure the previous report remains unchanged and becomes stale; it is never refreshed with invented zero costs. The collector's own systemd deadline is three minutes. Existing verified invoice/provider-metered input remains supported separately under its original 48-hour freshness rule.
 
 The supplied service/timer runs hourly, with at most one message per run containing all current alerts. A persistent problem therefore repeats hourly; there is no suppression or escalation controller. Run independent availability monitoring outside each observed host: a local timer cannot report its own host, network or SMTP outage. Public TLS verifies the configured endpoint and does not prove origin certificate renewal when a proxy terminates TLS. No external availability service or end-to-end notification receipt is claimed here.

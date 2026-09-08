@@ -1,0 +1,17 @@
+[Unit]
+Description=Estimate Small Cloud spending from Hetzner resource metrics
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/small-cloud/infra/spending.py
+TimeoutStartSec=180
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/root/.local/state/small-cloud/infra /var/lib/small-cloud
+StandardOutput=null
+StandardError=journal
