@@ -2,7 +2,7 @@
 
 ### Issue tracker
 
-Use GitHub Issues. Before issue operations, read `docs/agents/issue-tracker.md`.
+Use GitHub Project for work coordination and linked issues for specifications and implementation. Before project or issue operations, read `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

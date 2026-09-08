@@ -1,5 +1,7 @@
 # Triage labels
 
+Labels describe triage and implementation suitability. Project `Readiness` and native issue dependencies determine whether work can start; `ready-for-agent` can still have open blockers.
+
 | Role and label | Meaning |
 | --- | --- |
 | needs-triage | Maintainer evaluation needed |
