@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safe network/resource probe, shared by uploaded Dockerfiles and tool runtimes."""
+"""Safe network/resource probe, shared by uploaded Dockerfiles and app runtimes."""
 
 import argparse
 import errno

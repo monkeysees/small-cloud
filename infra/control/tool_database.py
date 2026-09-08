@@ -95,10 +95,10 @@ ALTER ROLE {name} SET idle_in_transaction_session_timeout = '30s';
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('tool_id', help='Immutable tool ID (ASCII letters, numbers, underscore, dash)')
+    parser.add_argument('tool_id', metavar='app_id', help='Immutable app ID (ASCII letters, numbers, underscore, dash)')
     args = parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', args.tool_id):
-        parser.error('Invalid immutable tool ID')
+        parser.error('Invalid immutable app ID')
     if os.geteuid() != 0:
         parser.error('Root required')
     os.umask(0o077)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run inside a real Dockerfile RUN or tool sandbox, with an operator-controlled canary."""
+"""Run inside a real Dockerfile RUN or app sandbox, with an operator-controlled canary."""
 import argparse
 import json
 import os

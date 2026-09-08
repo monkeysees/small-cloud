@@ -38,15 +38,15 @@ separate externally bounded build exhaustion fixtures for that evidence.
 
 The image includes Debian's signed-repository `postgresql-client` package for
 the runtime-only database check. Supply `DATABASE_URL` through the protected
-runtime env file and set `PROBE_OTHER_DATABASE` to the second tool's database
+runtime env file and set `PROBE_OTHER_DATABASE` to the second app's database
 name. For the control helper, the name is `tool_` followed by the first 24 hex
-characters of SHA-256 of the immutable tool ID (for example `probe-a`/`probe-b`).
+characters of SHA-256 of the immutable app ID (for example `probe-a`/`probe-b`).
 Never supply these credentials to the build. `GET /database` or
 `python3 /probe/network.py database` performs repeatable own-database table
 creation, upsert and readback, then changes only the URL database path to the
-other tool, `postgres` and `template1`. Only an explicit database permission
+other app, `postgres` and `template1`. Only an explicit database permission
 denial passes each cross-database check; timeout/authentication failures do not.
-Run once with each tool's own credentials and reverse the other database name.
+Run once with each app's own credentials and reverse the other database name.
 The URL is split into libpq's `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`,
 `PGPASSWORD`, `PGSSLMODE` and `PGSSLROOTCERT` environment variables; `PGDATABASE`
 alone does not parse a connection URI. Passwords never appear in process arguments or probe results. Output contains

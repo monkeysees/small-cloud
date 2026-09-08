@@ -53,6 +53,8 @@ All three host roles disable automatic Apport/whoopsie/core-dump export and repl
 
 ## Build and runtime operations
 
+Product terminology uses “app.” The deployed operator interfaces retain `tool`/`tool_id` JSON keys, the `small-cloud.tool` Docker label, the `tool_` database/role prefix, and `small-cloud-tool-database` (from `control/tool_database.py`). These identify existing stored records and installed commands; changing them requires a coordinated migration. Historical JSON evidence retains the identifiers and output actually observed. New product APIs use the app terminology in [the contracts](../docs/contracts.md).
+
 See [builder enforcement](builder/README.md), [runtime enforcement](runtime/README.md), and [database handoff](control/README.md). On the German control host, a bounded uploaded tar can be built with:
 
 ```bash
@@ -64,7 +66,7 @@ The coordinator derives control/runtime public management addresses from its pro
 
 Use `builders.py reconcile` to retry expired VM/address cleanup. Deletion journals retain address IDs across an interrupted deletion. Inspect failures promptly: a stopped VM still bills, and a deleted server does not prove every associated resource was removed. Retained teardown results report estimated rounded hours, not verified invoice charges. The cost estimator retains completed builder deletion records and prices observed resources; it does not ingest invoices or implement the monthly product build-allowance ledger.
 
-A successful build returns an image archive in the EU control directory. Follow the [release and service-identity handoff](artifacts/README.md#release-handoff) to publish, import and pin it before staging expires. New uploads, builds and registry publication refuse admission below 10 GiB free on their control storage filesystem; this is a pressure guard, not an atomic disk reservation. Monitor database and cleanup-backlog growth too. The runtime operator harness reserves five distinct tools plus one update candidate belonging to an already active tool. It leaves the old allocation available; promotion/routing and product admission remain #5/#8/#9/#10. Supply only the owning tool's database/environment, keep the environment file in root-only `/run`, and remove it after creation. Current environment-file input is a probe interface and does not implement the full multiline secret UX contract.
+A successful build returns an image archive in the EU control directory. Follow the [release and service-identity handoff](artifacts/README.md#release-handoff) to publish, import and pin it before staging expires. New uploads, builds and registry publication refuse admission below 10 GiB free on their control storage filesystem; this is a pressure guard, not an atomic disk reservation. Monitor database and cleanup-backlog growth too. The runtime operator harness reserves five distinct apps plus one update candidate belonging to an already active app. It leaves the old allocation available; promotion/routing and product admission remain #5/#8/#9/#10. Supply only the owning app's database/environment, keep the environment file in root-only `/run`, and remove it after creation. Current environment-file input is a probe interface and does not implement the full multiline secret UX contract.
 
 ## Verification
 
@@ -93,4 +95,4 @@ Permanent foundation teardown is deliberately an explicit operator procedure, no
 
 ## Acceptance and handoff
 
-The [dated report](../docs/hosting-acceptance-2026-09-08.md) maps #17 criteria to evidence and records the approved budget exception. Later invoices can reconcile estimates; they are not a prerequisite under the operator's decision. Product authentication/lifecycle, per-tool log APIs, build allowance accounting and the final integrated gate remain their existing tickets. Keep the public gateway at 503 until those checks pass.
+The [dated report](../docs/hosting-acceptance-2026-09-08.md) maps #17 criteria to evidence and records the approved budget exception. Later invoices can reconcile estimates; they are not a prerequisite under the operator's decision. Product authentication/lifecycle, per-app log APIs, build allowance accounting and the final integrated gate remain their existing tickets. Keep the public gateway at 503 until those checks pass.

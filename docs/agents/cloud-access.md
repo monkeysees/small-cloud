@@ -35,7 +35,7 @@ Hetzner needs a project-bound Read & Write token. Cloudflare needs DNS Edit and 
 
 1. Authenticate to Hetzner and inspect existing project resources before creating anything. Read server types, permitted locations and current prices. Apply the approved CX23 → CPX22 builder policy across EU locations from the hosting notes; recheck availability at creation time. Keep the permanent control/runtime pair in Germany.
 2. Verify the Cloudflare token, look up `zones?name=monkeysees.one`, and inspect the returned zone permissions and relevant DNS records. Discover the zone ID from this lookup. Preserve unrelated records, including the existing proxied `*.monkeysees.one` wildcard; use explicit platform records as needed.
-3. Generate/register a dedicated SSH key during bootstrap if none exists. Confirm provisioning permissions, account quotas, SSH connectivity, DNS/TLS and renewal through actual implementation checks. Keep platform API credentials outside untrusted builds and tool runtimes.
+3. Generate/register a dedicated SSH key during bootstrap if none exists. Confirm provisioning permissions, account quotas, SSH connectivity, DNS/TLS and renewal through actual implementation checks. Keep platform API credentials outside untrusted builds and app runtimes.
 4. Configure alerts to the recipient above and verify delivery as part of #17. An email address alone supplies no SMTP/API sending authority; establish an actual delivery mechanism during implementation and report any required access precisely.
 
 ## Verified state — 2026-09-08

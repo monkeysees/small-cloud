@@ -107,7 +107,7 @@ def publish(root, rows, args):
         live = [row for _, row in rows if row['state'] != 'retired']
         if (len(rows) >= 256 or len({row['tool'] for row in live} | {tool}) > 30
                 or sum(row['tool'] == tool for row in live) >= 2):
-            raise ValueError('retain at most thirty tools and current plus candidate/previous release')
+            raise ValueError('retain at most thirty apps and current plus candidate/previous release')
     require_space(root)
     row = {'tool': tool, 'release': release, 'archive_sha256': digest,
            'state': 'pending', 'changed_at': time.time()}
@@ -130,9 +130,9 @@ def main():
     parser.add_argument('--root', type=Path, default=Path('/srv/small-cloud/releases'))
     commands = parser.add_subparsers(dest='command', required=True)
     new = commands.add_parser('publish')
-    new.add_argument('tool'); new.add_argument('release'); new.add_argument('archive', type=Path)
+    new.add_argument('tool', metavar='app'); new.add_argument('release'); new.add_argument('archive', type=Path)
     retire = commands.add_parser('retire')
-    retire.add_argument('tool'); retire.add_argument('release')
+    retire.add_argument('tool', metavar='app'); retire.add_argument('release')
     commands.add_parser('list'); commands.add_parser('prune')
     args = parser.parse_args()
     if os.geteuid() != 0:

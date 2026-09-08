@@ -107,7 +107,7 @@ def release_records():
 def retain_release(tool, release, image=None):
     if (not re.fullmatch(r'[a-z0-9-]{1,32}', tool)
             or not re.fullmatch(r'[a-z0-9-]{1,64}', release)):
-        raise ValueError('invalid tool or release identifier')
+        raise ValueError('invalid app or release identifier')
     records = release_records()
     key = tool + '/' + release
     if image is not None:
@@ -117,7 +117,7 @@ def retain_release(tool, release, image=None):
             raise ValueError('release identity is immutable')
         if key not in records and (len(records) >= 60 or sum(k.startswith(tool + '/') for k in records) >= 2
                                    or len({k.split('/')[0] for k in records} | {tool}) > 30):
-            raise ValueError('retain at most thirty tools and two releases per tool')
+            raise ValueError('retain at most thirty apps and two releases per app')
         if json.loads(run('docker', 'image', 'inspect', image))[0]['Id'] != image:
             raise ValueError('loaded image identity mismatch')
         track_image(image)
@@ -280,9 +280,9 @@ def launch(config, tool, image, candidate=False, env_file=None):
         if candidates or len(own) != 1 or own[0]['Config']['Labels']['small-cloud.role'] != 'active':
             raise ValueError('one update candidate requires exactly one existing active allocation')
     elif own or len(active) >= 5:
-        raise ValueError('tool already allocated or five active allocations reserved')
+        raise ValueError('app already allocated or five active allocations reserved')
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,31}', tool):
-        raise ValueError('tool must be 1–32 lowercase letters, digits or hyphens')
+        raise ValueError('app must be 1–32 lowercase letters, digits or hyphens')
     if not re.fullmatch(r'(?:[^\s]+@)?sha256:[0-9a-f]{64}', image):
         raise ValueError('image must be pinned by sha256 digest and already loaded')
     info = json.loads(run('docker', 'image', 'inspect', image))[0]
@@ -347,17 +347,17 @@ def main():
     commands.add_parser('apply-policy')
     commands.add_parser('prune-images', help='remove unreferenced tracked images after a one-hour grace period, without force')
     retain = commands.add_parser('retain-image', help='protect an imported image for a stored release')
-    retain.add_argument('tool')
+    retain.add_argument('tool', metavar='app')
     retain.add_argument('release')
     retain.add_argument('image')
     forget = commands.add_parser('forget-release', help='release a stored image after a one-hour grace period')
-    forget.add_argument('tool')
+    forget.add_argument('tool', metavar='app')
     forget.add_argument('release')
     start = commands.add_parser('start')
-    start.add_argument('tool')
+    start.add_argument('tool', metavar='app')
     start.add_argument('image')
     start.add_argument('--candidate', action='store_true')
-    start.add_argument('--env-file', type=Path, help='root-owned mode-0600 DATABASE_URL/tool environment')
+    start.add_argument('--env-file', type=Path, help='root-owned mode-0600 DATABASE_URL/app environment')
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     ipaddress.IPv4Address(config['runtime_private_ip'])
