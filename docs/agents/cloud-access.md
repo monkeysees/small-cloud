@@ -21,6 +21,8 @@ Read `docs/agents/issue-tracker.md`, then the current issue #17 body, comments a
 | --- | --- |
 | Hetzner | `/home/john/.config/small-cloud/secrets/hetzner-token` |
 | Cloudflare | `/home/john/.config/small-cloud/secrets/cloudflare-token` |
+| Resend administration | `/home/john/.config/small-cloud/secrets/resend-token` |
+| Resend sending only | `/home/john/.config/small-cloud/secrets/resend-smtp-token` |
 
 Each file contains only its token. These files are local and outside Git; another machine will need its own credential setup. Verify directory ownership/mode `0700` and file ownership/mode `0600` without printing contents. Read tokens directly inside the API client process and use bearer authorization headers. Keep values out of command arguments, shell tracing, tool output, logs, source and provisioning state. Report only redacted authentication outcomes and resource metadata needed for the task. If a file is missing or rejected, identify that exact credential rather than requesting both again.
 
@@ -37,6 +39,8 @@ Hetzner needs a project-bound Read & Write token. Cloudflare needs DNS Edit and 
 4. Configure alerts to the recipient above and verify delivery as part of #17. An email address alone supplies no SMTP/API sending authority; establish an actual delivery mechanism during implementation and report any required access precisely.
 
 ## Verified state — 2026-09-08
+
+Resend sending domain `small-cloud.monkeysees.one` is verified in `eu-west-1`; its DKIM and return-path SPF/MX records are installed in Cloudflare. Receiving, open tracking and click tracking are disabled; delivery TLS is enforced. Private SMTP settings are saved outside Git in `/home/john/.config/small-cloud/secrets/monitor-smtp.json` (mode `0600`): `smtp.resend.com:2587`, STARTTLS, username `resend`, sending-only key, sender `alerts@small-cloud.monkeysees.one`. The existing monitor sender submitted one workstation test to the operator recipient; Resend reports `delivered` for message `83b1c9ad-dc98-4694-b09a-bc68144a1e38`. Human receipt confirmation is pending. This resolves sender authority; host installation and end-to-end operational/spending alerts remain pending because no foundation hosts are running. The earlier unavailable-sender status below is superseded by this check.
 
 Both token files were readable with the expected permissions. Hetzner authenticated successfully; inspected server, network, volume, firewall and SSH-key collections were empty. The operator identified the token's project as `small-cloud`; authentication alone did not independently establish its display name. Cloudflare reported an active token, an active zone, DNS Edit and Zone Read; public nameservers matched Cloudflare. The chosen platform hostname had no explicit record and resolved through the existing wildcard.
 
