@@ -2,11 +2,13 @@
 
 ## Unreleased
 
+- Complete #4 acceptance with operator-confirmed macOS creator sign-in, administrator-command denials and unadmitted Google-account rejection.
+
 - Allow CLI authentication from the home directory while rejecting credential storage within Git checkouts, worktrees and Dockerfile source roots independently of the current directory.
 - Verify live Google administrator sign-in, separate creator privileges, retained CLI authentication and immediate credential revocation; leave the workstation signed in with a tested replacement credential.
 - Fix browser CLI approval by preserving the form's Origin header with a strict-origin referrer policy, while retaining exact-origin and CSRF checks.
 - Deploy Google identity routes on the control host, bootstrap the confirmed administrator, install the local CLI and redact OAuth callback details from proxy-error logs; keep app publishing routes closed.
-- Add #4 Google browser approval, retained revocable CLI credentials, explicit administrator admission and separate five-creator grants, with CLI/HTTPS acceptance checks and an identity-service runbook; live Google verification remains pending.
+- Add #4 Google browser approval, retained revocable CLI credentials, explicit administrator admission and separate five-creator grants, with CLI/HTTPS acceptance checks and an identity-service runbook; live Google verification is recorded in the identity evidence.
 - Use “app” for creator-published software across the glossary, specifications, operator guidance and GitHub tracker; retain disposable-data limits and deployed infrastructure identifiers.
 - Complete #17 infrastructure acceptance with live concurrency/isolation/renewal evidence, release-aware retention, crash-export hardening and independent host-loss alerts; retain the closed creator gateway and document approved costs.
 - Enable Hetzner API-based estimated spending alerts with retained builder costs, monthly caps, traffic, quoted VAT, ECB conversion and explicit coverage/staleness warnings.

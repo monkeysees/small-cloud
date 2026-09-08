@@ -155,11 +155,11 @@
     "real_browser_retry": "passed; operator saw approval and CLI received credential"
   },
   "local_validation": {
-    "identity_tests": 12,
+    "identity_tests": 14,
     "infrastructure_tests": 80,
     "hosting_fixture_tests": 4,
     "pyright_errors": 0,
-    "independent_review": "no outstanding implementation findings; live acceptance pending"
+    "independent_review": "No outstanding implementation findings; subsequent operator confirmation resolves the alternate-identity live acceptance gap."
   },
   "live_administrator_actions": {
     "existing_member_admission": "successful no-op",
@@ -177,5 +177,16 @@
     },
     "replacement_remains_authorized": true
   },
-  "remaining_acceptance": "Other real Google identities have not been exercised in the deployed environment; the local signed-provider suite covers the full role/identity matrix and five-creator boundary."
+  "remaining_acceptance": "None for #4. Publishing and app authorization remain separate implementation tickets.",
+  "operator_reported_alternate_identity_checks": {
+    "source": "Operator confirmation in conversation; executed on a separate macOS machine, not observed directly by the agent",
+    "retained_cli_roles": [
+      "member",
+      "creator"
+    ],
+    "creator_admission_command": "FORBIDDEN, as expected",
+    "creator_grant_command": "FORBIDDEN, as expected",
+    "unadmitted_google_sign_in": "Denied as expected",
+    "member_only_and_five_creator_boundary": "Covered by local CLI/HTTPS acceptance suite; no separate live member-only or quota probe claimed"
+  }
 }
