@@ -72,4 +72,4 @@ Verify creator-only access, cross-tool isolation, failed-update behavior, and da
 
 ## Outstanding design decisions
 
-Deferred: hosting provider, orchestration, build execution, and database technology. These choices must satisfy the accepted runtime, isolation, EU-residency, capacity, and budget requirements before infrastructure implementation. Per-tool resource limits and remaining implementation contracts are also unresolved. Product and CLI design can proceed without selecting a provider.
+Deferred: hosting provider, orchestration, build execution, and database technology. These choices must satisfy the accepted runtime, isolation, EU-residency, capacity, and budget requirements before infrastructure implementation. Per-tool resource limits remain unresolved. [CLI and platform contracts](contracts.md) define the CLI, identity, accounting, diagnostics and lifecycle interfaces for implementation. Product and CLI design can proceed without selecting a provider.
