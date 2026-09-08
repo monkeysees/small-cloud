@@ -14,6 +14,7 @@ Read `docs/agents/issue-tracker.md`, then the current issue #17 body, comments a
 | Platform domain | `small-cloud.monkeysees.one` |
 | Cloudflare zone | `monkeysees.one` |
 | Alert recipient | `monkeyseesone@gmail.com` (operator-confirmed; use instead of the checkout's placeholder Git email) |
+| Sole workspace administrator | `monkeyseesone@gmail.com` (operator-confirmed; same as alerts) |
 
 ## Credentials on this workstation
 
@@ -23,8 +24,9 @@ Read `docs/agents/issue-tracker.md`, then the current issue #17 body, comments a
 | Cloudflare | `/home/john/.config/small-cloud/secrets/cloudflare-token` |
 | Resend administration | `/home/john/.config/small-cloud/secrets/resend-token` |
 | Resend sending only | `/home/john/.config/small-cloud/secrets/resend-smtp-token` |
+| Google OAuth web client JSON | `/home/john/.config/small-cloud/secrets/google-oauth-web.json` |
 
-Each file contains only its token. These files are local and outside Git; another machine will need its own credential setup. Verify directory ownership/mode `0700` and file ownership/mode `0600` without printing contents. Read tokens directly inside the API client process and use bearer authorization headers. Keep values out of command arguments, shell tracing, tool output, logs, source and provisioning state. Report only redacted authentication outcomes and resource metadata needed for the task. If a file is missing or rejected, identify that exact credential rather than requesting both again.
+Provider token files contain only their token; the Google file contains the downloaded web-client JSON. These files are local and outside Git; another machine will need its own credential setup. Verify directory ownership/mode `0700` and file ownership/mode `0600` without printing contents. Read tokens directly inside the API client process and use bearer authorization headers. Keep values out of command arguments, shell tracing, tool output, logs, source and provisioning state. Report only redacted authentication outcomes and resource metadata needed for the task. If a file is missing or rejected, identify that exact credential rather than requesting both again.
 
 Hetzner needs a project-bound Read & Write token. Cloudflare needs DNS Edit and Zone Read restricted to `monkeysees.one`. Use the provider APIs from this workspace; browser access is not a prerequisite for provisioning/DNS. Consult current official API documentation before implementing calls:
 

@@ -1,5 +1,6 @@
 # Merge inside the existing small-cloud.monkeysees.one site; keep its TLS settings.
 # Do not enable access logging: OAuth URLs contain confidential, single-use codes.
+# Also install Caddyfile.global.fragment to redact request details from proxy errors.
 @identity path /auth/* /api/auth/* /api/admin/member/add /api/admin/creator/grant
 handle @identity {
     request_body {

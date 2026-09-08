@@ -1,0 +1,11 @@
+# Merge into the existing global options block. Keep access logging disabled.
+# Proxy errors can otherwise record OAuth callback URLs even without access logs.
+log {
+    format filter {
+        wrap json
+        fields {
+            request>uri delete
+            request>headers delete
+        }
+    }
+}

@@ -1,0 +1,153 @@
+{
+  "checked_at": "2026-09-08T22:10:17.178348+00:00",
+  "origin": "https://small-cloud.monkeysees.one",
+  "control_host_id": 165120313,
+  "administrator_email": "monkeyseesone@gmail.com",
+  "https_checks": {
+    "app_root_closed": {
+      "status": 503,
+      "no_store": true
+    },
+    "unauthenticated_status_denied": {
+      "status": 401,
+      "no_store": true
+    },
+    "unauthenticated_admission_denied": {
+      "status": 401,
+      "no_store": true
+    },
+    "invalid_callback_denied": {
+      "status": 401,
+      "no_store": true
+    },
+    "forged_browser_approval_denied": {
+      "status": 403,
+      "no_store": true
+    },
+    "health_not_public": {
+      "status": 503,
+      "no_store": true
+    }
+  },
+  "deployment": {
+    "files": [
+      {
+        "path": "/etc/small-cloud/identity",
+        "mode": "0o700",
+        "owner": "small-cloud-identity"
+      },
+      {
+        "path": "/etc/small-cloud/identity/server.json",
+        "mode": "0o600",
+        "owner": "small-cloud-identity"
+      },
+      {
+        "path": "/srv/small-cloud/identity",
+        "mode": "0o700",
+        "owner": "small-cloud-identity"
+      },
+      {
+        "path": "/srv/small-cloud/identity/identity.sqlite3",
+        "mode": "0o600",
+        "owner": "small-cloud-identity"
+      }
+    ],
+    "services": [
+      "active",
+      "active"
+    ],
+    "listeners": [
+      "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess",
+      "LISTEN 0      5          127.0.0.1:8765      0.0.0.0:*          "
+    ],
+    "packages": [
+      {
+        "name": "cffi",
+        "version": "2.1.1"
+      },
+      {
+        "name": "cryptography",
+        "version": "50.0.1"
+      },
+      {
+        "name": "jaraco.classes",
+        "version": "3.4.0"
+      },
+      {
+        "name": "jaraco.context",
+        "version": "6.1.2"
+      },
+      {
+        "name": "jaraco.functools",
+        "version": "4.6.0"
+      },
+      {
+        "name": "jeepney",
+        "version": "0.9.0"
+      },
+      {
+        "name": "keyring",
+        "version": "25.7.0"
+      },
+      {
+        "name": "more-itertools",
+        "version": "11.1.0"
+      },
+      {
+        "name": "pip",
+        "version": "24.0"
+      },
+      {
+        "name": "pycparser",
+        "version": "3.0"
+      },
+      {
+        "name": "PyJWT",
+        "version": "2.12.1"
+      },
+      {
+        "name": "SecretStorage",
+        "version": "3.5.0"
+      },
+      {
+        "name": "small-cloud",
+        "version": "0.1.0"
+      }
+    ]
+  },
+  "proxy_error_redaction": {
+    "induced_status": 502,
+    "error_recorded": true,
+    "callback_code_leaked": false,
+    "authorization_leaked": false,
+    "cookie_leaked": false
+  },
+  "google_browser_login": "pending administrator approval",
+  "scope": "Identity routes deployed; app publishing remains closed.",
+  "application_base_commit": "ddfd0875cce3052313329952a84b99d2bc125d1a",
+  "installed_source_sha256": {
+    "store.py": "17192938540fbf83e7d57b53b6a9736f5fcbd419d2839a2a3a54bd0386bd60b5",
+    "server.py": "ff19d59ff1a8600b3c6d838b89c896ee1a25bc9a29ad57a475abcb41f5b6e751",
+    "google.py": "23acbf476c0667f38665d373b1930cc0398f2fdc32ef2bc128668b3533b26bbf",
+    "credentials.py": "7cf181b2d2bc528e6471a584259a05b87dd6472681598315ca71b9bfce26b544",
+    "http.py": "4969a1f7a75814e8c56deb2dd231d0e543809d9cd970618dc1e294cbc555363a",
+    "__init__.py": "84e511e221670c8823ea36ad5a8ea14f87ca06a2fd25354d6b7f0744468f30ba",
+    "common.py": "de09d2f433127944dccc2df18aa79cbff7e85059f9bd80d0bbc884973588bea8",
+    "cli.py": "2bae53c444f700dcc8ace50a0d08ca4b9f3e6c60f589f958950a3c304d8f517c"
+  },
+  "source_verified_at": "2026-09-08T22:17:18.186760+00:00",
+  "browser_approval_fix": {
+    "initial_error": "Origin rejected on form POST under no-referrer policy",
+    "policy": "strict-origin",
+    "regression_test": "passed",
+    "null_and_foreign_origins": "still rejected",
+    "real_browser_retry": "pending"
+  },
+  "local_validation": {
+    "identity_tests": 12,
+    "infrastructure_tests": 80,
+    "hosting_fixture_tests": 4,
+    "pyright_errors": 0,
+    "independent_review": "no outstanding implementation findings; live acceptance pending"
+  }
+}

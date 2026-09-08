@@ -161,11 +161,13 @@ class IdentityAcceptance(unittest.TestCase):
         import re
         with self.browser.open(url, timeout=5) as response:
             html = response.read().decode()
+            # Fetch's Origin-header algorithm suppresses Origin on no-referrer form POSTs.
+            form_origin = 'null' if response.headers.get('Referrer-Policy') == 'no-referrer' else self.endpoint
         csrf = re.search(r'name="csrf" value="([^"]+)"', html).group(1)
         code = re.search(r'name="code" value="([^"]+)"', html).group(1)
         request = urllib.request.Request(self.endpoint + '/auth/approve',
             urllib.parse.urlencode({'csrf': csrf, 'code': code}).encode(),
-            headers={'Origin': self.endpoint, 'Content-Type': 'application/x-www-form-urlencoded'})
+            headers={'Origin': form_origin, 'Content-Type': 'application/x-www-form-urlencoded'})
         with self.browser.open(request, timeout=5) as response:
             self.assertEqual(response.status, 200)
 
@@ -298,7 +300,15 @@ class IdentityAcceptance(unittest.TestCase):
         _, raw = self.http('/api/auth/login', {'poll_secret': secret})
         login = json.loads(raw)['data']
         with self.browser.open(login['verification_url']) as response:
-            self.assertIn('Approve CLI sign-in', response.read().decode())
+            approval_html = response.read().decode()
+            self.assertIn('Approve CLI sign-in', approval_html)
+            self.assertEqual(response.headers['Referrer-Policy'], 'strict-origin')
+        import re
+        csrf = re.search(r'name="csrf" value="([^"]+)"', approval_html).group(1)
+        for untrusted_origin in ('null', 'https://untrusted.example'):
+            status, _ = self.http('/auth/approve', {'code': login['user_code'], 'csrf': csrf},
+                                  browser=self.browser, headers={'Origin': untrusted_origin})
+            self.assertEqual(status, 403)
         status, _ = self.http('/auth/approve', {'code': login['user_code'], 'csrf': 'forged'},
                               browser=self.browser, headers={'Origin': self.endpoint})
         self.assertEqual(status, 403)
