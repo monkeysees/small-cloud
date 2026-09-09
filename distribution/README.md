@@ -49,7 +49,7 @@ Use the repository's Python/pip tooling, in a build environment outside the chec
 
 ```sh
 python3 -m venv /tmp/small-cloud-build
-/tmp/small-cloud-build/bin/python -m pip install . -r distribution/requirements.txt
+OPENSSL_STATIC=1 /tmp/small-cloud-build/bin/python -m pip install --no-cache-dir . -r distribution/requirements.txt
 /tmp/small-cloud-build/bin/python distribution/build.py
 /tmp/small-cloud-build/bin/python distribution/build.py --fixture
 /tmp/small-cloud-build/bin/python distribution/verify.py build/release/small-cloud-linux-x86_64 build/release/small-cloud-fixture
@@ -60,6 +60,8 @@ Substitute the native target filename on other systems. Linux builders need a sh
 The [native workflow](../.github/workflows/cli-release.yml) uses four GitHub-hosted runners. It installs each production binary outside the checkout, checks offline help/catalog/guides, rejects endpoint flags, ignores environment/config endpoint overrides, and verifies installer checksum failure preserves the previous binary. It also makes a hosted authentication-status request using an invalid synthetic credential and unavailable system CA paths: the expected authentication refusal proves bundled public TLS trust without a real credential or hosted mutation. A separate frozen fixture executable exercises actual browser-protocol login, retained credentials, exact-origin refusal and logout against the existing signed-provider HTTPS harness. Both file fallback and native OS keyring roundtrips must pass per target. Installer tests supply local build bytes at the HTTPS-download boundary; published installation needs an additional real download check. The harness uses Python to operate the test service; the executable contains its own runtime.
 
 CA dependency review on 2026-09-09: [certifi 2026.7.22](https://pypi.org/project/certifi/) is the established Requests ecosystem's Mozilla CA bundle, maintained at [certifi/python-certifi](https://github.com/certifi/python-certifi) (latest push August 25). Pinning it makes bundled trust reviewable; refresh it deliberately with CLI releases.
+
+Release builds also pin the existing transitive cryptography dependency to 50.0.1. Where upstream provides a wheel, its OpenSSL is already static. Intel macOS currently builds it from source and needs Rust plus Homebrew OpenSSL headers/static libraries; `OPENSSL_STATIC=1` prevents a collision between Homebrew's OpenSSL and frozen Python's OpenSSL. See [upstream build instructions](https://cryptography.io/en/latest/installation/). These are maintainer build prerequisites only. Native macOS acceptance creates an unlocked disposable Keychain in the runner; its test credentials are never exported.
 
 Production calls `identity.cli.main()` with its fixed default. Source tests call the same function through `identity/tests/cli.py`, supplying the isolated origin as an internal Python argument. The frozen fixture uses that test launcher; it is never uploaded by the release workflow. Production has no environment/flag/config path to that argument, and `identity.tests` is excluded from wheels and frozen imports.
 

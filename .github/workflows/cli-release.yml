@@ -31,7 +31,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install build dependencies
-        run: python -m pip install . -r distribution/requirements.txt
+        env:
+          OPENSSL_STATIC: '1'
+        run: python -m pip install --no-cache-dir . -r distribution/requirements.txt
       - name: Build production and internal test executables
         run: |
           python distribution/build.py
@@ -54,7 +56,14 @@ jobs:
         if: runner.os == 'macOS'
         env:
           SMALL_CLOUD_TEST_NATIVE_KEYRING: '1'
-        run: python distribution/verify.py build/release/small-cloud-${{ matrix.target }} build/release/small-cloud-fixture > build/native-acceptance.json
+        run: |
+          keychain="$RUNNER_TEMP/small-cloud-acceptance.keychain-db"
+          security create-keychain -p acceptance-only "$keychain"
+          security list-keychains -d user -s "$keychain"
+          security default-keychain -d user -s "$keychain"
+          security unlock-keychain -p acceptance-only "$keychain"
+          security set-keychain-settings -lut 3600 "$keychain"
+          python distribution/verify.py build/release/small-cloud-${{ matrix.target }} build/release/small-cloud-fixture > build/native-acceptance.json
       - name: Upload only production artifacts and evidence
         uses: actions/upload-artifact@v7.0.1
         with:
