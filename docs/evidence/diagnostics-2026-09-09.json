@@ -1,0 +1,288 @@
+{
+  "issue": "https://github.com/monkeysees/small-cloud/issues/11",
+  "date": "2026-09-09",
+  "deployed_package_commit": "a95e068",
+  "deployed_builder_script_commit": "d655296",
+  "wheel_sha256": "ef68624b8391c8b801504b9dc59a85c179872103221572602bd84310e2e9d5f8",
+  "app": "diagnostics-acceptance-11",
+  "app_id": "a-a77c2dbda3aa42ec8d20b656",
+  "first_deployment": "d-ec9dafee144d48328553f859",
+  "second_deployment": "d-2cd1ff01a10a489ba41a7f30",
+  "runtime_volume": {
+    "truncated": true,
+    "dropped_bytes": 3776062,
+    "oldest_available_at": "2026-09-09T03:59:54.262002Z",
+    "collection_interrupted": false,
+    "first_page_bytes": 1032798,
+    "entries": 3737,
+    "pages": 51,
+    "redaction_seen": true,
+    "final_marker_seen": true,
+    "oldest_marker_seen": false
+  },
+  "build_volume_after_upstream_limit_fix": {
+    "truncated": true,
+    "dropped_bytes": 857823,
+    "oldest_available_at": "2026-09-09T04:05:31.524790Z",
+    "collection_interrupted": false,
+    "entries": 770,
+    "pages": 11,
+    "largest_page_bytes": 1033162,
+    "redaction_seen": true,
+    "final_marker_seen": true,
+    "oldest_marker_seen": false
+  },
+  "initial_build_observation": {
+    "result": {
+      "truncated": false,
+      "dropped_bytes": 0,
+      "oldest_available_at": "2026-09-09T03:59:14.114989Z",
+      "collection_interrupted": false,
+      "first_page_bytes": 221085,
+      "entries": 93,
+      "pages": 1,
+      "redaction_seen": true,
+      "final_marker_seen": true,
+      "oldest_marker_seen": true
+    },
+    "limitation": "BuildKit clipped output before platform ingestion; disabled upstream size/rate limits and repeated the real build."
+  },
+  "storage": {
+    "database_url_absent_from_persistent_diagnostics": true,
+    "database_password_absent_from_persistent_diagnostics": true,
+    "synthetic_canary_absent_from_persistent_diagnostics": true,
+    "staging_files": [
+      ".small-cloud-build.json",
+      "accounting.json",
+      "admission.log",
+      "builder.json",
+      "image.tar",
+      "resources.json",
+      "result.json",
+      "teardown.json"
+    ],
+    "builder_teardown": {
+      "id": 165251890,
+      "deleted": true,
+      "addresses_removed": true,
+      "estimated_billed_hours": 1,
+      "invoice_verified": false
+    },
+    "runtime_logging": {
+      "Type": "syslog",
+      "Config": {
+        "cache-disabled": "true",
+        "mode": "blocking",
+        "syslog-address": "unix:///run/small-cloud-diagnostics.sock",
+        "syslog-format": "rfc5424micro",
+        "tag": "d-2cd1ff01a10a489ba41a7f30"
+      }
+    }
+  },
+  "collector_restart": {
+    "private_runtime_http_status": 200,
+    "since": "2026-09-09T04:07:30.413477Z",
+    "collector_gap_visible": true,
+    "runtime_collection_resumed": true,
+    "database_and_canary_redaction_after_restart": true,
+    "unauthenticated_logs": 401,
+    "unauthenticated_private_app_api": 401,
+    "unauthenticated_private_app_browser": 302
+  },
+  "existing_apps_upgraded": [
+    {
+      "app": "publishing-probe",
+      "app_id": "a-9ce8504acd8242b98d681bc3",
+      "deployment_preserved": "d-cd728bf566aa4215b126f37b",
+      "sharing_scope_preserved": "creator-only",
+      "database_credential_preserved": true,
+      "database_content_preserved": true,
+      "readiness_before_and_after_promotion": true,
+      "logging": {
+        "Type": "syslog",
+        "Config": {
+          "cache-disabled": "true",
+          "mode": "blocking",
+          "syslog-address": "unix:///run/small-cloud-diagnostics.sock",
+          "syslog-format": "rfc5424micro",
+          "tag": "d-cd728bf566aa4215b126f37b"
+        }
+      }
+    },
+    {
+      "app": "sharing-acceptance-7",
+      "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+      "deployment_preserved": "d-3ba4a171d346430cad297322",
+      "sharing_scope_preserved": "creator-only",
+      "database_credential_preserved": true,
+      "database_content_preserved": true,
+      "readiness_before_and_after_promotion": true,
+      "logging": {
+        "Type": "syslog",
+        "Config": {
+          "cache-disabled": "true",
+          "mode": "blocking",
+          "syslog-address": "unix:///run/small-cloud-diagnostics.sock",
+          "syslog-format": "rfc5424micro",
+          "tag": "d-3ba4a171d346430cad297322"
+        }
+      }
+    }
+  ],
+  "cleanup": {
+    "app_id": "a-a77c2dbda3aa42ec8d20b656",
+    "builders": [
+      {
+        "operation": "d-ec9dafee144d48328553f859",
+        "teardown": {
+          "id": 165251890,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 13.093547042999987
+        },
+        "raw_log_files_absent": true
+      },
+      {
+        "operation": "d-2cd1ff01a10a489ba41a7f30",
+        "teardown": {
+          "id": 165252523,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 12.489433753
+        },
+        "raw_log_files_absent": true
+      }
+    ],
+    "charged_seconds_preserved": 27,
+    "remaining_apps": [
+      {
+        "id": "a-9ce8504acd8242b98d681bc3",
+        "name": "publishing-probe",
+        "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+        "sharing_scope": "creator-only"
+      },
+      {
+        "id": "a-ff8207a35ca74d7b9bbe3a33",
+        "name": "sharing-acceptance-7",
+        "active_deployment_id": "d-3ba4a171d346430cad297322",
+        "sharing_scope": "creator-only"
+      }
+    ],
+    "legacy_raw_files_removed": 10,
+    "temporary_runtime_database_credentials_source_logs_removed": true,
+    "artifacts_retired_with_existing_janitor_grace": true,
+    "rollback_copy_removed": true
+  },
+  "final": {
+    "services": [
+      "active",
+      "active",
+      "active"
+    ],
+    "servers": [
+      {
+        "id": 165120313,
+        "name": "small-cloud-control",
+        "location": "nbg1"
+      },
+      {
+        "id": 165120370,
+        "name": "small-cloud-runtime",
+        "location": "nbg1"
+      }
+    ],
+    "usage": {
+      "creators": {
+        "used": 2,
+        "limit": 5
+      },
+      "deployed_apps": {
+        "used": 2,
+        "limit": 30
+      },
+      "active_apps": {
+        "used": 2,
+        "limit": 5
+      },
+      "build": {
+        "period_start": "2026-09-01T00:00:00Z",
+        "period_end": "2026-10-01T00:00:00Z",
+        "limit_seconds": 60000,
+        "charged_seconds": 642,
+        "reserved_seconds": 0,
+        "available_seconds": 59358
+      }
+    },
+    "apps": {
+      "publishing-probe": {
+        "app": "publishing-probe",
+        "app_id": "a-9ce8504acd8242b98d681bc3",
+        "description": "Disposable HTTP publishing acceptance probe",
+        "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+        "latest_operation": {
+          "id": "d-cd728bf566aa4215b126f37b",
+          "kind": "deploy",
+          "app": "publishing-probe",
+          "operation_id": "d-cd728bf566aa4215b126f37b",
+          "deployment_id": "d-cd728bf566aa4215b126f37b",
+          "state": "succeeded",
+          "request_id": "2de4a7d1-6506-4639-96b5-6911a6068da6",
+          "created_at": "2026-09-08T23:58:50.964936Z",
+          "updated_at": "2026-09-09T00:01:16.726066Z",
+          "completed_at": "2026-09-09T00:01:16.726066Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "sharing-acceptance-7": {
+        "app": "sharing-acceptance-7",
+        "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+        "description": "Disposable sharing acceptance",
+        "url": "https://a-ff8207a35ca74d7b9bbe3a33.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "active_deployment_id": "d-3ba4a171d346430cad297322",
+        "latest_operation": {
+          "id": "d-3ba4a171d346430cad297322",
+          "kind": "deploy",
+          "app": "sharing-acceptance-7",
+          "operation_id": "d-3ba4a171d346430cad297322",
+          "deployment_id": "d-3ba4a171d346430cad297322",
+          "state": "succeeded",
+          "request_id": "7a4552c9-728d-49b0-bcb2-f8684e6bcd89",
+          "created_at": "2026-09-09T01:18:09.118965Z",
+          "updated_at": "2026-09-09T01:20:18.364241Z",
+          "completed_at": "2026-09-09T01:20:18.364241Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      }
+    }
+  },
+  "verification": {
+    "identity_tests": 63,
+    "infrastructure_tests": 86,
+    "hosting_probe_tests": 4,
+    "pyright_errors": 0,
+    "standards_findings": 0,
+    "spec_findings": 0,
+    "local_boundaries": "CLI/authenticated HTTPS role matrix, cursor isolation/stability, record/snapshot/app volume bounds, exact ingestion retention and real Docker syslog redaction.",
+    "live_boundaries": "Retained creator/administrator credential, real EU builds/runtimes, database-value redaction, volume eviction, collector restart, unauthenticated denial and existing-app preservation.",
+    "limits": "Seven-day expiry and separate member/administrator identities are deterministic local checks; the live run does not alter the production clock or create additional identities."
+  }
+}

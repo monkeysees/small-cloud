@@ -8,6 +8,7 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 | [Hosting foundation — 2026-09-08](hosting-foundation-2026-09-08.md) | #17 infrastructure acceptance. |
 | [Workspace identity — 2026-09-09](workspace-identity-2026-09-09.md) | #4 identity and CLI authentication acceptance. |
 | [App publishing — 2026-09-09](app-publishing-2026-09-09.md) | #5 publication and protected app ingress acceptance. |
+| [Diagnostics — 2026-09-09](diagnostics-2026-09-09.md) | #11 authorized bounded logs, redaction, real EU volume/restart checks and acceptance cleanup. |
 | [Publishing limits — 2026-09-09](publishing-limits-2026-09-09.md) | #10 local quota/month boundaries and live CLI usage, successful/timeout accounting, preserved app availability and acceptance cleanup. |
 | [App sharing — 2026-09-09](app-sharing-2026-09-09.md) | #7 local CLI/HTTP sharing, directory and shared PostgreSQL acceptance. |
 | [App database — 2026-09-09](app-database-2026-09-09.md) | #6 database persistence, isolation and acceptance-resource cleanup. |
