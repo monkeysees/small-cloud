@@ -246,11 +246,16 @@ class DatabaseAcceptance(unittest.TestCase):
                 columns = [row[1] for row in old.execute('PRAGMA table_info(' + table + ')')]
                 source = 'workspace_users' if table == 'users' else table
                 for row in current.execute('SELECT * FROM ' + source):
+                    legacy_diagnostics = {'build_log': 'Legacy build output\n', 'dropped_bytes': 0} if table == 'deployments' else {}
                     old.execute('INSERT INTO ' + table + ' VALUES(' + ','.join('?' for _ in columns) + ')',
-                                [row[column] for column in columns])
+                                [legacy_diagnostics[column] if column in legacy_diagnostics else row[column] for column in columns])
         legacy.chmod(0o600)
         legacy.replace(path)
         self.restart_platform()
+        self.worker.recover()
+        logs = self.cli('logs', 'migrated', '--source', 'build')
+        self.assertEqual(logs.returncode, 0, logs.stdout + logs.stderr)
+        self.assertEqual(json.loads(logs.stdout)['data']['entries'][0]['message'], 'Legacy build output')
         result = self.cli('auth', 'status')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(json.loads(result.stdout)['data']['default_workspace'], 'ws-initial')

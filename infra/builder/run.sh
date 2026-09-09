@@ -36,6 +36,7 @@ nft -f "$root/policy.nft"
 systemd-run --unit=sc-build-deadline --on-active=600s --timer-property=AccuracySec=1us \
   /usr/bin/python3 /opt/small-cloud-builder/worker.py terminate
 systemd-run --unit=sc-build-daemon --slice=small-cloud-build.slice \
+  --setenv=BUILDKIT_STEP_LOG_MAX_SIZE=-1 --setenv=BUILDKIT_STEP_LOG_MAX_SPEED=-1 \
   --property=Delegate=yes --property=TimeoutStopSec=1s \
   --property=LimitCORE=0 \
   --property=StandardOutput=null --property=StandardError=null \
