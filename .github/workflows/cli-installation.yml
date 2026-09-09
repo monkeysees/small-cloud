@@ -1,0 +1,66 @@
+name: Published CLI installation
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Published version to verify
+        required: true
+        default: v0.1.0
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: linux-x86_64
+          - runner: ubuntu-24.04-arm
+            target: linux-arm64
+          - runner: macos-15-intel
+            target: macos-x86_64
+          - runner: macos-15
+            target: macos-arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Install using only public downloads and verify the executable
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          TARGET: ${{ matrix.target }}
+        shell: bash
+        run: |
+          install_dir="$RUNNER_TEMP/installed cli"
+          state_dir="$RUNNER_TEMP/cli-state"
+          shell_files=("$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc")
+          for path in "${shell_files[@]}"; do
+            if [ -f "$path" ]; then shasum -a 256 "$path"; fi
+          done > "$RUNNER_TEMP/shell-before"
+          curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh |
+            SMALL_CLOUD_VERSION="$RELEASE_VERSION" SMALL_CLOUD_INSTALL_DIR="$install_dir" XDG_STATE_HOME="$state_dir" sh
+          test ! -e "$state_dir"
+          for path in "${shell_files[@]}"; do
+            if [ -f "$path" ]; then shasum -a 256 "$path"; fi
+          done > "$RUNNER_TEMP/shell-after"
+          cmp "$RUNNER_TEMP/shell-before" "$RUNNER_TEMP/shell-after"
+          executable="$install_dir/small-cloud"
+          PATH=/nonexistent "$executable" --help
+          PATH=/nonexistent "$executable" --version
+          PATH=/nonexistent "$executable" catalog --json > "$RUNNER_TEMP/catalog.json"
+          PATH=/nonexistent "$executable" guide getting-started
+          set +e
+          PATH=/nonexistent XDG_STATE_HOME="$state_dir" SMALL_CLOUD_ENDPOINT=https://invalid.example "$executable" auth status --json > "$RUNNER_TEMP/status.json"
+          status=$?
+          set -e
+          test "$status" -eq 3
+          grep -q AUTH_REQUIRED "$RUNNER_TEMP/status.json"
+          printf '{"target":"%s","version":"%s","public_installation":"passed","offline_without_python_on_path":"passed","shell_files_unchanged":true,"installation_did_not_login":true}\n' "$TARGET" "$RELEASE_VERSION" > "$RUNNER_TEMP/installation.json"
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: published-install-${{ matrix.target }}
+          path: ${{ runner.temp }}/installation.json
+          if-no-files-found: error
