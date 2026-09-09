@@ -26,6 +26,20 @@ python3 -m unittest discover -s probes/hosting/fixture -p 'test_*.py'
 npx --yes pyright@1.1.413 --pythonpath "$(command -v python3)"
 ```
 
-These are local regression results. Google identity uses the existing signed-token fixture; database transport uses loopback without TLS; app containers use Docker host networking. Cloud build provisioning, gVisor, production readiness timing, runtime promotion commands and EU hosting are not revalidated by this adapter. No production deployment or destructive hosted-schema experiment was performed for this increment. Existing infrastructure evidence remains in the [foundation report](hosting-foundation-2026-09-08.md).
+The local adapter uses the existing signed-token Google fixture, database transport over loopback without TLS and Docker host networking. It does not establish cloud build provisioning, gVisor, production readiness timing, runtime promotion commands or EU hosting. The hosted follow-up below verifies those redeployment paths; broader infrastructure evidence remains in the [foundation report](hosting-foundation-2026-09-08.md).
 
 [Creator guidance](../../identity/REDEPLOYMENT.md) explains compatible migrations, creator-led schema repair and explicit reset as a future recovery option under #13. No automatic schema rollback, backup guarantee, migration runner or reset implementation is claimed.
+
+## Hosted acceptance and finalization
+
+Pushed implementation `b04e2cb` and published seven fixture variants through the real creator CLI to the temporary `redeployment-acceptance-8` app. The existing platform implementation required no package or service upgrade. All seven fresh CX23 builders ran in Nuremberg and were deleted, with termination and accounting receipts captured in the [hosted evidence](../evidence/app-redeployment-2026-09-09.json). Runtime inspection confirmed gVisor and `sslmode=verify-full` database connections.
+
+Successful creator-only and workspace-wide updates preserved the URL and saved PostgreSQL row while changing the serving release marker. Continuous authenticated HTTP probes observed the old release during updates. The `cleaning` stage was also observed with the new release already serving after readiness; it is not a requirement to keep selecting the old release during retirement.
+
+The deliberate Dockerfile failure reported `BUILD_FAILED`; the separate early-exit image reported `STARTUP_FAILED` after the production 120-second readiness window. The same active container ID remained running across both failures, and the saved row remained readable. CLI app status and request-ID operation status identified each failed attempt without replacing the active deployment ID.
+
+The incompatible-schema candidate committed a column rename and then exited. The old release continued answering its identity route, while both database reads and writes returned HTTP 503. A final creator-authored repair deployment restored the expected column and the original row at the same URL. The repair checks for the renamed column under the startup advisory lock before changing it. This experiment touched only the temporary app's disposable database.
+
+Removed the temporary app, container, PostgreSQL database/role, encrypted credentials, source staging, diagnostics and request/session records; its authenticated URL now returns 404. Retired registry/runtime images follow the existing automatic janitor grace periods, with all cleanup timers active. Final provider inventory contains only the two permanent hosts and their two addresses. The seven real builds charged **92 seconds**, retained in the allowance ledger: final usage is two deployed/active apps, 734 charged seconds and zero reserved seconds.
+
+Both pre-existing apps retain their exact status records, deployment IDs and sharing scopes, and both pass operator HTTP readiness. The owner-accessible `publishing-probe` returns authenticated HTTP 200; the other creator's private `sharing-acceptance-7` correctly returns 404 to the administrator, preserving the established content boundary. Identity, publishing, diagnostics and Caddy services are active. Sharing-role coverage remains backed by the local regression matrix and the completed [#7 hosted acceptance](app-sharing-2026-09-09.md); no new human login or browser action is required. All #8 acceptance work is complete.

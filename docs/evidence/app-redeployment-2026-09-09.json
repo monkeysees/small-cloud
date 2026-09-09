@@ -1,0 +1,1047 @@
+{
+  "implementation_commit": "b04e2cb",
+  "endpoint": "https://small-cloud.monkeysees.one",
+  "started_at": "2026-09-09T04:43:49Z",
+  "deployments": [
+    {
+      "version": "release-one",
+      "mode": null,
+      "request_id": "88668dcc-187a-4733-9bb3-5317e1991ad8",
+      "operation_id": "d-08d184210d9144caa915e963",
+      "stages": [
+        "accepted",
+        "building",
+        "starting",
+        "succeeded"
+      ],
+      "previous_http_checks": 0,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "active_deployment_id": "d-08d184210d9144caa915e963",
+        "latest_operation": {
+          "id": "d-08d184210d9144caa915e963",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-08d184210d9144caa915e963",
+          "deployment_id": "d-08d184210d9144caa915e963",
+          "state": "succeeded",
+          "request_id": "88668dcc-187a-4733-9bb3-5317e1991ad8",
+          "created_at": "2026-09-09T04:43:50.629074Z",
+          "updated_at": "2026-09-09T04:45:26.110159Z",
+          "completed_at": "2026-09-09T04:45:26.110159Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "release-one",
+      "authenticated_http_status": 200
+    },
+    {
+      "version": "release-two",
+      "mode": null,
+      "request_id": "937660cf-6c40-4f58-a3f4-b3e78ec19a8e",
+      "operation_id": "d-e422556798af4a1fbf3bbb7b",
+      "stages": [
+        "accepted",
+        "building",
+        "starting",
+        "cleaning",
+        "succeeded"
+      ],
+      "previous_http_checks": 17,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "active_deployment_id": "d-e422556798af4a1fbf3bbb7b",
+        "latest_operation": {
+          "id": "d-e422556798af4a1fbf3bbb7b",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-e422556798af4a1fbf3bbb7b",
+          "deployment_id": "d-e422556798af4a1fbf3bbb7b",
+          "state": "succeeded",
+          "request_id": "937660cf-6c40-4f58-a3f4-b3e78ec19a8e",
+          "created_at": "2026-09-09T04:45:34.565813Z",
+          "updated_at": "2026-09-09T04:47:04.931679Z",
+          "completed_at": "2026-09-09T04:47:04.931679Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "release-two",
+      "authenticated_http_status": 200
+    },
+    {
+      "version": "release-three",
+      "mode": null,
+      "request_id": "675786d1-f10a-4f97-beca-c3d055235418",
+      "operation_id": "d-7d43d03a5fd94ab68e99906d",
+      "stages": [
+        "accepted",
+        "building",
+        "starting",
+        "succeeded"
+      ],
+      "previous_http_checks": 17,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "latest_operation": {
+          "id": "d-7d43d03a5fd94ab68e99906d",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-7d43d03a5fd94ab68e99906d",
+          "deployment_id": "d-7d43d03a5fd94ab68e99906d",
+          "state": "succeeded",
+          "request_id": "675786d1-f10a-4f97-beca-c3d055235418",
+          "created_at": "2026-09-09T04:48:20.625351Z",
+          "updated_at": "2026-09-09T04:49:46.754115Z",
+          "completed_at": "2026-09-09T04:49:46.754115Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "release-three",
+      "authenticated_http_status": 200
+    },
+    {
+      "version": "failed-build",
+      "mode": "build",
+      "request_id": "5c536fbf-7b6e-4a27-85ce-339d7f5bcc83",
+      "operation_id": "d-c926c5ad77144a039cd9e5b0",
+      "stages": [
+        "accepted",
+        "building",
+        "failed"
+      ],
+      "previous_http_checks": 21,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "latest_operation": {
+          "id": "d-c926c5ad77144a039cd9e5b0",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-c926c5ad77144a039cd9e5b0",
+          "deployment_id": "d-c926c5ad77144a039cd9e5b0",
+          "state": "failed",
+          "request_id": "5c536fbf-7b6e-4a27-85ce-339d7f5bcc83",
+          "created_at": "2026-09-09T04:49:51.119393Z",
+          "updated_at": "2026-09-09T04:51:39.825047Z",
+          "completed_at": "2026-09-09T04:51:39.825047Z",
+          "error": {
+            "code": "BUILD_FAILED",
+            "message": "Dockerfile build failed; inspect build logs.",
+            "retryable": false,
+            "details": {}
+          },
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "release-three",
+      "authenticated_http_status": 200
+    },
+    {
+      "version": "failed-startup",
+      "mode": "startup",
+      "request_id": "466028e6-fe17-4ab1-9bcb-f956f2cc89a6",
+      "operation_id": "d-7e7766156deb4ab3918b59e0",
+      "stages": [
+        "building",
+        "starting",
+        "failed"
+      ],
+      "previous_http_checks": 46,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "latest_operation": {
+          "id": "d-7e7766156deb4ab3918b59e0",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-7e7766156deb4ab3918b59e0",
+          "deployment_id": "d-7e7766156deb4ab3918b59e0",
+          "state": "failed",
+          "request_id": "466028e6-fe17-4ab1-9bcb-f956f2cc89a6",
+          "created_at": "2026-09-09T04:51:42.711875Z",
+          "updated_at": "2026-09-09T04:55:41.878098Z",
+          "completed_at": "2026-09-09T04:55:41.878098Z",
+          "error": {
+            "code": "STARTUP_FAILED",
+            "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+            "retryable": false,
+            "details": {}
+          },
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "release-three",
+      "authenticated_http_status": 200
+    },
+    {
+      "version": "failed-schema",
+      "mode": "schema",
+      "request_id": "2609208a-acff-4192-b79e-3fad6f3a1828",
+      "operation_id": "d-7c8f7ec8c2dc403aaefe4a60",
+      "stages": [
+        "accepted",
+        "building",
+        "starting",
+        "failed"
+      ],
+      "previous_http_checks": 39,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "latest_operation": {
+          "id": "d-7c8f7ec8c2dc403aaefe4a60",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-7c8f7ec8c2dc403aaefe4a60",
+          "deployment_id": "d-7c8f7ec8c2dc403aaefe4a60",
+          "state": "failed",
+          "request_id": "2609208a-acff-4192-b79e-3fad6f3a1828",
+          "created_at": "2026-09-09T04:55:46.356129Z",
+          "updated_at": "2026-09-09T04:59:09.456398Z",
+          "completed_at": "2026-09-09T04:59:09.456398Z",
+          "error": {
+            "code": "STARTUP_FAILED",
+            "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+            "retryable": false,
+            "details": {}
+          },
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "release-three",
+      "authenticated_http_status": 200
+    },
+    {
+      "version": "repaired-release",
+      "mode": "repair",
+      "request_id": "ab4314f8-5dc9-4416-9594-061ef37bb77a",
+      "operation_id": "d-aabe7ac514184e1288db3526",
+      "stages": [
+        "building",
+        "starting",
+        "succeeded"
+      ],
+      "previous_http_checks": 27,
+      "status": {
+        "app": "redeployment-acceptance-8",
+        "app_id": "a-2b65972192f64f2e8384af2b",
+        "description": "Temporary issue 8 redeployment acceptance",
+        "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "active_deployment_id": "d-aabe7ac514184e1288db3526",
+        "latest_operation": {
+          "id": "d-aabe7ac514184e1288db3526",
+          "kind": "deploy",
+          "app": "redeployment-acceptance-8",
+          "operation_id": "d-aabe7ac514184e1288db3526",
+          "deployment_id": "d-aabe7ac514184e1288db3526",
+          "state": "succeeded",
+          "request_id": "ab4314f8-5dc9-4416-9594-061ef37bb77a",
+          "created_at": "2026-09-09T04:59:13.264795Z",
+          "updated_at": "2026-09-09T05:01:35.535012Z",
+          "completed_at": "2026-09-09T05:01:35.535012Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "serving_version": "repaired-release",
+      "authenticated_http_status": 200
+    }
+  ],
+  "usage_before": {
+    "creators": {
+      "used": 2,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 2,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 2,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 642,
+      "reserved_seconds": 0,
+      "available_seconds": 59358
+    }
+  },
+  "retained_apps_before": [
+    {
+      "app": "publishing-probe",
+      "app_id": "a-9ce8504acd8242b98d681bc3",
+      "description": "Disposable HTTP publishing acceptance probe",
+      "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+      "latest_operation": {
+        "id": "d-cd728bf566aa4215b126f37b",
+        "kind": "deploy",
+        "app": "publishing-probe",
+        "operation_id": "d-cd728bf566aa4215b126f37b",
+        "deployment_id": "d-cd728bf566aa4215b126f37b",
+        "state": "succeeded",
+        "request_id": "2de4a7d1-6506-4639-96b5-6911a6068da6",
+        "created_at": "2026-09-08T23:58:50.964936Z",
+        "updated_at": "2026-09-09T00:01:16.726066Z",
+        "completed_at": "2026-09-09T00:01:16.726066Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    },
+    {
+      "app": "sharing-acceptance-7",
+      "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+      "description": "Disposable sharing acceptance",
+      "url": "https://a-ff8207a35ca74d7b9bbe3a33.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-3ba4a171d346430cad297322",
+      "latest_operation": {
+        "id": "d-3ba4a171d346430cad297322",
+        "kind": "deploy",
+        "app": "sharing-acceptance-7",
+        "operation_id": "d-3ba4a171d346430cad297322",
+        "deployment_id": "d-3ba4a171d346430cad297322",
+        "state": "succeeded",
+        "request_id": "7a4552c9-728d-49b0-bcb2-f8684e6bcd89",
+        "created_at": "2026-09-09T01:18:09.118965Z",
+        "updated_at": "2026-09-09T01:20:18.364241Z",
+        "completed_at": "2026-09-09T01:20:18.364241Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    }
+  ],
+  "app_id": "a-2b65972192f64f2e8384af2b",
+  "saved_entries": [
+    {
+      "id": 1,
+      "value": "Issue 8 retained disposable acceptance row"
+    }
+  ],
+  "creator_only_update_preserves_rows": true,
+  "workspace_wide_update_preserves_rows": true,
+  "separate_failures_preserve_rows": true,
+  "schema_caveat": {
+    "old_version_still_serves": "release-three",
+    "read_status": 503,
+    "write_status": 503
+  },
+  "creator_repair_preserves_rows": true,
+  "final_app": {
+    "app": "redeployment-acceptance-8",
+    "app_id": "a-2b65972192f64f2e8384af2b",
+    "description": "Temporary issue 8 redeployment acceptance",
+    "url": "https://a-2b65972192f64f2e8384af2b.small-cloud.monkeysees.one",
+    "sharing_scope": "creator-only",
+    "availability": "running",
+    "active_deployment_id": "d-aabe7ac514184e1288db3526",
+    "latest_operation": {
+      "id": "d-aabe7ac514184e1288db3526",
+      "kind": "deploy",
+      "app": "redeployment-acceptance-8",
+      "operation_id": "d-aabe7ac514184e1288db3526",
+      "deployment_id": "d-aabe7ac514184e1288db3526",
+      "state": "succeeded",
+      "request_id": "ab4314f8-5dc9-4416-9594-061ef37bb77a",
+      "created_at": "2026-09-09T04:59:13.264795Z",
+      "updated_at": "2026-09-09T05:01:35.535012Z",
+      "completed_at": "2026-09-09T05:01:35.535012Z",
+      "error": null,
+      "cleanup_pending": false
+    },
+    "cleanup": null
+  },
+  "usage_after_acceptance": {
+    "creators": {
+      "used": 2,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 3,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 3,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 734,
+      "reserved_seconds": 0,
+      "available_seconds": 59266
+    }
+  },
+  "retained_apps_after": [
+    {
+      "app": "publishing-probe",
+      "app_id": "a-9ce8504acd8242b98d681bc3",
+      "description": "Disposable HTTP publishing acceptance probe",
+      "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+      "latest_operation": {
+        "id": "d-cd728bf566aa4215b126f37b",
+        "kind": "deploy",
+        "app": "publishing-probe",
+        "operation_id": "d-cd728bf566aa4215b126f37b",
+        "deployment_id": "d-cd728bf566aa4215b126f37b",
+        "state": "succeeded",
+        "request_id": "2de4a7d1-6506-4639-96b5-6911a6068da6",
+        "created_at": "2026-09-08T23:58:50.964936Z",
+        "updated_at": "2026-09-09T00:01:16.726066Z",
+        "completed_at": "2026-09-09T00:01:16.726066Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    },
+    {
+      "app": "sharing-acceptance-7",
+      "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+      "description": "Disposable sharing acceptance",
+      "url": "https://a-ff8207a35ca74d7b9bbe3a33.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-3ba4a171d346430cad297322",
+      "latest_operation": {
+        "id": "d-3ba4a171d346430cad297322",
+        "kind": "deploy",
+        "app": "sharing-acceptance-7",
+        "operation_id": "d-3ba4a171d346430cad297322",
+        "deployment_id": "d-3ba4a171d346430cad297322",
+        "state": "succeeded",
+        "request_id": "7a4552c9-728d-49b0-bcb2-f8684e6bcd89",
+        "created_at": "2026-09-09T01:18:09.118965Z",
+        "updated_at": "2026-09-09T01:20:18.364241Z",
+        "completed_at": "2026-09-09T01:20:18.364241Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    }
+  ],
+  "acceptance_complete": true,
+  "cleanup": {
+    "app_id": "a-2b65972192f64f2e8384af2b",
+    "builders": [
+      {
+        "operation": "d-08d184210d9144caa915e963",
+        "teardown": {
+          "id": 165255070,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 9.639000507999995
+        },
+        "builder": {
+          "id": 165255070,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-08d184210d9144caa915e963"
+        }
+      },
+      {
+        "operation": "d-e422556798af4a1fbf3bbb7b",
+        "teardown": {
+          "id": 165255244,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 9.562029330000001
+        },
+        "builder": {
+          "id": 165255244,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-e422556798af4a1fbf3bbb7b"
+        }
+      },
+      {
+        "operation": "d-7d43d03a5fd94ab68e99906d",
+        "teardown": {
+          "id": 165255482,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 9.341558522999996
+        },
+        "builder": {
+          "id": 165255482,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-7d43d03a5fd94ab68e99906d"
+        }
+      },
+      {
+        "operation": "d-c926c5ad77144a039cd9e5b0",
+        "teardown": {
+          "id": 165255617,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 11.765287478000005
+        },
+        "builder": {
+          "id": 165255617,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-c926c5ad77144a039cd9e5b0"
+        }
+      },
+      {
+        "operation": "d-7e7766156deb4ab3918b59e0",
+        "teardown": {
+          "id": 165255726,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 17.052623950999994
+        },
+        "builder": {
+          "id": 165255726,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-7e7766156deb4ab3918b59e0"
+        }
+      },
+      {
+        "operation": "d-7c8f7ec8c2dc403aaefe4a60",
+        "teardown": {
+          "id": 165255903,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 9.308073522
+        },
+        "builder": {
+          "id": 165255903,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-7c8f7ec8c2dc403aaefe4a60"
+        }
+      },
+      {
+        "operation": "d-aabe7ac514184e1288db3526",
+        "teardown": {
+          "id": 165256110,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 21.243249613000003
+        },
+        "builder": {
+          "id": 165256110,
+          "location": "nbg1",
+          "type": "cx23",
+          "job": "d-aabe7ac514184e1288db3526"
+        }
+      }
+    ],
+    "control_cleanup_timers": [
+      "active",
+      "active"
+    ],
+    "runtime_cleanup_timer": "active",
+    "charged_seconds_preserved": 92,
+    "retained_apps": [
+      {
+        "id": "a-9ce8504acd8242b98d681bc3",
+        "name": "publishing-probe",
+        "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+        "sharing_scope": "creator-only"
+      },
+      {
+        "id": "a-ff8207a35ca74d7b9bbe3a33",
+        "name": "sharing-acceptance-7",
+        "active_deployment_id": "d-3ba4a171d346430cad297322",
+        "sharing_scope": "creator-only"
+      }
+    ],
+    "temporary_runtime_database_credentials_source_logs_removed": true,
+    "artifacts_retired_for_existing_janitors": true
+  },
+  "usage_after_cleanup": {
+    "creators": {
+      "used": 2,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 2,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 2,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 734,
+      "reserved_seconds": 0,
+      "available_seconds": 59266
+    }
+  },
+  "retained_apps_final": [
+    {
+      "app": "publishing-probe",
+      "app_id": "a-9ce8504acd8242b98d681bc3",
+      "description": "Disposable HTTP publishing acceptance probe",
+      "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+      "latest_operation": {
+        "id": "d-cd728bf566aa4215b126f37b",
+        "kind": "deploy",
+        "app": "publishing-probe",
+        "operation_id": "d-cd728bf566aa4215b126f37b",
+        "deployment_id": "d-cd728bf566aa4215b126f37b",
+        "state": "succeeded",
+        "request_id": "2de4a7d1-6506-4639-96b5-6911a6068da6",
+        "created_at": "2026-09-08T23:58:50.964936Z",
+        "updated_at": "2026-09-09T00:01:16.726066Z",
+        "completed_at": "2026-09-09T00:01:16.726066Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    },
+    {
+      "app": "sharing-acceptance-7",
+      "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+      "description": "Disposable sharing acceptance",
+      "url": "https://a-ff8207a35ca74d7b9bbe3a33.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-3ba4a171d346430cad297322",
+      "latest_operation": {
+        "id": "d-3ba4a171d346430cad297322",
+        "kind": "deploy",
+        "app": "sharing-acceptance-7",
+        "operation_id": "d-3ba4a171d346430cad297322",
+        "deployment_id": "d-3ba4a171d346430cad297322",
+        "state": "succeeded",
+        "request_id": "7a4552c9-728d-49b0-bcb2-f8684e6bcd89",
+        "created_at": "2026-09-09T01:18:09.118965Z",
+        "updated_at": "2026-09-09T01:20:18.364241Z",
+        "completed_at": "2026-09-09T01:20:18.364241Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    }
+  ],
+  "removed_app_http_status": 404,
+  "retained_app_http_statuses": {
+    "publishing-probe": 200,
+    "sharing-acceptance-7": 404
+  },
+  "retained_private_app_denial": "Administrator diagnostic authority does not grant another creator private content access.",
+  "final_provider_servers": [
+    {
+      "id": 165120313,
+      "name": "small-cloud-control",
+      "status": "running",
+      "labels": {
+        "issue": "17",
+        "managed-by": "small-cloud",
+        "role": "control"
+      },
+      "created": "2026-09-08T10:29:10Z"
+    },
+    {
+      "id": 165120370,
+      "name": "small-cloud-runtime",
+      "status": "running",
+      "labels": {
+        "issue": "17",
+        "managed-by": "small-cloud",
+        "role": "runtime"
+      },
+      "created": "2026-09-08T10:29:29Z"
+    }
+  ],
+  "final_provider_primary_ips": [
+    {
+      "assignee_id": 165120313,
+      "auto_delete": true,
+      "created": "2026-09-08T10:29:10Z",
+      "id": 148618556,
+      "ip": "2.28.60.91",
+      "labels": {},
+      "name": "primary_ip-148618556"
+    },
+    {
+      "assignee_id": 165120370,
+      "auto_delete": true,
+      "created": "2026-09-08T10:29:29Z",
+      "id": 148618592,
+      "ip": "2.28.67.62",
+      "labels": {},
+      "name": "primary_ip-148618592"
+    }
+  ],
+  "runtime_observations": [
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": null,
+        "sharing_scope": "creator-only",
+        "container": null
+      },
+      "latest_state": "building",
+      "containers": [],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-08d184210d9144caa915e963",
+        "sharing_scope": "creator-only",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "building",
+      "containers": [
+        {
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "443dadef0af7e4df357605dd0dc15fb1d8bf0379970e52d13c6fc1ef3c01eb12",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:caaf52ea1c208eb88286c88b58d56411410df14d9efe59694720a5845e7178fb"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-e422556798af4a1fbf3bbb7b",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "building",
+      "containers": [
+        {
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "75ad1c20c8ee67cb2c96b4a843265d0406a0d6a49620c07baecd90278aaf9ee8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:7631bdd06414d040ad48d1fa8f7da75ef6614f776ee43e70bf327265676d6791"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "succeeded",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "11ccaaf0133a406d70fcf01bc49cba501effd4111e1d9ac938bbf065e2066bd8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:27b9968df015ef70b826564f909ad792683f85f29b2d4bcf9e14ba8ec2c927f7"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "building",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "11ccaaf0133a406d70fcf01bc49cba501effd4111e1d9ac938bbf065e2066bd8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:27b9968df015ef70b826564f909ad792683f85f29b2d4bcf9e14ba8ec2c927f7"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "building",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "11ccaaf0133a406d70fcf01bc49cba501effd4111e1d9ac938bbf065e2066bd8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:27b9968df015ef70b826564f909ad792683f85f29b2d4bcf9e14ba8ec2c927f7"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "starting",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "11ccaaf0133a406d70fcf01bc49cba501effd4111e1d9ac938bbf065e2066bd8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:27b9968df015ef70b826564f909ad792683f85f29b2d4bcf9e14ba8ec2c927f7"
+        },
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-candidate",
+          "id": "11ac8a7119b6d18daa7628285e459af50d1126091e01e55067759cc282ff4098",
+          "running": false,
+          "runtime": "runsc",
+          "image": "sha256:d6198aafb40e91959fc18dd1c147a7ef1a00c7fc8b3953e28bf8fa5dd380ac8e"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "building",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "11ccaaf0133a406d70fcf01bc49cba501effd4111e1d9ac938bbf065e2066bd8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:27b9968df015ef70b826564f909ad792683f85f29b2d4bcf9e14ba8ec2c927f7"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-7d43d03a5fd94ab68e99906d",
+        "sharing_scope": "workspace-wide",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "building",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "11ccaaf0133a406d70fcf01bc49cba501effd4111e1d9ac938bbf065e2066bd8",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:27b9968df015ef70b826564f909ad792683f85f29b2d4bcf9e14ba8ec2c927f7"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    },
+    {
+      "app": {
+        "id": "a-2b65972192f64f2e8384af2b",
+        "name": "redeployment-acceptance-8",
+        "active_deployment_id": "d-aabe7ac514184e1288db3526",
+        "sharing_scope": "creator-only",
+        "container": "sc-a-2b65972192f64f2e8384af2b-active"
+      },
+      "latest_state": "succeeded",
+      "containers": [
+        {
+          "database_tls_verify_full": true,
+          "name": "sc-a-2b65972192f64f2e8384af2b-active",
+          "id": "2d9554ed5b897535edfb4c0dc497bf0cc82916551ab65eeaec91a46475980806",
+          "running": true,
+          "runtime": "runsc",
+          "image": "sha256:3ab1d016fb01791578117e68ddb4155ad920cad943a733a1c2eed482caef255f"
+        }
+      ],
+      "services": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ]
+    }
+  ],
+  "finalized": true,
+  "retained_app_readiness": {
+    "apps": [
+      {
+        "name": "publishing-probe",
+        "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+        "readiness_status": 200
+      },
+      {
+        "name": "sharing-acceptance-7",
+        "active_deployment_id": "d-3ba4a171d346430cad297322",
+        "readiness_status": 200
+      }
+    ],
+    "services": [
+      "active",
+      "active",
+      "active",
+      "active"
+    ]
+  }
+}

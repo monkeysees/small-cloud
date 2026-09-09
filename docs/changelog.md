@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Complete #8 hosted redeployment acceptance across seven EU builds, verify preserved releases/data and creator-led schema repair, remove temporary resources, and preserve both existing apps and the 92-second build charge.
+
 - Verify #8 redeployment with uploaded Docker/HTTP/PostgreSQL fixture variants, preserved URL/sharing/data, separate build/startup failures and schema-repair regression checks; document compatible migrations and the limits of previous-container recovery.
 
 - Deploy #11 and verify live build/runtime eviction, database-value redaction and collector restart; preserve both existing apps and remove acceptance resources while retaining real build charges.
