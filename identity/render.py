@@ -9,6 +9,23 @@ def safe(value):
 
 
 def human(data, command):
+    if command == 'auth login start':
+        return (f"Open {safe(data['verification_url'])} and verify code {safe(data['user_code'])}\n"
+                f"Expires: {safe(data['expires_at'])}\n"
+                f"Finish: small-cloud auth login finish {safe(data['attempt_id'])}")
+    if command in ('auth login', 'auth login finish', 'auth status'):
+        user, workspace = data['user'], data.get('workspace')
+        lines = [f"Service: {safe(data['service_endpoint'])}",
+                 f"Signed in as {safe(user['name'])} ({safe(user['email'])})", f"User ID: {safe(user['id'])}",
+                 'Workspace: ' + (f"{safe(workspace['name'])} ({safe(workspace['id'])})" if workspace else 'none'),
+                 'Roles: ' + ', '.join(safe(role) for role in data['roles']),
+                 f"Credential: {safe(data['credential_id'])}; expires {safe(data['expires_at'])}"]
+        lines.extend(safe(step) for step in data['missing_steps'])
+        lines.extend('Next: ' + safe(step) for step in data['next_steps'])
+        return '\n'.join(lines)
+    if command in ('auth logout', 'auth revoke'):
+        return ('All your CLI credentials revoked; local credential removed.' if command == 'auth revoke'
+                else 'Signed out; this CLI credential revoked and removed locally.')
     if command == 'app list':
         if not data['apps']:
             return 'No accessible apps. Ask your workspace administrator for access or a creator to share an app.'
@@ -65,6 +82,15 @@ def human_error(error, request_id=None):
         'NETWORK_ERROR': 'Check the connection and endpoint. Inspect accepted work before retrying a mutation.',
     }
     result = safe(error.code) + ': ' + safe(error.message)
+    if error.details.get('service_endpoint'):
+        result += '\nService: ' + safe(error.details['service_endpoint'])
+    if error.details.get('next_command'):
+        result += '\nNext: ' + safe(error.details['next_command'])
+        if error.details.get('credential_revocation'):
+            result += '\nDelivered credential revocation: ' + safe(error.details['credential_revocation'])
+        return result + ''.join('\nNext: ' + safe(step) for step in error.details.get('next_steps', []))
+    if error.details.get('next_steps'):
+        return result + ''.join('\nNext: ' + safe(step) for step in error.details['next_steps'])
     if error.code in hints:
         result += '\n' + hints[error.code]
     if error.details.get('operation_id'):

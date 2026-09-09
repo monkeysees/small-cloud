@@ -8,11 +8,12 @@ import unittest
 
 
 class DiscoveryAcceptance(unittest.TestCase):
-    def run_cli(self, *args):
+    def run_cli(self, *args, production=False):
         with tempfile.TemporaryDirectory() as home:
-            return subprocess.run([sys.executable, '-m', 'identity.cli', *args],
+            return subprocess.run([sys.executable, '-m', 'identity.cli' if production else 'identity.tests.cli', *args],
                 env={**os.environ, 'HOME': home, 'XDG_CONFIG_HOME': home,
-                     'XDG_STATE_HOME': home, 'SMALL_CLOUD_ENDPOINT': 'invalid'},
+                     'XDG_STATE_HOME': home, 'SMALL_CLOUD_ENDPOINT': 'invalid',
+                     'SMALL_CLOUD_TEST_ORIGIN': 'https://127.0.0.1:1'},
                 text=True, capture_output=True)
 
     def test_bare_and_nested_help_are_offline_and_take_precedence(self):
@@ -29,7 +30,7 @@ class DiscoveryAcceptance(unittest.TestCase):
                     self.assertIn('usage: small-cloud app status', result.stdout)
 
     def test_service_is_fixed_without_endpoint_setup(self):
-        result = self.run_cli('auth', 'status', '--json')
+        result = self.run_cli('auth', 'status', '--json', production=True)
         self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
         self.assertEqual(json.loads(result.stdout)['error']['code'], 'AUTH_REQUIRED')
         for args in (('--endpoint', 'https://example.test'), ('--endpoint=https://example.test',)):

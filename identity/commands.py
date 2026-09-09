@@ -87,12 +87,25 @@ COMMANDS = [
             guide='workspace', command='admin', resource='creator', action='grant'),
     command('auth login', 'Approve Google sign-in in a browser and save a protected CLI credential.',
             'auth login --no-browser --json', 'Explicitly admitted workspace member; browser approval required.',
-            'user, roles, credential_id, expires_at, workspace, default_workspace, platform_administrator; no credential value.',
-            'Starts browser approval and saves a credential locally. --no-input refuses login.',
+            'service_endpoint, user, roles, credential_id, expires_at, workspace, default_workspace, platform_administrator, missing_steps, next_steps; no credential value.',
+            'Starts browser approval and saves a credential locally. --no-input prohibits terminal prompts, not browser approval.',
             [argument('--no-browser', 'Print approval URL and code to stderr without opening a browser.', action='store_true')],
             command='auth', action='login'),
+    command('auth login start', 'Start browser approval for a headless session without opening a browser.',
+            'auth login start --json --no-input', 'Explicitly admitted workspace member approves in a browser.',
+            'verification_url, user_code, attempt_id, expires_in, expires_at; no confidential login material.',
+            'Saves protected, origin-bound pending state outside source folders; does not save a credential.',
+            command='auth', action='login-start'),
+    command('auth login finish', 'Wait for approval of a local attempt and save the credential.',
+            'auth login finish ATTEMPT_ID --json --no-input', 'Human approval of this local login attempt.',
+            'service_endpoint, user, roles, credential_id, expires_at, workspace, default_workspace, platform_administrator, missing_steps, next_steps; no credential value. Pending timeout/interruption includes attempt_id and next_command.',
+            'Polls and consumes one-time delivery. Pending attempts survive timeout or interruption until expiry.',
+            [argument('attempt_id', 'Local identifier returned by auth login start; never the poll secret.'),
+             argument('--timeout', 'Positive wait bound in seconds; at most the remaining login lifetime.', type='integer', default=600)],
+            command='auth', action='login-finish'),
     command('auth status', 'Show current identity and workspace without credential values.', 'auth status --json',
-            'Authenticated member.', 'user, roles, credential_id, expires_at, workspace, default_workspace, platform_administrator.',
+            'No credential needed to report missing sign-in; identity requires authentication.',
+            'service_endpoint, user, roles, credential_id, expires_at, workspace, default_workspace, platform_administrator, missing_steps, next_steps. Missing sign-in returns AUTH_REQUIRED with setup details.',
             command='auth', action='status'),
     command('auth logout', 'Revoke this CLI credential and remove local storage after server success.',
             'auth logout --json', 'Credential holder.', 'revoked: boolean.',
@@ -159,7 +172,7 @@ def parser():
         else:
             parent, _, name = path.rpartition(' ')
             if parent not in children:
-                children[parent] = parsers[parent].add_subparsers(required=True)
+                children[parent] = parsers[parent].add_subparsers(required=parent != 'auth login')
             current = children[parent].add_parser(name, help=definition['description'], **options)
         parsers[path] = current
         if 'dispatch' in definition:

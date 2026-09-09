@@ -22,7 +22,7 @@ Implements [#4](https://github.com/monkeysees/small-cloud/issues/4) and [#19](ht
 
 Start with `small-cloud`, `small-cloud app --help`, or `small-cloud catalog app --json`. Read bundled guidance using `small-cloud guide` and `small-cloud guide getting-started`; these work offline without credentials or this checkout. Groups are `app`, `workspace`, `auth` and `operation`; superseded top-level command paths have been removed. App list/status have readable default results, and every command supports `--json` for the unchanged versioned envelope. Use `small-cloud app list` to discover accessible apps; detailed `app status NAME` requires the creator or a workspace administrator.
 
-Catalog version 1 describes only delivered commands, including permissions, inputs, output contracts and effects. Later #29 slices deliver setup-status guidance, split login, project linking, default completion waits, live logs and additional workspace commands.
+Catalog version 1 describes only delivered commands, including permissions, inputs, output contracts and effects. Setup status and split login are implemented in #32. Later #29 slices deliver project linking, default completion waits, live logs and additional workspace commands.
 
 ## Install the CLI
 
@@ -38,11 +38,15 @@ small-cloud auth logout
 small-cloud auth revoke --all
 ```
 
-Start login from your working directory and compare the browser approval code with the terminal. Only approve a login you initiated. `--no-browser` prints a link and code for manual opening. `--no-input` refuses login; `--json` still allows explicit browser approval and emits one result object. CLI polling starts at five seconds and honors backoff. A login expires after ten minutes; credential delivery is single-use. A lost delivery requires a new login, not replay of the poll. No Google tokens are delivered to the CLI.
+Start login from your working directory and compare the browser approval code with the terminal. Only approve a login you initiated. `--no-browser` prints a link and code for manual opening. `--no-input` and `--json` prohibit terminal prompts while permitting explicitly requested browser approval. CLI polling starts at five seconds and honors backoff. A login expires after ten minutes; credential delivery is single-use. A lost delivery requires a new login, not replay of the poll. No Google tokens are delivered to the CLI.
+
+For a headless session, run `small-cloud auth login start --json --no-input`. Give the returned `verification_url` and `user_code` to the human for browser approval. Run `small-cloud auth login finish ATTEMPT_ID --json --no-input`, substituting the returned `attempt_id`, on the same machine and OS account. Start never opens a browser; finish waits up to the remaining ten-minute lifetime, optionally bounded by `--timeout SECONDS`, and saves the credential. Pending timeout/interruption returns the attempt ID and an exact resume command. Expired or consumed attempts require a new start. No credential or poll secret needs to pass through the agent session.
+
+Pending state uses independent random attempt IDs and owner-only files beside the origin-bound credential, protected by the same directory and command lock. The attempt ID contains no poll secret. Finish refuses unsafe permissions, symlinks, hardlinks, or a mismatched origin; successful delivery and observed expiry remove pending state. Abandoned attempts expire server-side after ten minutes; their protected local files may be deleted. Pending state is never stored in a project folder.
 
 Credentials last 30 days and are bound to the exact HTTPS origin. The CLI uses the native macOS Keychain or Linux Secret Service when available, otherwise an owner-only file in `$XDG_STATE_HOME/small-cloud` (default `~/.local/state/small-cloud`). A locked available keyring fails rather than silently saving plaintext. Directories use 0700 and files 0600; symlinks, hardlinked files and unsafe permissions are refused. Authentication works from your home directory. Credential storage inside a Git checkout, Git worktree or Dockerfile source root is refused regardless of the current directory. Keep the state directory outside all source folders; validation of explicitly selected upload roots and mandatory credential exclusions belong to publishing #5. No token flags, token environment variables, saved-value readback or redirect forwarding are supported. Commands sharing a local credential are serialized by a nonblocking lock.
 
-`auth status` reports current user, roles, credential ID and expiry without its value. Logout first revokes on the server and then removes local storage; offline failure retains the credential for retry. Already revoked logout succeeds. `auth revoke --all` revokes every CLI credential for the caller, including this one, and removes this machine's copy. Other machines see `CREDENTIAL_REVOKED` immediately. Browser sessions are separate and expire after twelve hours; member removal and its session/app invalidation are #14.
+`auth status` reports the service endpoint, current user, workspace, roles, credential ID and expiry without its value, plus `missing_steps` and `next_steps`. Missing/revoked credentials retain their authentication error and exit 3, with endpoint, empty identity/workspace and sign-in guidance in error details. Network or access failures retain their distinct error and advise repair before retry. Publishing requires creator privileges independently of administrator/owner status. Only the initial workspace is currently available; richer selection belongs to #20. Logout first revokes on the server and then removes local storage; offline failure retains the credential for retry. Already revoked logout succeeds. `auth revoke --all` revokes every CLI credential for the caller, including this one, and removes this machine's copy. Other machines see `CREDENTIAL_REVOKED` immediately. Browser sessions are separate and expire after twelve hours; member removal and its session/app invalidation are #14.
 
 ## Bootstrap and admission
 
@@ -85,7 +89,7 @@ Management requests use `Authorization: Bearer …` and mutation header `X-Reque
 
 | Route | Input/result |
 | --- | --- |
-| `POST /api/auth/login` | Random 32-byte base64url `poll_secret` held in CLI memory; returns verification URL, user code, expiry and interval. Retrying the same secret returns its existing pending login. |
+| `POST /api/auth/login` | Random 32-byte base64url `poll_secret` saved in protected local pending state; returns verification URL, user code, expiry and interval. Retrying the same secret returns its existing pending login. |
 | `POST /api/auth/poll` | `poll_secret`; pending/backoff or one-time credential delivery after approval. |
 | `GET /api/auth/status` | Bearer credential; current identity, roles, credential ID and expiry. |
 | `POST /api/auth/logout` | Bearer credential, request ID and `{}`; revoke this credential. |

@@ -198,7 +198,7 @@ class IdentityAcceptance(unittest.TestCase):
 
     def login(self, cwd=ROOT):
         process = subprocess.Popen([*cli_command(), '--json',
-                                    'auth', 'login', '--no-browser'], cwd=cwd, env=self.env,
+                                    'auth', 'login', '--no-browser', '--no-input'], cwd=cwd, env=self.env,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self.addCleanup(lambda: process.poll() is None and process.kill())
         url = None
@@ -225,6 +225,204 @@ class IdentityAcceptance(unittest.TestCase):
         logged_out = self.cli('auth', 'logout')
         self.assertEqual(logged_out.returncode, 0, logged_out.stdout)
         self.assertEqual(self.cli('auth', 'status').returncode, 3)
+
+    def test_split_login_saves_credential_only_after_browser_approval(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        started = self.cli('auth', 'login', 'start', '--no-input')
+        self.assertEqual(started.returncode, 0, started.stdout)
+        login = json.loads(started.stdout)['data']
+        self.assertIn('user_code', login)
+        self.assertIn('attempt_id', login)
+        self.assertNotIn('poll_secret', started.stdout + started.stderr)
+        self.assertEqual(self.cli('auth', 'status').returncode, 3)
+        self.approve(login['verification_url'])
+        finished = self.cli('auth', 'login', 'finish', login['attempt_id'], '--no-input')
+        self.assertEqual(finished.returncode, 0, finished.stdout)
+        self.assertNotIn('"credential":', finished.stdout)
+        self.assertEqual(json.loads(finished.stdout)['data'],
+                         json.loads(self.cli('auth', 'status').stdout)['data'])
+        replay = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(replay.returncode, 3, replay.stdout)
+
+    def test_pending_split_login_can_resume_after_bounded_wait(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        login = json.loads(self.cli('auth', 'login', 'start').stdout)['data']
+        pending = self.cli('auth', 'login', 'finish', login['attempt_id'], '--timeout', '6')
+        self.assertEqual(pending.returncode, 6, pending.stdout)
+        error = json.loads(pending.stdout)['error']
+        self.assertEqual(error['code'], 'WAIT_TIMEOUT')
+        self.assertEqual(error['details']['attempt_id'], login['attempt_id'])
+        self.approve(login['verification_url'])
+        finished = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(finished.returncode, 0, finished.stdout)
+
+    def test_status_explains_setup_before_and_after_sign_in(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        missing = json.loads(self.cli('auth', 'status').stdout)['error']['details']
+        self.assertEqual(missing['service_endpoint'], self.endpoint)
+        self.assertIsNone(missing['user'])
+        self.assertIn('small-cloud auth login start --json', missing['next_steps'])
+        self.login()
+        status = json.loads(self.cli('auth', 'status').stdout)['data']
+        self.assertEqual(status['service_endpoint'], self.endpoint)
+        self.assertEqual(status['workspace']['id'], 'ws-initial')
+        self.assertEqual(status['user']['email'], 'admin@example.test')
+        self.assertIn('creator', status['missing_steps'][0].lower())
+
+    def test_split_login_protects_pending_material_and_origin(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        started = self.cli('auth', 'login', 'start')
+        login = json.loads(started.stdout)['data']
+        pending = next((self.home / 'state/small-cloud').glob('*.login-*'))
+        saved = json.loads(pending.read_text())
+        secret = saved['poll_secret']
+        self.assertNotEqual(login['attempt_id'], secret)
+        self.assertNotIn(secret, started.stdout + started.stderr + pending.name)
+        self.assertEqual(pending.stat().st_mode & 0o777, 0o600)
+        self.assertEqual(pending.parent.stat().st_mode & 0o777, 0o700)
+        pending.chmod(0o644)
+        refused = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(refused.returncode, 2, refused.stdout)
+        self.assertNotIn(secret, refused.stdout + refused.stderr)
+        pending.chmod(0o600)
+        saved['endpoint'] = 'https://another.example.test'
+        pending.write_text(json.dumps(saved))
+        refused = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(refused.returncode, 2, refused.stdout)
+        self.assertIn('different endpoint', refused.stdout)
+        target = pending.with_suffix('.saved')
+        pending.rename(target)
+        pending.symlink_to(target)
+        self.assertEqual(self.cli('auth', 'login', 'finish', login['attempt_id']).returncode, 2)
+        pending.unlink()
+        os.link(target, pending)
+        self.assertEqual(self.cli('auth', 'login', 'finish', login['attempt_id']).returncode, 2)
+        self.assertEqual(self.cli('auth', 'login', 'finish', '../outside').returncode, 2)
+
+    def test_split_login_server_expiry_removes_pending_state(self):
+        from unittest.mock import patch
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        login = json.loads(self.cli('auth', 'login', 'start').stdout)['data']
+        with patch('identity.store.time.time', return_value=time.time() + 601):
+            expired = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(expired.returncode, 3, expired.stdout)
+        self.assertEqual(json.loads(expired.stdout)['error']['code'], 'LOGIN_EXPIRED')
+        self.assertFalse(list((self.home / 'state/small-cloud').glob('*.login-*')))
+
+    def test_split_login_interruption_can_resume_without_credentials_in_output(self):
+        import signal
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        login = json.loads(self.cli('auth', 'login', 'start').stdout)['data']
+        process = subprocess.Popen([*cli_command(), '--json', 'auth', 'login', 'finish', login['attempt_id']],
+                                   env=self.env, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.addCleanup(lambda: process.poll() is None and process.kill())
+        self.assertTrue(process.stderr.readline().startswith('Request ID:'))
+        time.sleep(.3)
+        process.send_signal(signal.SIGINT)
+        stdout, stderr = process.communicate(timeout=3)
+        self.assertEqual(process.returncode, 130, stdout + stderr)
+        self.assertEqual(json.loads(stdout)['error']['details']['attempt_id'], login['attempt_id'])
+        self.approve(login['verification_url'])
+        self.assertEqual(self.cli('auth', 'login', 'finish', login['attempt_id']).returncode, 0)
+
+    def test_split_login_network_failure_preserves_attempt_for_retry(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        login = json.loads(self.cli('auth', 'login', 'start').stdout)['data']
+        self.platform_server.shutdown()
+        self.platform_server.server_close()
+        failed = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(failed.returncode, 6, failed.stdout)
+        self.assertEqual(json.loads(failed.stdout)['error']['details']['attempt_id'], login['attempt_id'])
+        self.restart_platform()
+        self.approve(login['verification_url'])
+        self.assertEqual(self.cli('auth', 'login', 'finish', login['attempt_id']).returncode, 0)
+
+    def test_failed_split_credential_save_does_not_expose_delivery(self):
+        from identity.common import digest
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        login = json.loads(self.cli('auth', 'login', 'start').stdout)['data']
+        state = self.home / 'state/small-cloud'
+        saved = state / (digest(self.endpoint) + '.json')
+        saved.write_text('{}')
+        saved.chmod(0o644)
+        self.approve(login['verification_url'])
+        failed = self.cli('auth', 'login', 'finish', login['attempt_id'])
+        self.assertEqual(failed.returncode, 2, failed.stdout)
+        self.assertNotIn('"credential":', failed.stdout + failed.stderr)
+        details = json.loads(failed.stdout)['error']['details']
+        self.assertEqual(details['next_command'], 'small-cloud auth login start --json')
+        self.assertEqual(details['credential_revocation'], 'revoked')
+        self.assertFalse(list(state.glob('*.login-*')))
+        self.assertEqual(self.cli('auth', 'login', 'finish', login['attempt_id']).returncode, 3)
+
+    def test_readable_status_logout_revoke_and_offline_revocation_retry(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        self.login()
+        status = subprocess.run([*cli_command(), 'auth', 'status'], cwd=ROOT, env=self.env,
+                                capture_output=True, text=True, timeout=10)
+        self.assertIn('Signed in as', status.stdout)
+        self.assertIn('Service: ' + self.endpoint, status.stdout)
+        saved = next((self.home / 'state/small-cloud').glob('*.json'))
+        original = saved.read_bytes()
+        self.platform_server.shutdown()
+        self.platform_server.server_close()
+        failed = self.cli('auth', 'logout')
+        self.assertEqual(failed.returncode, 6)
+        error = json.loads(failed.stdout)
+        self.assertEqual(error['error']['details']['next_command'],
+                         'small-cloud auth logout --request-id ' + error['request_id'] + ' --json')
+        self.assertEqual(saved.read_bytes(), original)
+        self.restart_platform()
+        revoked = subprocess.run([*cli_command(), 'auth', 'revoke', '--all'], cwd=ROOT, env=self.env,
+                                 capture_output=True, text=True, timeout=10)
+        self.assertEqual(revoked.returncode, 0, revoked.stderr)
+        self.assertIn('All your CLI credentials revoked', revoked.stdout)
+        self.assertFalse(saved.exists())
+        self.login()
+        logout = subprocess.run([*cli_command(), 'auth', 'logout'], cwd=ROOT, env=self.env,
+                                capture_output=True, text=True, timeout=10)
+        self.assertEqual(logout.returncode, 0, logout.stderr)
+        self.assertIn('Signed out', logout.stdout)
+
+    def test_delivery_storage_interrupt_and_failed_revocation_require_fresh_login(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        # Inject OS/network failures in a real CLI process after HTTPS delivery.
+        script = '''
+import os, sys, urllib.request, urllib.error
+from unittest.mock import patch
+from identity.cli import main
+original = urllib.request.OpenerDirector.open
+def network(opener, request, *args, **kwargs):
+    if sys.argv[1] == 'network' and request.full_url.endswith('/api/auth/logout'):
+        raise urllib.error.URLError('fixture connection failure')
+    return original(opener, request, *args, **kwargs)
+failure = KeyboardInterrupt() if sys.argv[1] == 'interrupt' else OSError('fixture disk failure')
+with patch('os.replace', side_effect=failure), patch('urllib.request.OpenerDirector.open', network):
+    raise SystemExit(main(['auth', 'login', 'finish', sys.argv[2], '--json'],
+                         service_origin=os.environ['SMALL_CLOUD_TEST_ORIGIN']))
+'''
+        for mode, code, revocation in (('interrupt', 'INTERRUPTED', 'revoked'), ('network', 'INTERNAL', 'unconfirmed')):
+            with self.subTest(mode=mode):
+                login = json.loads(self.cli('auth', 'login', 'start').stdout)['data']
+                self.approve(login['verification_url'])
+                failed = subprocess.run([sys.executable, '-c', script, mode, login['attempt_id']],
+                                        env=self.env, cwd=ROOT, capture_output=True, text=True, timeout=10)
+                self.assertEqual(failed.returncode, 130 if mode == 'interrupt' else 1, failed.stdout + failed.stderr)
+                error = json.loads(failed.stdout)['error']
+                self.assertEqual(error['code'], code)
+                self.assertEqual(error['details']['next_command'], 'small-cloud auth login start --json')
+                self.assertEqual(error['details']['credential_revocation'], revocation)
+                self.assertFalse(list((self.home / 'state/small-cloud').glob('*.login-*')))
 
     def http_login(self, email, subject=None):
         import secrets

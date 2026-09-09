@@ -2,7 +2,6 @@
 import getpass
 import json
 import re
-import secrets
 import ssl
 import sys
 import time
@@ -154,33 +153,27 @@ def authority_request(args, client, path, body, token, request_id):
 
 
 def authenticated_command(args, request_id, client, credentials):
-    if args.action == 'login':
-        if args.no_input:
-            raise Failure('INVALID_ARGUMENT', 'Browser sign-in requires interaction; omit --no-input.')
-        poll_secret = secrets.token_urlsafe(32)
-        login = client.request('/api/auth/login', {'poll_secret': poll_secret}, request_id=request_id)
+    if args.action in ('login', 'login-start', 'login-finish'):
+        from .login import start, finish
+        if args.action == 'login-finish':
+            return setup_status(finish(client, credentials, args.attempt_id, args.timeout), client.endpoint)
+        login = start(client, credentials, request_id)
+        if args.action == 'login-start':
+            return login
         url = login['verification_url']
-        if not url.startswith(client.endpoint + '/auth/verify?'):
-            raise Failure('NETWORK_ERROR', 'Invalid verification origin.', 503)
         print(f'Open {url} and verify code {login["user_code"]}', file=sys.stderr, flush=True)
         if not args.no_browser:
             webbrowser.open(url)
-        deadline = time.monotonic() + min(login['expires_in'], 600)
-        interval = max(5, login['interval'])
-        while time.monotonic() < deadline:
-            time.sleep(interval)
-            result = client.request('/api/auth/poll', {'poll_secret': poll_secret})
-            if result.get('state') == 'complete':
-                token = result.pop('credential')
-                result.pop('state')
-                try:
-                    credentials.write(token)
-                except BaseException:
-                    client.request('/api/auth/logout', {}, token, str(uuid.uuid4()))
-                    raise
-                return result
-            interval = max(5, min(result.get('interval', 5), 60))
-        raise Failure('LOGIN_EXPIRED', 'Login expired; start again.', 401)
+        return setup_status(finish(client, credentials, login['attempt_id']), client.endpoint)
+    if args.command == 'auth' and args.action == 'status':
+        try:
+            return setup_status(client.request('/api/auth/status', token=credentials.read()), client.endpoint)
+        except Failure as error:
+            error.details.update(service_endpoint=client.endpoint, user=None, workspace=None,
+                                 missing_steps=[error.message],
+                                 next_steps=['small-cloud auth login start --json'] if error.code in
+                                 ('AUTH_REQUIRED', 'CREDENTIAL_REVOKED') else ['Resolve the reported error and retry small-cloud auth status --json.'])
+            raise
     token = credentials.read()
     if args.command == 'usage':
         return client.request('/api/usage', token=token)
@@ -256,11 +249,25 @@ def authenticated_command(args, request_id, client, credentials):
     if args.command == 'admin':
         body = {'email': args.email} if args.resource == 'member' else {'user_id': args.user_id}
         return client.request('/api/admin/' + args.resource + '/' + args.action, body, token, request_id)
-    if args.action == 'status':
-        return client.request('/api/auth/status', token=token)
-    result = client.request('/api/auth/' + args.action, {}, token, request_id)
+    try:
+        result = client.request('/api/auth/' + args.action, {}, token, request_id)
+    except Failure as error:
+        if error.code == 'NETWORK_ERROR':
+            command = 'small-cloud auth ' + args.action + (' --all' if args.action == 'revoke' else '')
+            error.details['next_command'] = command + ' --request-id ' + request_id + ' --json'
+        raise
     credentials.remove()
     return result
+
+
+def setup_status(identity, endpoint):
+    missing = []
+    if not identity.get('workspace'):
+        missing.append('Ask the platform administrator for workspace access.')
+    elif 'creator' not in identity['roles']:
+        missing.append('To publish, ask a workspace administrator for creator privileges using your user ID.')
+    return {**identity, 'service_endpoint': endpoint, 'missing_steps': missing,
+            'next_steps': ['small-cloud app list --json'] if identity.get('workspace') else []}
 
 
 def main(argv=None, *, service_origin=SERVICE_ORIGIN):
@@ -287,7 +294,7 @@ def main(argv=None, *, service_origin=SERVICE_ORIGIN):
     except Failure as exc:
         print(json.dumps(envelope(failure=exc, request_id=request_id)) if json_mode else human_error(exc, request_id),
               file=sys.stdout if json_mode else sys.stderr)
-        return exc.exit_code
+        return 130 if exc.code == 'INTERRUPTED' else exc.exit_code
     except KeyboardInterrupt:
         exc = Failure('INTERRUPTED', 'Interrupted.', 500)
         print(json.dumps(envelope(failure=exc, request_id=request_id)) if json_mode else human_error(exc, request_id),

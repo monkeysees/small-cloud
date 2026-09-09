@@ -27,8 +27,27 @@ ignored. No repository config or .env is loaded.
 
 Login requires human Google browser approval. --no-browser prints a verification
 URL and code on stderr; compare the code before approving. The same process waits
-and saves the credential; --no-input refuses login. Never paste credentials into
-commands. Split headless login and setup-status guidance are not delivered yet.
+and saves the credential. --no-input prohibits terminal prompts but permits this
+explicitly requested browser approval. Never paste credentials into commands.
+
+For a headless agent session:
+small-cloud auth login start --json --no-input
+small-cloud auth login finish ATTEMPT_ID --json --no-input
+
+Start returns verification_url, user_code and attempt_id. Give the URL and code
+to the human, who compares the code and approves in their browser. Replace
+ATTEMPT_ID with the returned local identifier, then finish on the same machine
+and OS account. Finish waits and saves the credential without terminal input.
+Use --timeout SECONDS to bound the wait. Timeout, interruption and network errors
+provide a next_command to resume; expired or consumed attempts require a new start.
+Pending secrets stay in owner-only per-user storage, never in the attempt ID.
+
+auth status reports the fixed service, current identity, workspace and missing
+setup steps. Without a credential it returns AUTH_REQUIRED (exit 3) with setup
+details and a login command. A member can list apps; publishing additionally
+requires a creator grant. Only the initial workspace is currently available.
+Use auth logout to revoke this credential, or auth revoke --all for all your CLI
+credentials. Network failures retain local credentials so revocation can be retried.
 
 The delivered CLI has app, workspace, auth and operation groups. Project
 linking, local app check, default deployment waiting, live
