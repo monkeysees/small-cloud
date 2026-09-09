@@ -1,5 +1,6 @@
 """Diagnostics acceptance through the authenticated HTTP and creator CLI seams."""
 import json
+import socket
 import subprocess
 import sys
 import threading
@@ -174,6 +175,33 @@ class DiagnosticsAcceptance(unittest.TestCase):
         self.assertNotIn('postgresql://', str(data))
         self.assertNotIn('multiline', str(data))
         self.assertNotIn('confidential', str(data))
+
+    def test_registration_refreshes_an_open_stream_without_revealing_its_pending_prefix(self):
+        from identity.collector import Collector
+        from identity.diagnostics import Registry
+        from identity.worker import State
+
+        self.creator()
+        _, accepted = self.deploy()
+        operation = accepted['data']['operation_id']
+        self.diagnostic(operation, None, b'{"values":["old-secret-value"]}', action='register')
+        state = State(self.home / 'server/identity.sqlite3')
+        collector = Collector(self.home / 'logs.sock', state, Registry(state, self.home / 'redaction.key'))
+        self.addCleanup(collector.close)
+        connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.addCleanup(connection.close)
+        connection.connect(str(self.home / 'logs.sock'))
+        collector.poll(0.1)
+        def send(message):
+            connection.sendall(('<14>1 2026-09-09T00:00:00Z runtime ' + operation + ' 1 - - ' + message + '\n').encode())
+            collector.poll(0.1)
+        send('old-secret-')
+        self.diagnostic(operation, None, b'{"values":["new-secret-value"]}', action='register')
+        send('value new-secret-value')
+        data = self.logs()
+        self.assertNotIn('old-secret-', str(data))
+        self.assertNotIn('new-secret-value', str(data))
+        self.assertIn('[REDACTED] [REDACTED]', str(data))
 
 
 if __name__ == '__main__':

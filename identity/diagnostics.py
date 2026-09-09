@@ -54,6 +54,7 @@ def prune(db, now):
 class Registry:
     def __init__(self, state, key, clock=time.time):
         self.state, self.clock = state, clock
+        self.cached = {}
         path = Path(key)
         try:
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -93,13 +94,16 @@ class Registry:
                                (app, deployment, self.cipher.encrypt(value.encode()), self.clock() + RETENTION + 60))
 
     def values(self, app_id):
-        self.maintain()
         with self.state.connect() as db:
-            rows = db.execute("SELECT value FROM diagnostic_values WHERE app_id IN (?, '*') AND expires>?",
+            rows = db.execute("SELECT rowid,value FROM diagnostic_values WHERE app_id IN (?, '*') AND expires>? ORDER BY rowid",
                               (app_id, self.clock())).fetchall()
-        return [self.cipher.decrypt(row['value']) for row in rows]
+        revision = tuple(row['value'] for row in rows)
+        if app_id not in self.cached or self.cached[app_id][0] != revision:
+            self.cached[app_id] = (revision, [self.cipher.decrypt(row['value']) for row in rows])
+        return self.cached[app_id][1]
 
     def maintain(self):
+        self.cached.clear()
         with self.state.connect() as db:
             # Interrupted candidates remain possible users until operator reconciliation.
             db.execute('UPDATE diagnostic_values SET expires=? WHERE deployment IN '
@@ -166,6 +170,7 @@ class Writer:
         if source not in VOLUME:
             raise ValueError('Invalid diagnostic source')
         self.state, self.clock = state, clock
+        self.registry = registry
         self.deployment, self.source = deployment, source
         with state.connect() as db:
             row = db.execute('SELECT app_id FROM deployments WHERE id=?', (deployment,)).fetchone()
@@ -175,17 +180,28 @@ class Writer:
             self.stream = source + ':' + (deployment if source == 'build' else self.app)
             db.execute('INSERT OR IGNORE INTO diagnostic_streams(id,app_id,source) VALUES(?,?,?)',
                        (self.stream, self.app, source))
-        values = registry.values(self.app)
-        if source == 'runtime':
-            # Docker removes line delimiters before syslog framing. Match that wire
-            # representation as well as literal values, including multiline secrets.
-            values += [value.replace(b'\n', b'') for value in values if value.replace(b'\n', b'')]
-        self.redactor = Redactor(values)
+        self.patterns = None
+        self.redactor = Redactor([])
+        self.refresh()
         self.decoder = codecs.getincrementaldecoder('utf-8')(errors='replace')
         self.line = ''
         self.lost = 0
 
+    def refresh(self):
+        values = list(self.registry.values(self.app))
+        if self.source == 'runtime':
+            # Docker removes line delimiters before syslog framing. Match that wire
+            # representation as well as literal values, including multiline secrets.
+            values += [value.replace(b'\n', b'') for value in values if value.replace(b'\n', b'')]
+        patterns = tuple(values)
+        if patterns != self.patterns:
+            pending = self.redactor.pending
+            self.redactor = Redactor(values)
+            self.redactor.pending = pending
+            self.patterns = patterns
+
     def feed(self, chunk, final=False, record=False):
+        self.refresh()
         text = self.decoder.decode(self.redactor.feed(chunk, final), final=final)
         parts = text.split('\n')
         for index, part in enumerate(parts):

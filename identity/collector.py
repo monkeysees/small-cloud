@@ -120,6 +120,13 @@ def main():
         last_maintenance = 0
         try:
             while True:
+                if time.monotonic() - last_maintenance >= 30:
+                    platform_redaction(registry, config)
+                    registry.maintain()
+                    for key in collector.selector.get_map().values():
+                        if key.data and key.data.writer:
+                            key.data.writer.refresh()
+                    last_maintenance = time.monotonic()
                 if tunnel is None or tunnel.poll() is not None:
                     if tunnel is not None:
                         # Allow Docker to reconnect to the replacement forwarded socket.
@@ -133,10 +140,6 @@ def main():
                         '-o', 'ExitOnForwardFailure=yes', '-o', 'StreamLocalBindUnlink=yes',
                         '-R', SOCKET + ':' + SOCKET, 'root@' + infrastructure.runtime],
                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                if time.monotonic() - last_maintenance >= 30:
-                    platform_redaction(registry, config)
-                    registry.maintain()
-                    last_maintenance = time.monotonic()
                 collector.poll()
         finally:
             if tunnel is not None:
