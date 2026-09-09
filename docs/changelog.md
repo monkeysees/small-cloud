@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Deploy #12 and verify exact multiline runtime secrets, hidden input, sharing/authorization boundaries, encrypted storage, retained-value redaction and failed/interrupted restart recovery; remove acceptance resources and retain 41 build seconds.
+
 - Add #12 creator-owned encrypted runtime secrets with hidden/stdin input, saved-configuration restarts, sharing acknowledgement, seven-day retired-value redaction and local CLI/HTTP/external-service regression coverage.
 
 - Deploy #9 and verify a real 30-minute idle stop, competing wake-ups, retained data, capacity/loading responses and failed/interrupted startup recovery; remove four acceptance apps/builders, retain 43 build seconds, and close acceptance with the operator accepting the unverified browser checks.
