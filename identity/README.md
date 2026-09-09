@@ -6,6 +6,8 @@ For source upload, remote builds and protected app URLs, see [publishing](PUBLIS
 
 For `small-cloud usage`, deployment capacity and the shared monthly build allowance, see [publishing limits](LIMITS.md).
 
+For authorized status, build/runtime log snapshots, redaction and retention, see [diagnostics](DIAGNOSTICS.md).
+
 For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](../docs/acceptance/app-database-2026-09-09.md) and the [starter guide](fixture/README.md).
 
 Implements [#4](https://github.com/monkeysees/small-cloud/issues/4) and [#19](https://github.com/monkeysees/small-cloud/issues/19) against the [CLI and identity contracts](../docs/contracts.md). One operator bootstraps the initial workspace owner and platform administrator, explicitly admits Google emails, and grants creator privileges separately. A member can sign in to establish their immutable user ID; membership, ownership and administrator authority alone do not grant publishing privileges. There are at most five creators, including the owner if separately granted that role. See [initial workspace migration](WORKSPACE-MIGRATION.md) before upgrading an existing installation. Additional workspaces remain unavailable.

@@ -51,6 +51,7 @@ def stream_command(args: list[str], output, limit: int, timeout: int, stderr_out
                         raise Failure("Remote command output exceeded its bound")
                     if key.data == "stdout":
                         output.write(chunk)
+                        output.flush()
                     elif stderr_output is not None:
                         stderr_output.write(chunk)
         remaining = deadline - time.monotonic()
@@ -360,8 +361,15 @@ def build(args: argparse.Namespace) -> dict:
         management = sorted(set(management) | set(management_addresses()))
         try:
             args.execution_attempted = True
-            host.command("bash", "/opt/small-cloud-builder/run.sh", "/var/lib/small-cloud-build/context.tar",
-                         *management, timeout=660)
+            arguments = ['ssh', *host.options, 'root@' + host.address,
+                         shlex.join(['bash', '/opt/small-cloud-builder/run.sh',
+                                     '/var/lib/small-cloud-build/context.tar', *management])]
+            if args.stream_build_log:
+                stream_command(arguments, sys.stdout.buffer, sys.maxsize, 660)
+            else:
+                # The root-only operator CLI retains its existing bounded build.log artifact.
+                with (destination / 'build.log').open('wb') as output:
+                    stream_command(arguments, output, 10 * 1024 * 1024, 660)
         finally:
             try:
                 observation = host.command('python3', '/opt/small-cloud-builder/evidence.py', timeout=15)
@@ -369,7 +377,7 @@ def build(args: argparse.Namespace) -> dict:
             except Failure:
                 pass
             # Private output never reaches the console, including failed Dockerfile logs.
-            for name in ("build.log", "daemon.log", "result.json", "accounting.json"):
+            for name in ("result.json", "accounting.json"):
                 try:
                     host.download("/var/lib/small-cloud-build/output/" + name, destination / name,
                                   10 * 1024 * 1024 if name.endswith('.log') else 65536)
@@ -407,6 +415,7 @@ def main() -> int:
     execute.add_argument("--output", type=Path, required=True)
     execute.add_argument("--admin-cidr", required=True)
     execute.add_argument("--job", required=True)
+    execute.add_argument('--stream-build-log', action='store_true', help='Stream build output for trusted pre-storage redaction')
     args = parser.parse_args()
     try:
         operation = {'configure': configure, 'build': build, 'enable-alerts': enable_alerts,

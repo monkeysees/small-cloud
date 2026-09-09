@@ -293,7 +293,14 @@ def promote(tool):
     print(json.dumps({'container': 'sc-' + tool + '-active'}))
 
 
-def launch(config, tool, image, candidate=False, env_file=None):
+def launch(config, tool, image, candidate=False, env_file=None, deployment=None):
+    logging = ['--log-driver', 'none']
+    if deployment is not None:
+        if not re.fullmatch(r'd-[0-9a-f]{24}', deployment):
+            raise ValueError('invalid diagnostic deployment')
+        logging = ['--log-driver', 'syslog', '--log-opt', 'syslog-address=unix:///run/small-cloud-diagnostics.sock',
+                   '--log-opt', 'syslog-format=rfc5424micro', '--log-opt', 'tag=' + deployment,
+                   '--log-opt', 'cache-disabled=true', '--log-opt', 'mode=blocking']
     environment = []
     if env_file is not None:
         metadata = env_file.lstat()
@@ -356,7 +363,7 @@ def launch(config, tool, image, candidate=False, env_file=None):
         '--tmpfs', '/tmp:rw,nosuid,nodev,noexec,size=1073741824,mode=1777',
         '--shm-size', '1m', '--cpus', '0.5', '--memory', '512m', '--memory-swap', '512m',
         '--pids-limit', '128', '--ulimit', 'nproc=128:128', '--ulimit', 'core=0:0', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-        '--user', '65532:65532', '--ulimit', 'nofile=1024:1024', '--log-driver', 'none',
+        '--user', '65532:65532', '--ulimit', 'nofile=1024:1024', *logging,
         '--publish', f"{config['runtime_private_ip']}:{18080 + int(slot)}:8080",
         *environment, '--env', 'PORT=8080', image)
     run('docker', 'start', name)
@@ -394,6 +401,7 @@ def main():
     start.add_argument('image')
     start.add_argument('--candidate', action='store_true')
     start.add_argument('--env-file', type=Path, help='root-owned mode-0600 DATABASE_URL/app environment')
+    start.add_argument('--deployment', help='Product deployment ID for collected, redacted diagnostics')
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     ipaddress.IPv4Address(config['runtime_private_ip'])
@@ -415,7 +423,7 @@ def main():
         elif args.command == 'forget-release':
             retain_release(args.tool, args.release)
         else:
-            launch(config, args.tool, args.image, args.candidate, args.env_file)
+            launch(config, args.tool, args.image, args.candidate, args.env_file, args.deployment)
 
 
 if __name__ == '__main__':

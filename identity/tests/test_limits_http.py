@@ -18,7 +18,7 @@ class BuildFixture:
     terminated = True
     fail = False
 
-    def build(self, operation):
+    def build(self, operation, logs):
         if self.fail:
             raise Failure('BUILD_FAILED', 'Fixture build failed.', 500)
         return {'archive': 'fixture'}
@@ -26,7 +26,7 @@ class BuildFixture:
     def build_accounting(self, operation):
         return {'terminated': self.terminated, 'duration_seconds': self.duration}
 
-    def start(self, operation, artifact, app):
+    def start(self, operation, artifact, app, register):
         return {'host': '127.0.0.1', 'port': 18080, 'container': 'fixture'}
 
     def ready(self, target):
@@ -38,8 +38,6 @@ class BuildFixture:
     def cleanup(self, operation, app, succeeded=False):
         pass
 
-    def build_log(self, operation):
-        return 'fixture build', 0
 
 
 class LimitsAcceptance(unittest.TestCase):
@@ -264,12 +262,12 @@ class LimitsAcceptance(unittest.TestCase):
 
         infrastructure = PreflightInfrastructure({'admin_cidr': '203.0.113.1/32'})
         infrastructure.staging = self.home / 'staging'
+        infrastructure.root = self.home / 'infra'
+        infrastructure.root.mkdir()
+        (infrastructure.root / 'artifacts.py').write_text('pass\n')
+        (infrastructure.root / 'remote.py').write_text(
+            'import sys\nprint(\'{"error":{"code":"BUILD_NOT_STARTED"}}\')\nsys.exit(7)\n')
         self.deploy()
-        def external_process(arguments, **kwargs):
-            if arguments[1].endswith('remote.py'):
-                return subprocess.CompletedProcess(arguments, 7, b'{"error":{"code":"BUILD_NOT_STARTED"}}')
-            return subprocess.CompletedProcess(arguments, 0, b'{}')
-        with patch('identity.worker.subprocess.run', side_effect=external_process):
-            self.worker(infrastructure).once()
+        self.worker(infrastructure).once()
         self.assertEqual(self.usage()['build']['available_seconds'], 60000)
         self.assertEqual(self.deploy()[0], 202)

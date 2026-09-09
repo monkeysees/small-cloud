@@ -66,15 +66,7 @@ def daemon(arguments):
     # changing only the resolver in the caller's private mount namespace.
     subprocess.run(['/usr/bin/mount', '--bind', '/etc/netns/sc-build/resolv.conf',
                     '/etc/resolv.conf'], check=True)
-    process = subprocess.Popen(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    assert process.stdout is not None
-    written = 0
-    with (ROOT / 'output/daemon.log').open('wb', buffering=0) as output:
-        while chunk := os.read(process.stdout.fileno(), 65536):
-            retained = chunk[:max(0, LOG_LIMIT - written)]
-            output.write(retained)
-            written += len(retained)
-    return process.wait()
+    return subprocess.run(arguments, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode
 
 
 def prepare(archive, management):
@@ -168,21 +160,15 @@ def execute():
         'execution_started_at': EXECUTION_STARTED_AT,
         'execution_completed_at': None, 'execution_duration_seconds': None,
     }) + '\n')
-    dropped = 0
-    with (ROOT / 'output/build.log').open('wb') as log:
-        process = subprocess.Popen(DOCKER + ['build', '--progress=plain', '--no-cache',
-                                             '--tag=sc-artifact:build', str(ROOT / 'context')],
-                                   env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        assert process.stdout is not None
-        written = 0
-        while chunk := os.read(process.stdout.fileno(), 64 * 1024):
-            retained = chunk[:max(0, LOG_LIMIT - written)]
-            log.write(retained)
-            log.flush()
-            written += len(retained)
-            dropped += len(chunk) - len(retained)
-        if process.wait() != 0:
-            raise RuntimeError('Dockerfile build failed; inspect bounded build.log')
+    process = subprocess.Popen(DOCKER + ['build', '--progress=plain', '--no-cache',
+                                         '--tag=sc-artifact:build', str(ROOT / 'context')],
+                               env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    assert process.stdout is not None
+    while chunk := os.read(process.stdout.fileno(), 64 * 1024):
+        sys.stdout.buffer.write(chunk)
+        sys.stdout.buffer.flush()
+    if process.wait() != 0:
+        raise RuntimeError('Dockerfile build failed; inspect collected build logs')
     # Stream and bound export; a declared image size does not bound a tar stream.
     digest = hashlib.sha256()
     size = 0
@@ -205,7 +191,7 @@ def execute():
                 process.wait()
     (ROOT / 'output/result.json').write_text(json.dumps({
         'ok': True, 'image_archive_sha256': digest.hexdigest(), 'image_bytes': size,
-        'dropped_log_bytes': dropped,
+        'dropped_log_bytes': 0,
         **execution_timing(),
     }) + '\n')
 
@@ -223,7 +209,7 @@ if __name__ == '__main__':
         else:
             raise ValueError('Usage: worker.py prepare ARCHIVE MANAGEMENT_IPV4... | execute')
     except (OSError, ValueError, RuntimeError, tarfile.TarError, subprocess.SubprocessError) as error:
-        # Raw daemon output is retained only in bounded, private build logs.
+        # Only a safe failure type is persisted; raw execution output is streamed.
         if (ROOT / 'output').is_dir():
             (ROOT / 'output/result.json').write_text(json.dumps({
                 'ok': False, 'error': type(error).__name__,

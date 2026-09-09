@@ -100,11 +100,12 @@ class DeploymentAcceptance(unittest.TestCase):
 
         class InfrastructureFixture:
             fail = False
-            def build(self, operation):
+            def build(self, operation, logs):
+                logs.feed(b'fixture build completed\n')
                 return {'archive': 'fixture-archive'}
             def build_accounting(self, operation):
                 return {'terminated': True, 'duration_seconds': 1}
-            def start(self, operation, artifact, app):
+            def start(self, operation, artifact, app, register):
                 return {'host': '127.0.0.1', 'port': 18080, 'container': 'fixture-container'}
             def ready(self, target):
                 if self.fail:
@@ -113,8 +114,6 @@ class DeploymentAcceptance(unittest.TestCase):
                 return target['container']
             def cleanup(self, operation, app, succeeded=False):
                 pass
-            def build_log(self, operation):
-                return 'fixture build completed\n', 0
 
         self.creator()
         infrastructure = InfrastructureFixture()
@@ -164,10 +163,8 @@ class DeploymentAcceptance(unittest.TestCase):
         from identity.worker import State, Worker
 
         class LostInfrastructure:
-            def build(self, operation):
+            def build(self, operation, logs):
                 raise KeyboardInterrupt()
-            def build_log(self, operation):
-                return '', 0
 
         self.creator()
         _, accepted = self.deploy()
@@ -205,14 +202,12 @@ class DeploymentAcceptance(unittest.TestCase):
         imported_id = 'sha256:' + 'a' * 64
 
         class InfrastructureFixture(Infrastructure):
-            def build(self, operation):
+            def build(self, operation, logs):
                 return {'archive': str(archive), 'sha256': archive_digest}
             def build_accounting(self, operation):
                 return {'terminated': True, 'duration_seconds': 1}
             def ready(self, target):
                 pass
-            def build_log(self, operation):
-                return 'fixture image export complete', 0
 
         def external_process(arguments, **kwargs):
             args = list(arguments)
@@ -235,7 +230,7 @@ class DeploymentAcceptance(unittest.TestCase):
             elif args[0] == 'python3' and args[1].endswith('tool_database.py'):
                 output = b'{"encrypted_credentials":"/protected/fixture.age"}'
             elif args[0] == 'age':
-                output = b'{"database_url":"postgresql://fixture:confidential@example.invalid/db"}'
+                output = b'{"database_url":"postgresql://fixture:confidential@example.invalid/db","password":"confidential"}'
             elif Path(args[0]).name == 'python' and len(args) > 1 and args[1].endswith('releases.py'):
                 output = b'{}'
             return subprocess.CompletedProcess(arguments, 0, output)

@@ -7,6 +7,7 @@ import ipaddress
 import json
 import os
 import re
+import selectors
 from pathlib import Path
 import shlex
 import sqlite3
@@ -20,7 +21,7 @@ import urllib.request
 
 from .common import Failure
 from .upload import validate_archive
-from . import allowance
+from . import allowance, diagnostics
 
 
 class State:
@@ -51,10 +52,35 @@ class State:
                 os.seteuid(previous)
 
 
-def command(arguments, timeout=900, data=None):
+def command(arguments, timeout=900, data=None, logs=None):
     try:
-        result = subprocess.run(arguments, input=data, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                                timeout=timeout, check=False)
+        if logs is None:
+            result = subprocess.run(arguments, input=data, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                    timeout=timeout, check=False)
+        else:
+            with subprocess.Popen(arguments, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                  stderr=subprocess.DEVNULL) as process:
+                assert process.stdout is not None
+                tail = b''
+                deadline = time.monotonic() + timeout
+                try:
+                    with selectors.DefaultSelector() as selector:
+                        selector.register(process.stdout, selectors.EVENT_READ)
+                        while selector.get_map():
+                            if time.monotonic() >= deadline:
+                                raise subprocess.TimeoutExpired(arguments, timeout)
+                            for event, _ in selector.select(1):
+                                chunk = os.read(event.fd, 65536)
+                                if not chunk:
+                                    selector.unregister(event.fileobj)
+                                    break
+                                logs.feed(chunk)
+                                tail = (tail + chunk)[-65536:]
+                    result = subprocess.CompletedProcess(arguments, process.wait(timeout=max(1, deadline - time.monotonic())), tail)
+                finally:
+                    if process.poll() is None:
+                        process.kill()
+                        process.wait()
         if result.returncode:
             if result.returncode == 7:
                 try:
@@ -101,7 +127,7 @@ class Infrastructure:
         return self.ssh('python3', '/opt/small-cloud/runtime/sandbox.py', '--config',
                         '/etc/small-cloud/runtime.json', *arguments)
 
-    def build(self, operation):
+    def build(self, operation, logs):
         job = operation['id']
         self.unstarted_job = job
         archive = bytes(operation['source'])
@@ -112,7 +138,8 @@ class Infrastructure:
         try:
             self.unstarted_job = None
             command([sys.executable, str(self.root / 'remote.py'), 'build', '--context', str(source),
-                     '--output', str(output), '--job', job, '--admin-cidr', self.admin_cidr], timeout=1800)
+                     '--output', str(output), '--job', job, '--admin-cidr', self.admin_cidr,
+                     '--stream-build-log'], timeout=1800, logs=logs)
         except Failure as error:
             if error.details.get('execution_not_started') is True:
                 self.unstarted_job = job
@@ -145,19 +172,7 @@ class Infrastructure:
             pass
         return {'terminated': False, 'duration_seconds': None}
 
-    def build_log(self, operation):
-        if not re.fullmatch(r'd-[0-9a-f]{24}', operation['id']):
-            return '', 0
-        path = self.staging / operation['id'] / 'build.log'
-        if not path.is_file():
-            return '', 0
-        # Leave envelope/escaping headroom inside the 1 MiB HTTP snapshot contract.
-        with path.open('rb') as stream:
-            content = stream.read(128 * 1024)
-        dropped = max(0, path.stat().st_size - len(content))
-        return content.decode('utf-8', errors='replace'), dropped
-
-    def start(self, operation, artifact, app):
+    def start(self, operation, artifact, app, register):
         image = Path(artifact['archive'])
         with tarfile.open(image, mode='r:') as archive:
             manifest_file = archive.extractfile('manifest.json')
@@ -192,12 +207,14 @@ class Infrastructure:
             stage = 'database-credential-handoff'
             credentials = json.loads(command(['age', '--decrypt', '-i', '/srv/small-cloud/secrets/identity.age',
                                              provisioned['encrypted_credentials']]))
+            register([credentials['database_url'], credentials['password']])
             stage = 'runtime-environment-handoff'
             self.ssh('python3', '-c',
                 'import os,sys; fd=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); '
                 'os.write(fd,sys.stdin.buffer.read(65536)); os.close(fd)', environment,
                 data=('DATABASE_URL=' + credentials['database_url'] + '\n').encode())
-            arguments = ['start', operation['app_id'], image_id, '--env-file', environment]
+            arguments = ['start', operation['app_id'], image_id, '--env-file', environment,
+                         '--deployment', operation['id']]
             if app['container']:
                 arguments.append('--candidate')
             stage = 'runtime-start'
@@ -253,10 +270,12 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class Worker:
-    def __init__(self, state, infrastructure):
+    def __init__(self, state, infrastructure, key=None):
         self.state, self.infrastructure = state, infrastructure
+        self.registry = diagnostics.Registry(state, key or state.path.parent / 'redaction.key')
 
     def recover(self):
+        self.registry.migrate()
         with self.state.connect() as db:
             # Never replay a build after process loss; independent builder reconciliation
             # owns termination, and the creator lock stays held for operator review.
@@ -264,7 +283,7 @@ class Worker:
                        (json.dumps({'code': 'INTERNAL', 'message': 'Worker interrupted; operator reconciliation required.',
                                     'retryable': False, 'details': {'reconciliation_required': True}}),))
             db.execute('UPDATE deployments SET source=NULL WHERE finished IS NOT NULL')
-            db.execute("UPDATE deployments SET build_log='' WHERE created<?", (time.time() - 604800,))
+        self.registry.maintain()
 
     def once(self):
         with self.state.connect() as db:
@@ -278,13 +297,14 @@ class Worker:
         target = None
         switched = False
         starting = False
+        logs = diagnostics.Writer(self.state, self.registry, operation['id'], 'build')
         try:
             if (not re.fullmatch(r'd-[0-9a-f]{24}', operation['id'])
                     or not re.fullmatch(r'a-[0-9a-f]{24}', operation['app_id'])):
                 raise Failure('INTERNAL', 'Invalid deployment identity requires operator reconciliation.', 500,
                               reconciliation_required=True)
             try:
-                artifact = self.infrastructure.build(operation)
+                artifact = self.infrastructure.build(operation, logs)
             except Exception:
                 self.settle_build(operation)
                 raise
@@ -292,7 +312,8 @@ class Worker:
             with self.state.connect() as db:
                 db.execute("UPDATE deployments SET state='starting',source=NULL WHERE id=?", (operation['id'],))
             starting = True
-            target = self.infrastructure.start(operation, artifact, app)
+            target = self.infrastructure.start(operation, artifact, app,
+                        lambda values: self.registry.register(operation['id'], values))
             with self.state.connect() as db:
                 db.execute('UPDATE deployments SET candidate_host=?,candidate_port=?,candidate_container=?,previous_container=? WHERE id=?',
                            (target['host'], target['port'], target['container'], app['container'], operation['id']))
@@ -336,13 +357,9 @@ class Worker:
                             json.dumps({'code': failure.code, 'message': failure.message, 'retryable': False,
                                         'details': failure.details}), int(bool(failure.details.get('reconciliation_required'))), operation['id']))
         finally:
-            try:
-                log, dropped = self.infrastructure.build_log(operation)
-            except (OSError, ValueError):
-                log, dropped = 'Build log could not be collected; operator inspection required.', 0
+            logs.feed(b'', final=True)
             with self.state.connect() as db:
-                db.execute('UPDATE deployments SET source=NULL,build_log=?,dropped_bytes=? WHERE id=?',
-                           (log, dropped, operation['id']))
+                db.execute('UPDATE deployments SET source=NULL WHERE id=?', (operation['id'],))
         return True
 
     def settle_build(self, operation):
@@ -352,6 +369,34 @@ class Worker:
             evidence = {}
         with self.state.connect() as db:
             allowance.settle(db, operation['id'], evidence)
+
+
+def platform_redaction(registry, config):
+    values = []
+    paths = config.get('redaction_files', ['/root/.config/small-cloud/secrets/hetzner-token'])
+    identity_config = Path(config.get('identity_config', '/etc/small-cloud/identity/server.json'))
+    for path in [*(Path(value) for value in paths), identity_config]:
+        info = path.lstat()
+        if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) != 0o600
+                or info.st_uid not in (0, registry.state.owner) or info.st_size > 262144):
+            raise ValueError('Unsafe confidential platform configuration')
+        content = path.read_text()
+        values.append(json.loads(content)['google_client_secret'] if path == identity_config else content.strip())
+    registry.save('*', 'platform', values)
+
+
+def seed_redaction(registry, config):
+    platform_redaction(registry, config)
+    with registry.state.connect() as db:
+        apps = db.execute('SELECT a.id,COALESCE(a.active_deployment_id, '
+                          '(SELECT id FROM deployments WHERE app_id=a.id ORDER BY created DESC LIMIT 1)) AS deployment '
+                          'FROM apps a').fetchall()
+    for app in apps:
+        filename = 'tool_' + hashlib.sha256(app['id'].encode()).hexdigest()[:24] + '.json.age'
+        path = Path('/srv/small-cloud/secrets') / filename
+        if path.exists() and app['deployment']:
+            credentials = json.loads(command(['age', '--decrypt', '-i', '/srv/small-cloud/secrets/identity.age', str(path)]))
+            registry.register(app['deployment'], [credentials['database_url'], credentials['password']])
 
 
 def main():
@@ -364,9 +409,11 @@ def main():
     if os.geteuid() != 0 or not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or stat.S_IMODE(info.st_mode) != 0o600:
         parser.error('Worker requires root and a root-owned mode-0600 configuration')
     config = json.loads(args.config.read_text())
-    worker = Worker(State(config['database']), Infrastructure(config))
+    worker = Worker(State(config['database']), Infrastructure(config),
+                    config.get('redaction_key', '/srv/small-cloud/secrets/diagnostics.key'))
     with open('/run/small-cloud-publishing.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        seed_redaction(worker.registry, config)
         worker.recover()
         while True:
             worked = worker.once()

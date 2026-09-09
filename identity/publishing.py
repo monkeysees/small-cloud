@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 
 from .common import Failure, digest, timestamp
 from .upload import validate_archive
-from . import allowance
+from . import allowance, diagnostics
 
 
 class Publishing:
@@ -32,10 +32,10 @@ class Publishing:
                     id TEXT PRIMARY KEY, app_id TEXT NOT NULL, actor TEXT NOT NULL,
                     request_id TEXT NOT NULL, state TEXT NOT NULL, source BLOB,
                     created REAL NOT NULL, finished REAL, error TEXT,
-                    build_log TEXT NOT NULL DEFAULT '', dropped_bytes INTEGER NOT NULL DEFAULT 0,
                     candidate_host TEXT, candidate_port INTEGER, candidate_container TEXT,
                     previous_container TEXT, cleanup_pending INTEGER NOT NULL DEFAULT 0);
             ''')
+            diagnostics.initialize(db)
             db.execute('BEGIN IMMEDIATE')
             allowance.initialize(db)
 
@@ -186,37 +186,12 @@ class Publishing:
                 raise Failure('NOT_FOUND', 'Operation not found.', 404)
             return self.operation_result(row, app['name'])
 
-    def logs(self, token, name, source, deployment=None, since=None, limit=100):
-        if source != 'build':
-            raise Failure('INVALID_ARGUMENT', 'Runtime log collection is not available; select build logs.')
-        if not isinstance(limit, int) or not 1 <= limit <= 1000:
-            raise Failure('INVALID_ARGUMENT', 'Log limit must be between 1 and 1000.')
+    def logs(self, token, name, source, deployment=None, since=None, limit=100, cursor=None):
         with self.store.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
             app = self.authorized_app(db, token, name)
-            if deployment:
-                row = db.execute('SELECT * FROM deployments WHERE id=? AND app_id=?', (deployment, app['id'])).fetchone()
-            else:
-                row = db.execute('SELECT * FROM deployments WHERE app_id=? ORDER BY created DESC LIMIT 1',
-                                 (app['id'],)).fetchone()
-            if not row:
-                raise Failure('NOT_FOUND', 'Deployment not found.', 404)
-            lines = row['build_log'].splitlines() if row['created'] > time.time() - 604800 else []
-            recorded = timestamp(row['finished'] or row['created'])
-            if since:
-                from datetime import datetime
-                try:
-                    value = datetime.fromisoformat(since.replace('Z', '+00:00'))
-                    if value.tzinfo is None:
-                        raise ValueError()
-                except (ValueError, AttributeError):
-                    raise Failure('INVALID_ARGUMENT', 'Since must be a UTC RFC3339 timestamp.') from None
-                if value.timestamp() > (row['finished'] or row['created']):
-                    lines = []
-            return {'entries': [{'timestamp': recorded, 'source': 'build', 'deployment_id': row['id'], 'message': line}
-                                for line in lines[-limit:]],
-                    'truncated': len(lines) > limit or bool(row['dropped_bytes']),
-                    'dropped_bytes': row['dropped_bytes'], 'oldest_available_at': recorded if lines else None,
-                    'next_cursor': None}
+            _, user = self.store.credential(db, token)
+            return diagnostics.snapshot(db, user['id'], app, source, deployment, since, limit, cursor, self.clock())
 
     @staticmethod
     def accessible_apps(db, user_id, app_id=None):

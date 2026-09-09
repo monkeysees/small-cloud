@@ -73,13 +73,13 @@ class DatabaseAcceptance(unittest.TestCase):
         self.database_names = {}
 
         class LocalInfrastructure:
-            def build(self, operation):
+            def build(self, operation, logs):
                 return {}
 
             def build_accounting(self, operation):
                 return {'terminated': True, 'duration_seconds': 1}
 
-            def start(self, operation, artifact, app):
+            def start(self, operation, artifact, app, register):
                 provisioned = json.loads(command('docker', 'exec', acceptance.database, 'python3',
                     '/usr/local/bin/app-database.py', operation['app_id']))
                 saved = json.loads(command('docker', 'exec', acceptance.database, 'age', '--decrypt',
@@ -107,8 +107,6 @@ class DatabaseAcceptance(unittest.TestCase):
             def cleanup(self, operation, app, succeeded=False):
                 pass
 
-            def build_log(self, operation):
-                return '', 0
 
         self.worker = Worker(State(self.home / 'server/identity.sqlite3'), LocalInfrastructure())
 

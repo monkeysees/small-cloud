@@ -221,7 +221,8 @@ class Handler(BaseHTTPRequestHandler):
             if target.endswith('/logs'):
                 result = self.app.publishing.logs(self.bearer(), target.removesuffix('/logs'),
                     source=query['source'][0], deployment=query.get('deployment', [None])[0],
-                    since=query.get('since', [None])[0], limit=int(query.get('limit', ['100'])[0]))
+                    since=query.get('since', [None])[0], limit=int(query.get('limit', ['100'])[0]),
+                    cursor=query.get('cursor', [None])[0])
             else:
                 result = self.app.publishing.status(self.bearer(), target)
             self.respond(200, envelope(result))

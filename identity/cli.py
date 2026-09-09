@@ -69,7 +69,9 @@ def parser():
     logs.add_argument('app')
     logs.add_argument('--source', choices=['build', 'runtime'], required=True)
     logs.add_argument('--deployment')
-    logs.add_argument('--since')
+    position = logs.add_mutually_exclusive_group()
+    position.add_argument('--since')
+    position.add_argument('--cursor')
     logs.add_argument('--limit', type=int, default=100)
     auth = commands.add_parser('auth', help='Sign in and manage CLI credentials', epilog='Example: small-cloud auth status')
     actions = auth.add_subparsers(dest='action', required=True)
@@ -265,6 +267,10 @@ def authenticated_command(args, request_id, client, credentials):
             query['deployment'] = args.deployment
         if args.since:
             query['since'] = args.since
+        if args.cursor:
+            query['cursor'] = args.cursor
+        if args.source == 'runtime' and args.deployment:
+            raise Failure('INVALID_ARGUMENT', 'Deployment applies only to build logs.')
         return client.request('/api/apps/' + urllib.parse.quote(args.app, safe='') + '/logs?'
                               + urllib.parse.urlencode(query), token=token)
     if args.command == 'admin':

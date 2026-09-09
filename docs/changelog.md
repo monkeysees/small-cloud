@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #11 authorized build/runtime diagnostics with bounded snapshots, stable cursors, seven-day retention, encrypted known-value redaction, streamed EU collection and visible collection gaps without raw Docker log caching.
+
 - Deploy #10 and verify live usage, replay/concurrency refusal, a 15-second successful build charge and 600-second timeout charge with the previous app still serving; remove the temporary acceptance app and preserve existing apps.
 
 - Include #10 accounting receipts in the existing seven-day diagnostic cleanup, preserving recent reconciliation evidence without leaving expired staging directories behind.
