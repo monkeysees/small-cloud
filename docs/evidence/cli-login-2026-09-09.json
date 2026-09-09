@@ -152,6 +152,43 @@
     "result": "passed",
     "typechecking": "passed"
   },
-  "fresh_hosted_google_approval": "pending: no connected browser in agent session",
-  "fresh_hosted_logout_and_revoke": "pending: requires fresh approved acceptance credentials"
+  "fresh_hosted_google_approval": {
+    "combined": "passed",
+    "split": "pending retry after server fix"
+  },
+  "fresh_hosted_logout_and_revoke": {
+    "combined_logout": "passed",
+    "all_credentials_revoke": "not run; affects retained sessions"
+  },
+  "server_browser_fix": {
+    "commit": "2de9ac4",
+    "cause": "Second Google callback replaced shared session cookie and invalidated first approval form CSRF token.",
+    "reproduction": {
+      "before_current_cookie": 403,
+      "before_original_cookie": 200,
+      "after_current_cookie": 200
+    },
+    "regression": {
+      "identity_tests": 99,
+      "infrastructure_tests": 89,
+      "hosting_probe_tests": 4,
+      "typechecking": "passed",
+      "standards_review": "passed",
+      "spec_review": "passed"
+    },
+    "deployment": {
+      "deployed_files": [
+        "http.py",
+        "store.py"
+      ],
+      "health": "passed",
+      "rollback_directory": "/opt/small-cloud-identity/rollback-small-cloud-32-browser-4f4c2cffe7264dda86e11aa84ff89a9f",
+      "sha256": {
+        "http.py": "2f6c417e03d28e2e51ccb4b56c0da5868b1bea40b83a9bf6828c96fe7ff009fd",
+        "store.py": "fb39d014e1274cbb604aa6368babe2250397ae84fa6c3fa36652ab39556c7ac3"
+      }
+    },
+    "hosted_authenticated_status_after_restart": "passed",
+    "retained_credential": "preserved"
+  }
 }
