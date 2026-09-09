@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -18,6 +19,7 @@ import urllib.parse
 
 from identity.tests import test_deployment_http as deployment_fixture
 from identity.tests import test_identity_cli as identity_fixture
+from identity.common import Failure
 from identity.worker import State, Worker
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -65,15 +67,25 @@ class DatabaseAcceptance(unittest.TestCase):
         command('docker', 'exec', '-i', cls.database, 'psql', '-U', 'postgres', '-v', 'ON_ERROR_STOP=1',
                 data=b'REVOKE ALL ON DATABASE postgres, template1 FROM PUBLIC;')
 
-    def prepare(self):
+    def prepare(self, build_source=False):
         self.creator()
         self.login()
         acceptance = self
         self.runtimes = {}
         self.database_names = {}
+        containers = set()
 
         class LocalInfrastructure:
             def build(self, operation, logs):
+                if build_source:
+                    image = 'small-cloud-acceptance:' + operation['id']
+                    result = subprocess.run(['docker', 'build', '-q', '-t', image, '-'],
+                        input=bytes(operation['source']), capture_output=True, timeout=180)
+                    logs.feed(result.stdout + result.stderr)
+                    if result.returncode:
+                        raise Failure('BUILD_FAILED', 'Dockerfile build failed; inspect build logs.', 500)
+                    acceptance.addCleanup(command, 'docker', 'image', 'rm', '-f', image)
+                    return {'image': image}
                 return {}
 
             def build_accounting(self, operation):
@@ -92,6 +104,16 @@ class DatabaseAcceptance(unittest.TestCase):
                     listener.bind(('127.0.0.1', 0))
                     port = listener.getsockname()[1]
                 env = {**os.environ, 'DATABASE_URL': url, 'PORT': str(port)}
+                if build_source:
+                    name = operation['id']
+                    result = subprocess.run(['docker', 'run', '-d', '--network', 'host', '--name', name,
+                        '-e', 'DATABASE_URL', '-e', 'PORT', artifact['image']],
+                        env=env, capture_output=True, timeout=30)
+                    acceptance.addCleanup(command, 'docker', 'rm', '-f', name)
+                    containers.add(name)
+                    if result.returncode:
+                        raise Failure('STARTUP_FAILED', 'Acceptance container could not start.', 500)
+                    return {'host': '127.0.0.1', 'port': port, 'container': name}
                 process = subprocess.Popen([sys.executable, str(ROOT / 'identity/fixture/app.py')],
                     env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 acceptance.addCleanup(acceptance.stop, process)
@@ -99,13 +121,19 @@ class DatabaseAcceptance(unittest.TestCase):
                 return {'host': '127.0.0.1', 'port': port, 'container': operation['id']}
 
             def ready(self, target):
-                acceptance.wait_ready(target['port'])
+                try:
+                    acceptance.wait_ready(target['port'])
+                except RuntimeError:
+                    raise Failure('STARTUP_FAILED', 'App did not answer HTTP readiness with HTTP 200.', 500) from None
 
             def promote(self, operation, app, target):
                 return target['container']
 
             def cleanup(self, operation, app, succeeded=False):
-                pass
+                if build_source:
+                    name = app['container'] if succeeded else operation['id']
+                    if name in containers:
+                        command('docker', 'stop', '-t', '1', name)
 
 
         self.worker = Worker(State(self.home / 'server/identity.sqlite3'), LocalInfrastructure())
@@ -144,6 +172,111 @@ class DatabaseAcceptance(unittest.TestCase):
     def app_request(self, app, path='/', body=None, token=True, headers=None):
         return self.http(path, body, token=self.token if token else None,
                          headers={'Host': urllib.parse.urlsplit(app['url']).netloc, **(headers or {})})
+
+    def source(self, version):
+        source = self.home / version
+        shutil.copytree(ROOT / 'identity/fixture', source)
+        path = source / 'app.py'
+        path.write_text(path.read_text().replace("'small-cloud-publishing'", repr(version)))
+        return source
+
+    def deploy_source(self, name, source):
+        result = self.cli('deploy', str(source), '--name', name, '--description', 'Redeployment acceptance')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.worker.once()
+        result = self.cli('status', name)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return json.loads(result.stdout)['data']
+
+    def test_updates_preserve_url_sharing_and_data_in_both_scopes(self):
+        self.prepare(build_source=True)
+        app = self.deploy_source('updates', self.source('release-one'))
+        self.assertEqual(json.loads(self.app_request(app)[1])['fixture'], 'release-one')
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Retained across updates'})[0], 201)
+        entries = json.loads(self.app_request(app, '/data')[1])['entries']
+        owner_token = self.token
+        self.http('/api/admin/member/add', {'email': 'reader@example.test'}, token=owner_token,
+                  headers={'X-Request-ID': str(uuid.uuid4())})
+        member_token = self.http_login('reader@example.test')['credential']
+        for scope, version in [('creator-only', 'release-two'), ('workspace-wide', 'release-three')]:
+            with self.subTest(scope=scope):
+                self.assertEqual(self.cli('share', 'updates', '--scope', scope).returncode, 0)
+                updated = self.deploy_source('updates', self.source(version))
+                self.assertEqual(updated['latest_operation']['state'], 'succeeded', updated)
+                self.assertNotEqual(updated['active_deployment_id'], app['active_deployment_id'])
+                self.assertEqual(updated['url'], app['url'])
+                self.assertEqual(updated['sharing_scope'], scope)
+                self.assertEqual(json.loads(self.app_request(updated)[1])['fixture'], version)
+                self.assertEqual(json.loads(self.app_request(updated, '/data')[1])['entries'], entries)
+                self.token = member_token
+                self.assertEqual(self.app_request(updated, '/data')[0],
+                                 404 if scope == 'creator-only' else 200)
+                self.token = owner_token
+                app = updated
+
+    def test_build_and_startup_failures_keep_the_previous_release_and_data(self):
+        self.prepare(build_source=True)
+        app = self.deploy_source('failures', self.source('working-release'))
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Survives failed updates'})[0], 201)
+        entries = json.loads(self.app_request(app, '/data')[1])['entries']
+        for failure in ('BUILD_FAILED', 'STARTUP_FAILED'):
+            with self.subTest(failure=failure):
+                source = self.source(failure.lower())
+                if failure == 'BUILD_FAILED':
+                    dockerfile = source / 'Dockerfile'
+                    dockerfile.write_text(dockerfile.read_text() + '\nRUN false\n')
+                else:
+                    path = source / 'app.py'
+                    path.write_text(path.read_text().replace('        initialize()',
+                        "        raise SystemExit('Deliberate startup failure')"))
+                failed = self.deploy_source('failures', source)
+                self.assertEqual(failed['latest_operation']['state'], 'failed', failed)
+                self.assertEqual(failed['latest_operation']['error']['code'], failure)
+                self.assertTrue(failed['latest_operation']['error']['message'])
+                self.assertEqual(failed['availability'], 'running')
+                self.assertEqual(failed['active_deployment_id'], app['active_deployment_id'])
+                self.assertEqual(failed['url'], app['url'])
+                self.assertEqual(failed['sharing_scope'], app['sharing_scope'])
+                self.assertEqual(json.loads(self.app_request(failed)[1])['fixture'], 'working-release')
+                self.assertEqual(json.loads(self.app_request(failed, '/data')[1])['entries'], entries)
+                result = self.cli('operation', 'status', '--request-id', failed['latest_operation']['request_id'])
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(json.loads(result.stdout)['data']['error']['code'], failure)
+        recovered = self.deploy_source('failures', self.source('fixed-release'))
+        self.assertEqual(recovered['latest_operation']['state'], 'succeeded', recovered)
+        self.assertEqual(json.loads(self.app_request(recovered)[1])['fixture'], 'fixed-release')
+        self.assertEqual(json.loads(self.app_request(recovered, '/data')[1])['entries'], entries)
+
+    def test_failed_committed_migration_needs_creator_repair_not_container_rollback(self):
+        self.prepare(build_source=True)
+        app = self.deploy_source('schema', self.source('old-schema-release'))
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Recover through schema repair'})[0], 201)
+        entries = json.loads(self.app_request(app, '/data')[1])['entries']
+        source = self.source('incompatible-migration')
+        path = source / 'app.py'
+        path.write_text(path.read_text().replace('        initialize()',
+            "        with connect() as database:\n"
+            "            database.execute('ALTER TABLE entries RENAME COLUMN value TO incompatible_value')\n"
+            "        raise SystemExit('Failed after committing incompatible migration')"))
+        failed = self.deploy_source('schema', source)
+        self.assertEqual(failed['latest_operation']['state'], 'failed', failed)
+        self.assertEqual(failed['latest_operation']['error']['code'], 'STARTUP_FAILED')
+        self.assertEqual(failed['active_deployment_id'], app['active_deployment_id'])
+        self.assertEqual(json.loads(self.app_request(failed)[1])['fixture'], 'old-schema-release')
+        self.assertEqual(self.app_request(failed, '/data')[0], 503)
+        self.assertEqual(self.app_request(failed, '/data', {'value': 'Cannot use the changed schema'})[0], 503)
+
+        source = self.source('repaired-schema-release')
+        path = source / 'app.py'
+        path.write_text(path.read_text().replace('        initialize()',
+            "        with connect() as database:\n"
+            "            database.execute('ALTER TABLE entries RENAME COLUMN incompatible_value TO value')\n"
+            "        initialize()"))
+        repaired = self.deploy_source('schema', source)
+        self.assertEqual(repaired['latest_operation']['state'], 'succeeded', repaired)
+        self.assertEqual(repaired['url'], app['url'])
+        self.assertEqual(json.loads(self.app_request(repaired)[1])['fixture'], 'repaired-schema-release')
+        self.assertEqual(json.loads(self.app_request(repaired, '/data')[1])['entries'], entries)
 
     def test_shared_members_read_and_modify_the_same_app_database(self):
         self.prepare()

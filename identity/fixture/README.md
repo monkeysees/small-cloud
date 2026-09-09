@@ -16,6 +16,8 @@ The platform supplies `DATABASE_URL` only at runtime. Each app has a persistent 
 
 The author owns initialization and migrations. `app.py` initializes its table in a transaction before listening, takes a database-local advisory lock to serialize overlapping startups, and uses `CREATE TABLE IF NOT EXISTS` without dropping or reseeding existing rows. Request values use SQL parameters. Each request opens and closes its connection; there is no separate migration runner. For future schema changes, write compatible migrations in app startup: `IF NOT EXISTS` alone does not migrate an existing table. A failed startup does not undo previously committed schema changes or repair incompatibility with the old release.
 
+See [redeployment and recovery](../REDEPLOYMENT.md) for compatible migration guidance, creator-led schema repair and the planned explicit-reset option. Redeployment regressions build uploaded variants of this fixture in local Docker, check both sharing scopes, induce build and startup failures separately, and demonstrate a committed incompatible column rename followed by a creator-authored repair. The deliberately destructive migration exists only in temporary test source, never as a starter HTTP endpoint.
+
 **Data is disposable.** Use only data users can afford to lose. Database rows survive ordinary process/container restarts and redeployments, but the pilot provides no backup or recovery guarantee. Container filesystems, `/tmp`, and in-memory state are temporary; never use them as durable storage. `/tmp` also consumes the app memory budget. Reset and deletion are separate platform work; this starter supplies no destructive endpoint.
 
 | Authenticated HTTP request | Result |

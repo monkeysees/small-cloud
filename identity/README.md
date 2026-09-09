@@ -4,6 +4,8 @@ For creator-only/workspace-wide access and the accessible app directory, see [sh
 
 For source upload, remote builds and protected app URLs, see [publishing](PUBLISHING.md).
 
+For preserved releases during failed updates and schema compatibility responsibilities, see [redeployment](REDEPLOYMENT.md).
+
 For `small-cloud usage`, deployment capacity and the shared monthly build allowance, see [publishing limits](LIMITS.md).
 
 For authorized status, build/runtime log snapshots, redaction and retention, see [diagnostics](DIAGNOSTICS.md).

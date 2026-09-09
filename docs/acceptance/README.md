@@ -11,6 +11,7 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 | [Diagnostics — 2026-09-09](diagnostics-2026-09-09.md) | #11 authorized bounded logs, redaction, real EU volume/restart checks and acceptance cleanup. |
 | [Publishing limits — 2026-09-09](publishing-limits-2026-09-09.md) | #10 local quota/month boundaries and live CLI usage, successful/timeout accounting, preserved app availability and acceptance cleanup. |
 | [App sharing — 2026-09-09](app-sharing-2026-09-09.md) | #7 local CLI/HTTP sharing, directory and shared PostgreSQL acceptance. |
+| [App redeployment — 2026-09-09](app-redeployment-2026-09-09.md) | #8 uploaded Docker builds, retained URL/sharing/data, failed updates and committed-schema repair through CLI/HTTP. |
 | [App database — 2026-09-09](app-database-2026-09-09.md) | #6 database persistence, isolation and acceptance-resource cleanup. |
 | [Initial workspace migration — 2026-09-09](workspace-migration-2026-09-09.md) | #19 local acceptance and hosted migration/restart, saved defaults, workspace authorization and retained PostgreSQL data. |
 

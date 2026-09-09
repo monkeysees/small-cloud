@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Verify #8 redeployment with uploaded Docker/HTTP/PostgreSQL fixture variants, preserved URL/sharing/data, separate build/startup failures and schema-repair regression checks; document compatible migrations and the limits of previous-container recovery.
+
 - Deploy #11 and verify live build/runtime eviction, database-value redaction and collector restart; preserve both existing apps and remove acceptance resources while retaining real build charges.
 
 - Add #11 authorized build/runtime diagnostics with bounded snapshots, stable cursors, seven-day retention, encrypted known-value redaction, streamed EU collection and visible collection gaps without raw Docker log caching.

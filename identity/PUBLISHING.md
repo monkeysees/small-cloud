@@ -1,5 +1,7 @@
 # Publish a creator-only HTTP app
 
+For updates that retain the app URL, sharing and database, failed-update diagnostics, and creator-owned schema recovery, see [redeployment](REDEPLOYMENT.md).
+
 Publishing implements [issue #5](https://github.com/monkeysees/small-cloud/issues/5) using the existing [identity service](README.md), [product contracts](../docs/contracts.md), and the accepted German control/runtime hosts. Sign in and obtain the separately granted creator role before publishing. Ordinary membership and administrator status alone do not permit publication.
 
 ```bash
