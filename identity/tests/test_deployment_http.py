@@ -17,6 +17,21 @@ class DeploymentAcceptance(unittest.TestCase):
     http = identity_fixture.IdentityAcceptance.http
     approve = identity_fixture.IdentityAcceptance.approve
     http_login = identity_fixture.IdentityAcceptance.http_login
+    cli = identity_fixture.IdentityAcceptance.cli
+    login = identity_fixture.IdentityAcceptance.login
+
+    def test_wait_reports_progress_on_stderr_and_preserves_json_stdout(self):
+        self.creator()
+        self.login()
+        source = self.home / 'source'
+        source.mkdir()
+        (source / 'Dockerfile').write_text('FROM scratch\n')
+        result = self.cli('deploy', str(source), '--name', 'progress', '--description', '',
+                          '--wait', '--timeout', '1')
+        self.assertEqual(result.returncode, 6, result.stdout + result.stderr)
+        self.assertEqual(json.loads(result.stdout)['error']['code'], 'WAIT_TIMEOUT')
+        self.assertIn('Uploading validated source', result.stderr)
+        self.assertIn('Deployment: accepted', result.stderr)
 
     def creator(self):
         self.operator('bootstrap', 'admin@example.test')

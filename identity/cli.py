@@ -166,10 +166,14 @@ def execute(args, request_id):
             metadata = {'name': args.name}
             if args.description is not None:
                 metadata['description'] = args.description
+            print('Uploading validated source...', file=sys.stderr, flush=True)
             result = client.request('/api/deploy?' + urllib.parse.urlencode(metadata), archive, token, request_id)
             if not args.wait:
                 return result
-            deadline = time.monotonic() + args.timeout
+            started = time.monotonic()
+            deadline = started + args.timeout
+            last_state, last_report = 'accepted', started
+            print('Deployment: accepted (0s elapsed).', file=sys.stderr, flush=True)
             while True:
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
@@ -177,6 +181,12 @@ def execute(args, request_id):
                                   operation_id=result['operation_id'])
                 operation = client.request('/api/operations/' + urllib.parse.quote(result['operation_id'], safe=''),
                                            token=token, timeout=min(30, remaining))
+                now = time.monotonic()
+                state = operation['state']
+                if state != last_state or now - last_report >= 15:
+                    label = state if state in ('accepted', 'building', 'starting', 'cleaning', 'succeeded', 'failed') else 'waiting'
+                    print(f'Deployment: {label} ({int(now - started)}s elapsed).', file=sys.stderr, flush=True)
+                    last_state, last_report = state, now
                 if operation['state'] == 'succeeded':
                     return {**result, 'state': 'succeeded', 'active_deployment_id': operation['deployment_id']}
                 if operation['state'] == 'failed':

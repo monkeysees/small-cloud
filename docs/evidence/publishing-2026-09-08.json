@@ -52,7 +52,7 @@
     "unauthenticated_readiness": 401,
     "public_internal_tls_route": 404
   },
-  "live_acceptance": "CLI and authenticated HTTP verified; live browser handoff not observed because browser tools are unavailable",
+  "live_acceptance": "CLI and authenticated HTTP verified directly; browser sign-in, network checks, readiness denial and other-account denial additionally confirmed by operator on 2026-09-09.",
   "authenticated_http": {
     "/identity": {
       "status": 200,
@@ -262,5 +262,13 @@
     "sc-a-9ce8504acd8242b98d681bc3-active"
   ],
   "services": "identity, publishing worker and Caddy active",
-  "browser_handoff": "five local HTTP gateway tests pass; no live browser connection was available"
+  "browser_handoff": "Operator confirmed live Google browser handoff and all four browser checks on 2026-09-09.",
+  "operator_browser_confirmation": {
+    "reported_on": "2026-09-09",
+    "source": "operator report in conversation",
+    "creator_google_sign_in": true,
+    "network_expected_results": true,
+    "public_readiness_404": true,
+    "other_admitted_account_404": true
+  }
 }

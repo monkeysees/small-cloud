@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Show deployment upload/stage progress and periodic elapsed-time updates on stderr during CLI waits; record operator-confirmed browser sign-in, network checks, readiness denial and other-account denial.
+
 - Add #5 local source validation, durable remote publishing, creator-only authenticated app ingress, bounded build-log/status commands and a reusable HTTP acceptance fixture on the EU hosting foundation.
 
 - Complete #4 acceptance with operator-confirmed macOS creator sign-in, administrator-command denials and unadmitted Google-account rejection.
