@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Small Cloud · Persistent entries</title>
+<style>
+  body { max-width: 42rem; margin: 4rem auto; padding: 0 1.5rem; font: 1rem/1.6 system-ui, sans-serif; color: #23352f; background: #f7f7f2; }
+  aside { padding: 1rem 1.25rem; border-left: .25rem solid #997528; background: #f3ecd8; }
+  label, textarea { display: block; }
+  textarea { box-sizing: border-box; width: 100%; margin: .5rem 0 1rem; padding: .75rem; font: inherit; }
+  button { padding: .6rem 1rem; font: inherit; cursor: pointer; }
+  li { white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: .75rem; }
+</style>
+<main>
+  <h1>Persistent entries</h1>
+  <aside><strong>Data is disposable.</strong> Use only data you can afford to lose. Entries survive ordinary restarts and redeployments. No backup or recovery guarantee is provided.</aside>
+  <p>This starter saves entries in this app’s database. Container files and in-memory state are temporary.</p>
+  <form id="entry-form">
+    <label for="value">New entry</label>
+    <textarea id="value" required maxlength="4096" rows="3"></textarea>
+    <button type="submit">Save entry</button>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+  <h2>Saved entries</h2>
+  <p>Showing the first 100 entries.</p>
+  <ol id="entries"></ol>
+</main>
+<script>
+  const form = document.querySelector('#entry-form');
+  const value = document.querySelector('#value');
+  const status = document.querySelector('#status');
+  async function refresh() {
+    const response = await fetch('/data');
+    if (!response.ok) throw new Error('Could not load entries. Try again.');
+    const data = await response.json();
+    document.querySelector('#entries').replaceChildren(...data.entries.map(entry => {
+      const item = document.createElement('li');
+      item.textContent = entry.value;
+      return item;
+    }));
+  }
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = form.querySelector('button');
+    button.disabled = true;
+    status.textContent = 'Saving…';
+    try {
+      const response = await fetch('/data', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: value.value }) });
+      if (!response.ok) throw new Error(response.status === 400
+        ? 'Use 1–4096 UTF-8 bytes for each entry.' : 'Save was not confirmed. Reload entries before retrying.');
+      value.value = '';
+      status.textContent = 'Saved.';
+      await refresh();
+    } catch (error) { status.textContent = error.message; }
+    finally { button.disabled = false; }
+  });
+  refresh().catch(error => { status.textContent = error.message; });
+</script>
+</html>

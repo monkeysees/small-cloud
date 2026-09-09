@@ -2,6 +2,8 @@
 
 For source upload, remote builds and protected app URLs, see [publishing](PUBLISHING.md).
 
+For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](DATABASE.md) and the [starter guide](fixture/README.md).
+
 Implements [#4](https://github.com/monkeysees/small-cloud/issues/4) against the [CLI and identity contracts](../docs/contracts.md). One operator bootstraps the sole administrator, explicitly admits Google emails, and grants creator privileges separately. A member can sign in to establish their immutable user ID; membership and administrator authority alone do not grant publishing privileges. There are at most five creators, including the administrator if separately granted that role.
 
 ## Install the CLI
@@ -88,11 +90,12 @@ The identity service is installed on control host `165120313` in Nuremberg, usin
 
 On 2026-09-08 the operator completed real Google sign-in and browser approval. Fresh CLI invocations verified retained credentials and the separately granted creator role. A second browser approval produced a replacement credential; revoking the original immediately caused authenticated HTTP status to return `CREDENTIAL_REVOKED`, repeated revocation succeeded, and the replacement remained authorized. The workstation is left signed in as member, creator and administrator. The full alternate-identity/role matrix and five-creator boundary pass in the local signed-provider suite; the operator subsequently verified a separate creator on macOS with retained member/creator roles, denial of both administrator commands, and rejection of an unadmitted Google account. These alternate-identity results are operator-reported, not direct agent observations.
 
-Install the package in your test environment, then run from the repository root:
+Install the package and starter dependencies in your test environment, then run from the repository root. The HTTP/database suite also requires Docker for its disposable PostgreSQL 16 server:
 
 ```bash
-npx --yes pyright@1.1.413
-python3 -m unittest discover -s identity/tests -p 'test_*_cli.py'
+python3 -m pip install . -r identity/fixture/requirements.txt
+npx --yes pyright@1.1.413 --pythonpath "$(command -v python3)"
+python3 -m unittest discover -s identity/tests -p 'test_*.py'
 python3 -m unittest discover -s infra/tests -p 'test_*_cli.py'
 python3 -m unittest discover -s probes/hosting/fixture -p 'test_*.py'
 ```

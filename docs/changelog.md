@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #6 database-backed starter with repeatable initialization, parameterized entry writes, visible disposable-data notice and CLI/authenticated HTTP persistence and cross-app PostgreSQL isolation checks.
+
 - Show deployment upload/stage progress and periodic elapsed-time updates on stderr during CLI waits; record operator-confirmed browser sign-in, network checks, readiness denial and other-account denial.
 
 - Add #5 local source validation, durable remote publishing, creator-only authenticated app ingress, bounded build-log/status commands and a reusable HTTP acceptance fixture on the EU hosting foundation.

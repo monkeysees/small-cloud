@@ -1,0 +1,200 @@
+{
+  "issue": "https://github.com/monkeysees/small-cloud/issues/6",
+  "checked_at": "2026-09-09T00:30:12.260376+00:00",
+  "hosts": {
+    "control": 165120313,
+    "runtime": 165120370,
+    "location": "nbg1"
+  },
+  "apps": {
+    "database-starter-6": {
+      "app": "database-starter-6",
+      "app_id": "a-d1b0371db71144778ec01df5",
+      "description": "Disposable database starter and isolation acceptance for issue 6",
+      "url": "https://a-d1b0371db71144778ec01df5.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-058f49089db9410ab9a0d5c1",
+      "latest_operation": {
+        "id": "d-058f49089db9410ab9a0d5c1",
+        "kind": "deploy",
+        "app": "database-starter-6",
+        "operation_id": "d-058f49089db9410ab9a0d5c1",
+        "deployment_id": "d-058f49089db9410ab9a0d5c1",
+        "state": "succeeded",
+        "request_id": "0e671ac9-e047-4efd-b22a-7a44ec2c282d",
+        "created_at": "2026-09-09T00:27:31.899571Z",
+        "updated_at": "2026-09-09T00:29:25.580812Z",
+        "completed_at": "2026-09-09T00:29:25.580812Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    },
+    "database-peer-6": {
+      "app": "database-peer-6",
+      "app_id": "a-1040f9a86e414921a8d58d52",
+      "description": "Disposable cross-app database isolation acceptance for issue 6",
+      "url": "https://a-1040f9a86e414921a8d58d52.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "active_deployment_id": "d-4463c6d6a5934921887717fb",
+      "latest_operation": {
+        "id": "d-4463c6d6a5934921887717fb",
+        "kind": "deploy",
+        "app": "database-peer-6",
+        "operation_id": "d-4463c6d6a5934921887717fb",
+        "deployment_id": "d-4463c6d6a5934921887717fb",
+        "state": "succeeded",
+        "request_id": "69ff4570-c538-4413-b327-a5a1f69e6a3e",
+        "created_at": "2026-09-09T00:25:07.890512Z",
+        "updated_at": "2026-09-09T00:26:59.146191Z",
+        "completed_at": "2026-09-09T00:26:59.146191Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    }
+  },
+  "database_transport": {
+    "host": "10.42.0.2",
+    "port": 5432,
+    "sslmode": "verify-full",
+    "sslrootcert": "/etc/small-cloud/database-ca.crt",
+    "runtime": "runsc",
+    "read_only_root": true
+  },
+  "write": {
+    "status": 201,
+    "entry": {
+      "id": 1,
+      "value": "Issue 6: persisted across runtime restart and redeployment."
+    }
+  },
+  "container_restart": {
+    "command": "docker restart sc-a-d1b0371db71144778ec01df5-active",
+    "exit_code": 0,
+    "read_status": 200,
+    "rows": {
+      "entries": [
+        {
+          "id": 1,
+          "value": "Issue 6: persisted across runtime restart and redeployment."
+        }
+      ]
+    }
+  },
+  "redeployment": {
+    "stable_url_preserved": true,
+    "read_status": 200,
+    "rows": {
+      "entries": [
+        {
+          "id": 1,
+          "value": "Issue 6: persisted across runtime restart and redeployment."
+        }
+      ]
+    }
+  },
+  "isolation": {
+    "a-d1b0371db71144778ec01df5": {
+      "own_database": "reachable",
+      "other_database": "denied",
+      "other_role": "denied",
+      "maintenance_database": "denied"
+    },
+    "a-1040f9a86e414921a8d58d52": {
+      "own_database": "reachable",
+      "other_database": "denied",
+      "other_role": "denied",
+      "maintenance_database": "denied"
+    }
+  },
+  "ingress": {
+    "unauthenticated_data_status": 401,
+    "authenticated_data_status": 200,
+    "authenticated_public_readiness_status": 404,
+    "both_apps_checked": true
+  },
+  "notice": {
+    "authenticated_html_status": 200,
+    "contains_disposable_data_notice": true,
+    "contains_no_backup_or_recovery_guarantee": true,
+    "browser_rendering_tested": false
+  },
+  "network": {
+    "public_https": "reachable",
+    "metadata": "blocked",
+    "control_private_ssh": "blocked",
+    "runtime_private_ssh": "blocked",
+    "note": "Fixture observations; listener health and broader isolation were separately established in hosting/publishing acceptance."
+  },
+  "builds": {
+    "d-831988df6fe94619af326e37": {
+      "build": {
+        "ok": true,
+        "image_archive_sha256": "46f49933992547a489321211fc9bdede6d175b095608708fe49fcf0d68c117ec",
+        "image_bytes": 159812096,
+        "dropped_log_bytes": 0,
+        "execution_started_at": "2026-09-09T00:24:08Z",
+        "execution_completed_at": "2026-09-09T00:24:26Z",
+        "execution_duration_seconds": 17.498
+      },
+      "teardown": {
+        "id": 165240264,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    },
+    "d-4463c6d6a5934921887717fb": {
+      "build": {
+        "ok": true,
+        "image_archive_sha256": "e99a0513528029c2050c07aacfdbb2058d72664fe74044b68a8e232cda25a4b4",
+        "image_bytes": 159812096,
+        "dropped_log_bytes": 0,
+        "execution_started_at": "2026-09-09T00:26:16Z",
+        "execution_completed_at": "2026-09-09T00:26:32Z",
+        "execution_duration_seconds": 16.555
+      },
+      "teardown": {
+        "id": 165240398,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    },
+    "d-058f49089db9410ab9a0d5c1": {
+      "build": {
+        "ok": true,
+        "image_archive_sha256": "2f1b331be9adb4c56af5eafb2f5118726d9d3dd7632f8b873079e4d57d5af03b",
+        "image_bytes": 159812096,
+        "dropped_log_bytes": 0,
+        "execution_started_at": "2026-09-09T00:28:43Z",
+        "execution_completed_at": "2026-09-09T00:28:57Z",
+        "execution_duration_seconds": 14.788
+      },
+      "teardown": {
+        "id": 165240534,
+        "deleted": true,
+        "addresses_removed": true,
+        "estimated_billed_hours": 1,
+        "invoice_verified": false
+      }
+    }
+  },
+  "local_verification": {
+    "identity_tests": 36,
+    "infrastructure_tests": 81,
+    "hosting_fixture_tests": 4,
+    "total_tests": 121,
+    "result": "passed",
+    "pyright": "0 errors, 0 warnings",
+    "standards_findings": 0,
+    "spec_findings": 0,
+    "local_database_transport": "loopback TCP without TLS; deployed transport separately verified"
+  },
+  "retained_state": "Both creator-only acceptance apps retained on existing German hosts; two active slots. Existing publishing-probe unchanged. No platform service code or configuration required deployment."
+}
