@@ -196,5 +196,36 @@
     "spec_findings": 0,
     "local_database_transport": "loopback TCP without TLS; deployed transport separately verified"
   },
-  "retained_state": "Both creator-only acceptance apps retained on existing German hosts; two active slots. Existing publishing-probe unchanged. No platform service code or configuration required deployment."
+  "retained_state": "At acceptance, both creator-only apps were retained. The operator subsequently requested cleanup; see cleanup below. Existing publishing-probe is unchanged.",
+  "cleanup": {
+    "checked_at": "2026-09-09T00:40:54.117452+00:00",
+    "operator_authorized": true,
+    "removed_apps": [
+      "database-starter-6",
+      "database-peer-6"
+    ],
+    "removed_containers": 2,
+    "removed_runtime_images": 6,
+    "removed_databases": 2,
+    "removed_roles": 2,
+    "encrypted_credentials_removed": true,
+    "registry_manifests_removed": 3,
+    "registry_unused_blobs_garbage_collected": true,
+    "task_source_images_build_logs_removed": true,
+    "app_metadata_request_receipts_sessions_removed": true,
+    "active_slots_released": 2,
+    "authenticated_removed_app_status": 404,
+    "preserved_publishing_probe_status": 200,
+    "local_acceptance_image_removed": true,
+    "local_temporary_environments_removed": true,
+    "scope": "One-off operator cleanup of exact acceptance resources; does not implement the future #13 product deletion workflow. Shared infrastructure and provider billing/teardown audit records retained.",
+    "app_certificate_directories_removed": 2,
+    "platform_services_active": [
+      "small-cloud-identity",
+      "small-cloud-publishing",
+      "caddy",
+      "docker-registry",
+      "postgresql@16-main"
+    ]
+  }
 }
