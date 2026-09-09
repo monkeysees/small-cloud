@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-09",
+  "implementation_commit": "db35334",
+  "wheel_sha256": "80188171306e2b187611561b8ddfe7a5dddb0efd72ebff57ecdaba3b1faa3b0a",
+  "control_host_id": 165120313,
+  "workspace_id": "ws-initial",
+  "identities_migrated": 3,
+  "apps_preserved": 2,
+  "pending_deployments_before_upgrade": 0,
+  "roles_preserved": true,
+  "saved_defaults_assigned": 3,
+  "operator_is_owner_and_platform_administrator": true,
+  "operator_existing_creator_grant_preserved": true,
+  "retained_control_state_unchanged": true,
+  "app_database_data_fingerprints_unchanged": true,
+  "app_database_count": 2,
+  "repeat_bootstrap_succeeded": true,
+  "identity_service": "active/running",
+  "publishing_service": "active/running",
+  "service_automatic_restarts": 0,
+  "health_ready": true,
+  "existing_cli_credential_works": true,
+  "existing_app_urls_and_deployments_preserved": true,
+  "directory_excludes_other_creator_private_app": true,
+  "https_checks": {
+    "authenticated_own_app": 200,
+    "administrator_other_creator_private_app": 404,
+    "unauthenticated_app": 401
+  },
+  "not_exercised_after_upgrade": [
+    "new hosted build",
+    "sharing mutation",
+    "interactive Google/browser sign-in"
+  ]
+}

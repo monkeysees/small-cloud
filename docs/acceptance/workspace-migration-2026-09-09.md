@@ -1,6 +1,6 @@
 # Initial workspace migration acceptance — 2026-09-09
 
-Local implementation acceptance for [#19](https://github.com/monkeysees/small-cloud/issues/19), following [specification #18](https://github.com/monkeysees/small-cloud/issues/18) and [ADR 0009](../adr/0009-multiple-workspaces.md). Upgrade instructions and preserved-data contracts are in the [migration runbook](../../identity/WORKSPACE-MIGRATION.md).
+Local implementation acceptance and hosted migration verification for [#19](https://github.com/monkeysees/small-cloud/issues/19), following [specification #18](https://github.com/monkeysees/small-cloud/issues/18) and [ADR 0009](../adr/0009-multiple-workspaces.md). Upgrade instructions and preserved-data contracts are in the [migration runbook](../../identity/WORKSPACE-MIGRATION.md).
 
 ## Observed results
 
@@ -25,4 +25,14 @@ Typechecking passed with zero errors. All 46 identity, 81 infrastructure and fou
 
 ## Limits
 
-Google is replaced by a signed-token provider fixture and Docker supplies disposable local PostgreSQL. This change has not been deployed to the hosted installation and establishes no new live infrastructure or residency evidence. The implementation supports only the initial workspace; creation and selection of a second workspace and the other management workflows remain later tickets. Disposable-data guarantees are unchanged.
+In local tests, Google is replaced by a signed-token provider fixture and Docker supplies disposable local PostgreSQL. The hosted migration results below do not establish new infrastructure-isolation or residency evidence. The implementation supports only the initial workspace; creation and selection of a second workspace and the other management workflows remain later tickets. Disposable-data guarantees are unchanged.
+
+## Hosted migration — 2026-09-09
+
+Pushed and deployed commit `db35334` to the existing control host. Both services were healthy and no deployments were in progress before the upgrade. Stopped the identity service and publishing worker, installed the wheel into `/opt/small-cloud-identity`, ran bootstrap with the original operator email, and started both services. Repeating bootstrap after startup succeeded without changing retained state. Health returned `ready:true`; both services were active/running with zero automatic restarts.
+
+All three identities received `ws-initial` as their saved default. The original operator became workspace owner and platform administrator; all membership and creator grants were preserved, including the operator's pre-existing creator grant. Before/after comparisons preserved identity profiles, app/deployment metadata, credential verifiers, browser/app sessions, request receipts and login/OAuth state. Data-only PostgreSQL dump fingerprints for both existing app databases were unchanged.
+
+The retained workstation CLI credential returned the saved workspace and platform role without a new login. Both `publishing-probe` and `sharing-acceptance-7` remained running, creator-only, at their previous URLs and selected deployments. The operator's directory listed only their own probe. Authenticated HTTPS access to that probe returned 200; access to the other creator's private app returned 404 despite administrator status; unauthenticated app access returned 401.
+
+No new hosted build, sharing mutation or interactive Google/browser sign-in was performed in this deployment step. Those post-upgrade workflow smoke checks remain distinct from the completed migration/restart and retained-credential verification. Redacted outcomes are in [the deployment evidence](../evidence/workspace-migration-2026-09-09.json).
