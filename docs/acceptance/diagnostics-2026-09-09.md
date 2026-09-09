@@ -32,6 +32,8 @@ Both pre-existing apps were moved to the new logging configuration using their r
 
 ## Cleanup and remaining scope
 
+Finalization on 2026-09-09: implementation, fixes and acceptance evidence through `eafeaed` were pushed to GitHub `main` after operator authorization. The unpushed state recorded above describes the earlier deployment milestone.
+
 Deleted only the temporary acceptance app, runtime, PostgreSQL database/role, encrypted credential, source staging, diagnostics and synthetic registration. Removed the temporary rollback copy and ten migrated legacy raw log files. Both fresh builders and their addresses were deleted; only the permanent control/runtime hosts remain. Retired acceptance images follow the existing registry/runtime janitor grace periods, without forcing shared-layer deletion. The two real builds charged 14 and 13 seconds; those **27 seconds** remain in the ledger. Final usage is two deployed/active apps, 642 charged seconds and zero reserved seconds. Provider billing remains an estimate until an invoice is reconciled.
 
 Creator-supplied secret management and product app deletion remain separate #12/#13 work. This acceptance does not claim arbitrary encoded or transformed secret detection, exact byte counts for transport loss, or a durable replay buffer during collector outages; those limits are explicit in the diagnostics guide.
