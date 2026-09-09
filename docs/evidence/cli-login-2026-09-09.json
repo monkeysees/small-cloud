@@ -154,11 +154,15 @@
   },
   "fresh_hosted_google_approval": {
     "combined": "passed",
-    "split": "pending retry after server fix"
+    "split": "passed after server fix",
+    "browser_approval": "performed by operator"
   },
   "fresh_hosted_logout_and_revoke": {
     "combined_logout": "passed",
-    "all_credentials_revoke": "not run; affects retained sessions"
+    "split_logout": "passed",
+    "split_revoked_credential_rejected": "passed: CREDENTIAL_REVOKED",
+    "split_local_credential_removed": "passed",
+    "all_credentials_revoke": "covered by automated fixture; not run live to preserve retained sessions"
   },
   "server_browser_fix": {
     "commit": "2de9ac4",
@@ -189,6 +193,12 @@
       }
     },
     "hosted_authenticated_status_after_restart": "passed",
-    "retained_credential": "preserved"
+    "retained_credential": "preserved",
+    "fresh_hosted_split_login_after_deployment": "passed"
+  },
+  "complete": true,
+  "fresh_hosted_retained_status": {
+    "combined": "passed",
+    "split": "passed"
   }
 }

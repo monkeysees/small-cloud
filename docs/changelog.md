@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Fix simultaneous open CLI approval forms by retaining valid same-account browser sessions without extending expiry or weakening origin/CSRF checks.
+- Complete #32 live combined/split Google approval, credential retention, and targeted revocation acceptance.
 
 ## 0.2.0 — 2026-09-09
 
