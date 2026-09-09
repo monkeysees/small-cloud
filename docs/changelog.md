@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #46 public Small Cloud landing page with testing-stage and manual-admission notices, persistent app databases, backup/recovery limits, and CLI installation guidance.
+
 - Fix simultaneous open CLI approval forms by retaining valid same-account browser sessions without extending expiry or weakening origin/CSRF checks.
 - Complete #32 live combined/split Google approval, credential retention, and targeted revocation acceptance.
 

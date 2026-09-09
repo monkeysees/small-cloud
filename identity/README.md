@@ -1,5 +1,7 @@
 # Workspace identity and CLI
 
+The public homepage is served by Caddy from the [static landing page](../landing/README.md), with testing-stage and manual-admission notices. It requires no sign-in; app content and management APIs retain their existing authentication requirements.
+
 For creator-only/workspace-wide access and the accessible app directory, see [sharing and discovery](SHARING.md).
 
 For source upload, remote builds and protected app URLs, see [publishing](PUBLISHING.md).

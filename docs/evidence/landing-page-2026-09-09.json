@@ -1,0 +1,100 @@
+{
+  "checked_at": "2026-09-09T18:03:13.050759+00:00",
+  "origin": "https://small-cloud.monkeysees.one",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "head_status": 200,
+      "sha256": "2edb75f56642da2b783abe3100f9cf45d568e6c03dd021bd2084c98a19a1e42f"
+    },
+    {
+      "path": "/landing.css",
+      "status": 200,
+      "head_status": 200,
+      "sha256": "800b471f28831c99429fcfcfe95d78e5a2b0a3366eab29df643548a6274fa783"
+    },
+    {
+      "path": "/api/auth/status",
+      "status": 401
+    },
+    {
+      "path": "/api/directory",
+      "status": 401
+    },
+    {
+      "path": "/cli/install.sh",
+      "status": 200
+    },
+    {
+      "path": "/auth/verify",
+      "status": 400
+    },
+    {
+      "path": "/not-a-real-page-46",
+      "status": 404
+    },
+    {
+      "path": "/index.html",
+      "status": 404
+    },
+    {
+      "path": "/README.md",
+      "status": 404
+    },
+    {
+      "path": "/internal/tls",
+      "status": 404
+    },
+    {
+      "check": "HTTP redirects to public HTTPS",
+      "passed": true
+    }
+  ],
+  "browser": {
+    "checked_at": "2026-09-09T17:59:54.455Z",
+    "browser": "isolated Chromium",
+    "results": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        },
+        "width": 1440,
+        "scrollWidth": 1440,
+        "stylesheet": 1,
+        "background": "rgb(245, 243, 235)",
+        "checks": "public content, CSS, no horizontal overflow, keyboard skip link, access anchor, installer link",
+        "passed": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "width": 390,
+        "scrollWidth": 390,
+        "stylesheet": 1,
+        "background": "rgb(245, 243, 235)",
+        "checks": "public content, CSS, no horizontal overflow, keyboard skip link, access anchor, installer link",
+        "passed": true
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 740
+        },
+        "width": 320,
+        "scrollWidth": 320,
+        "stylesheet": 1,
+        "background": "rgb(245, 243, 235)",
+        "checks": "public content, CSS, no horizontal overflow, keyboard skip link, access anchor, installer link",
+        "passed": true
+      }
+    ]
+  },
+  "protected_app_check": {
+    "status": 401,
+    "code": "AUTH_REQUIRED"
+  }
+}

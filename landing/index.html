@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Small Cloud hosts purpose-built apps for you and your workspace. Currently in testing; new users are added manually.">
+  <meta name="theme-color" content="#f5f3eb">
+  <title>Small Cloud — A home for small software</title>
+  <link rel="stylesheet" href="/landing.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="masthead wrap">
+    <a class="brand" href="/" aria-label="Small Cloud home"><span aria-hidden="true">☁</span> Small Cloud</a>
+    <a class="nav-link" href="#access">Testing &amp; access <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="headline">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Small Cloud / In testing</p>
+        <h1 id="headline">Small software.<br>A place to <em>live.</em></h1>
+        <p class="intro">A home for purpose-built apps. The check-in board for your team. The little app that fits how you work. Software for one person, or a small group.</p>
+        <a class="button" href="#access">About the testing stage <span aria-hidden="true">↘</span></a>
+        <p class="hero-note">New users are added manually.</p>
+      </div>
+      <div class="illustration" aria-hidden="true">
+        <svg viewBox="0 0 480 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M45 339H442M65 362H422M86 385H399" stroke="#d4d7ca"/>
+          <ellipse cx="244" cy="337" rx="146" ry="18" fill="#dce1d2"/>
+          <path d="M125 262C76 262 60 209 86 178C99 162 117 156 138 158C137 104 180 66 226 74C253 29 325 49 331 107C385 99 419 150 399 192C440 224 414 276 370 276H145" fill="#edf0e4" stroke="#364d3c" stroke-width="2"/>
+          <path d="M127 175C104 170 92 185 90 201M239 91C247 74 266 67 280 74" stroke="#364d3c" stroke-width="2" stroke-linecap="round"/>
+          <path d="M173 253V316M320 264V316" stroke="#364d3c" stroke-width="2" stroke-dasharray="4 7"/>
+          <g transform="rotate(-8 172 233)">
+            <rect x="103" y="181" width="144" height="111" rx="7" fill="#f9f7f0" stroke="#364d3c" stroke-width="2"/>
+            <path d="M103 206H247" stroke="#364d3c"/>
+            <circle cx="117" cy="194" r="3" fill="#ce7049"/><circle cx="129" cy="194" r="3" fill="#d5bc71"/>
+            <path d="M120 227H173M120 243H226M120 260H202" stroke="#a4ae97" stroke-width="5"/>
+          </g>
+          <g transform="rotate(7 313 238)">
+            <rect x="258" y="197" width="124" height="98" rx="7" fill="#f9f7f0" stroke="#364d3c" stroke-width="2"/>
+            <path d="M258 221H382" stroke="#364d3c"/>
+            <circle cx="272" cy="209" r="3" fill="#ce7049"/>
+            <path d="M277 276V253H295V276M305 276V237H323V276M333 276V246H351V276" fill="#bccaa8"/>
+          </g>
+          <path d="M61 108V128M51 118H71M407 76V92M399 84H415" stroke="#ce7049" stroke-width="2"/>
+        </svg>
+        <p>A little corner of the cloud, for your apps.</p>
+      </div>
+    </section>
+    <section class="details wrap" aria-label="How Small Cloud works">
+      <article><p class="number">01 / Build something useful</p><h2>Made for your everyday.</h2><p>Give a small idea a real home. Publish an app from your source code with the Small Cloud CLI.</p></article>
+      <article><p class="number">02 / Choose your audience</p><h2>Just you. Or your workspace.</h2><p>Keep an app creator-only, or share it with everyone in your workspace. Access stays behind sign-in.</p></article>
+      <article><p class="number">03 / Pick up where you left off</p><h2>A database for every app.</h2><p>Each app has its own persistent database. Your saved data stays with it across restarts and redeployments.</p></article>
+    </section>
+    <section class="access wrap" id="access" aria-labelledby="access-title">
+      <div><p class="eyebrow">Where things stand</p><h2 id="access-title">Still in the<br><em>testing stage.</em></h2></div>
+      <div class="access-copy"><p class="access-lead">Small Cloud is in testing. New users are added manually.</p><p>There is no self-service signup. Access requires an administrator to add you to the workspace; publishing apps requires a separate creator grant.</p><p>App databases persist across restarts and redeployments. During testing, there is no backup or recovery guarantee, so keep important data backed up elsewhere.</p></div>
+    </section>
+    <section class="start wrap" aria-labelledby="start-title">
+      <div><p class="eyebrow">Already added?</p><h2 id="start-title">Make yourself at home.</h2><p>Install the CLI for Linux or macOS, then sign in with your admitted Google account. Installation alone does not grant access.</p><a class="text-link" href="/cli/install.sh">View the installer <span aria-hidden="true">↗</span></a></div>
+      <div class="terminal"><p class="terminal-label">Your terminal</p><pre aria-label="Install the Small Cloud CLI"><code>curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh</code></pre><p class="terminal-hint">Follow the installer’s PATH guidance, then:</p><pre aria-label="Sign in and read the getting started guide"><code>small-cloud auth login
+small-cloud guide getting-started</code></pre></div>
+    </section>
+  </main>
+  <footer class="wrap"><span>☁ Small Cloud</span><span>Purpose-built apps. A smaller scale.</span></footer>
+</body>
+</html>

@@ -13,6 +13,11 @@ handle @identity {
     }
     reverse_proxy 127.0.0.1:8765
 }
+@landing path / /landing.css
+handle @landing {
+    root * /srv/small-cloud/landing
+    file_server
+}
 handle {
-    respond "Small Cloud: publish apps with the small-cloud CLI." 200
+    respond "Not found" 404
 }
