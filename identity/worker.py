@@ -211,9 +211,9 @@ class Infrastructure:
             stage = 'runtime-environment-handoff'
             self.ssh('python3', '-c',
                 'import os,sys; fd=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); '
-                'os.write(fd,sys.stdin.buffer.read(65536)); os.close(fd)', environment,
-                data=('DATABASE_URL=' + credentials['database_url'] + '\n').encode())
-            arguments = ['start', operation['app_id'], image_id, '--env-file', environment,
+                'os.write(fd,sys.stdin.buffer.read(5242881)); os.close(fd)', environment,
+                data=json.dumps({**app.get('runtime_environment', {}), 'DATABASE_URL': credentials['database_url']}).encode())
+            arguments = ['start', operation['app_id'], image_id, '--env-json', environment,
                          '--deployment', operation['id']]
             if app['container']:
                 arguments.append('--candidate')
@@ -259,9 +259,9 @@ class Infrastructure:
         try:
             self.ssh('python3', '-c',
                 'import os,sys; fd=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); '
-                'os.write(fd,sys.stdin.buffer.read(65536)); os.close(fd)', environment,
-                data=('DATABASE_URL=' + credentials['database_url'] + '\n').encode())
-            started = json.loads(self.sandbox('resume', app['id'], app['active_deployment_id'], '--env-file', environment))
+                'os.write(fd,sys.stdin.buffer.read(5242881)); os.close(fd)', environment,
+                data=json.dumps({**app.get('runtime_environment', {}), 'DATABASE_URL': credentials['database_url']}).encode())
+            started = json.loads(self.sandbox('resume', app['id'], app['active_deployment_id'], '--env-json', environment))
             return {'host': self.runtime, 'port': started['private_port'], 'container': started['container']}
         finally:
             self.ssh('rm', '-f', '--', environment)
@@ -305,7 +305,7 @@ class Worker:
         with self.state.connect() as db:
             # Never replay a build after process loss; independent builder reconciliation
             # owns termination, and the creator lock stays held for operator review.
-            db.execute("UPDATE deployments SET error=?,source=NULL WHERE state IN ('building','starting','cleaning')",
+            db.execute("UPDATE deployments SET error=?,source=NULL WHERE kind='deploy' AND state IN ('building','starting','cleaning')",
                        (json.dumps({'code': 'INTERNAL', 'message': 'Worker interrupted; operator reconciliation required.',
                                     'retryable': False, 'details': {'reconciliation_required': True}}),))
             db.execute('UPDATE deployments SET source=NULL WHERE finished IS NOT NULL')
@@ -314,7 +314,7 @@ class Worker:
     def once(self):
         with self.state.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            row = db.execute("SELECT * FROM deployments WHERE state='accepted' ORDER BY created LIMIT 1").fetchone()
+            row = db.execute("SELECT * FROM deployments WHERE state='accepted' AND kind='deploy' ORDER BY created LIMIT 1").fetchone()
             if not row:
                 return False
             operation = dict(row)
@@ -343,6 +343,8 @@ class Worker:
                     raise Failure(error.code, error.message, 409, **error.details) from None
                 db.execute("UPDATE deployments SET state='starting',source=NULL WHERE id=?", (operation['id'],))
             starting = True
+            from .app_secrets import Vault
+            app['runtime_environment'] = Vault(self.state).environment(app['id'])
             target = self.infrastructure.start(operation, artifact, app,
                         lambda values: self.registry.register(operation['id'], values))
             with self.state.connect() as db:

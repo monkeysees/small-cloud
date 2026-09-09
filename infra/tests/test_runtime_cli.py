@@ -140,6 +140,61 @@ class RuntimeCLI(unittest.TestCase):
         self.assertEqual((self.root / 'resolv.conf').read_text(),
                          'nameserver 1.1.1.1\nnameserver 8.8.8.8\noptions timeout:2 attempts:2\n')
 
+    def test_json_environment_uses_private_socket_preserving_values_and_runtime_limits(self):
+        from http.server import BaseHTTPRequestHandler
+        import socketserver
+        import threading
+        received = []
+        response_status = [201]
+
+        class DockerAPI(BaseHTTPRequestHandler):
+            def log_message(self, *_args):
+                pass
+
+            def do_POST(self):
+                received.append(json.loads(self.rfile.read(int(self.headers['Content-Length']))))
+                self.send_response(response_status[0])
+                self.send_header('Content-Length', '2')
+                self.end_headers()
+                self.wfile.write(b'{}')
+
+        path = str(self.root / 'docker.sock')
+        server = socketserver.UnixStreamServer(path, DockerAPI)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        environment = self.root / 'environment.json'
+        values = {'SERVICE_TOKEN': 'exact-token\n\n', 'LD_PRELOAD': 'app-only', 'DOCKER_HOST': 'app-only'}
+        environment.write_text(json.dumps(values))
+        environment.chmod(0o600)
+        network = {'Driver': 'bridge', 'EnableIPv6': False, 'Containers': {},
+                   'Options': {'com.docker.network.bridge.name': 'sc-0'},
+                   'IPAM': {'Config': [{'Subnet': '172.30.0.0/24', 'Gateway': '172.30.0.1', 'IPRange': ''}]}}
+        original_fstat = runtime.os.fstat
+
+        def root_owned(fd):
+            info = list(original_fstat(fd))
+            info[4] = 0
+            return runtime.os.stat_result(info)
+
+        with patch.object(runtime, 'DOCKER_SOCKET', path), patch.object(runtime.os, 'fstat', side_effect=root_owned):
+            calls = self.invoke_start(network=network, extra=['--env-json', str(environment),
+                                                            '--deployment', 'd-' + 'a' * 24])
+            self.assertNotIn('exact-token', str(calls))
+            self.assertEqual(received[0]['Env'], ['SERVICE_TOKEN=exact-token\n\n', 'LD_PRELOAD=app-only',
+                                                 'DOCKER_HOST=app-only', 'PORT=8080'])
+            host = received[0]['HostConfig']
+            self.assertEqual((host['Runtime'], host['Memory'], host['MemorySwap'], host['NanoCpus'], host['PidsLimit']),
+                             ('runsc', 536870912, 536870912, 500000000, 128))
+            self.assertTrue(host['ReadonlyRootfs'])
+            self.assertEqual(host['CapDrop'], ['ALL'])
+            self.assertEqual(host['LogConfig']['Config']['cache-disabled'], 'true')
+            response_status[0] = 500
+            self.root = self.root / 'failed-create'
+            self.root.mkdir()
+            with self.assertRaisesRegex(ValueError, '^Runtime container creation failed$'):
+                self.invoke_start(network=network, extra=['--env-json', str(environment)])
+
     def test_prune_only_removes_tracked_aged_images_without_force(self):
         state = self.root / 'runtime' / 'images'
         state.parent.mkdir(mode=0o700)

@@ -9,6 +9,8 @@ import ssl
 import threading
 import time
 import urllib.parse
+import urllib.request
+import urllib.error
 
 import psycopg
 from psycopg.rows import DictRow, dict_row
@@ -94,6 +96,22 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def do_POST(self):
+        if urllib.parse.urlsplit(self.path).path == '/secret-probe':
+            token, endpoint = os.environ.get('SERVICE_TOKEN'), os.environ.get('SERVICE_URL')
+            if token is None or endpoint is None:
+                self.respond(200, {'configured': False, 'external_action': False})
+                return
+            # Deliberate fixture log probe: use disposable test credentials only.
+            print(token, flush=True)
+            try:
+                request = urllib.request.Request(endpoint, json.dumps({'token': token}).encode(),
+                                                 {'Content-Type': 'application/json'})
+                with urllib.request.urlopen(request, timeout=3) as response:
+                    accepted = response.status == 204
+            except (OSError, ValueError, urllib.error.URLError):
+                accepted = False
+            self.respond(200, {'configured': True, 'external_action': accepted})
+            return
         if urllib.parse.urlsplit(self.path).path != '/data':
             self.send_error(404)
             return

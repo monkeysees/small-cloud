@@ -51,8 +51,13 @@ class LifecycleWorker:
     def __init__(self, state, infrastructure, clock=time.time, registry=None):
         self.state, self.infrastructure, self.clock = state, infrastructure, clock
         self.registry = registry
+        from .app_secrets import Vault
+        self.secrets = Vault(state)
 
     def recover(self):
+        with self.state.connect() as db:
+            db.execute("UPDATE apps SET runtime_state='stopping' WHERE id IN "
+                       "(SELECT app_id FROM deployments WHERE kind='secret-change' AND state NOT IN ('succeeded','failed'))")
         with self.state.connect() as db:
             db.execute("UPDATE apps SET runtime_state='cleaning' WHERE runtime_state IN ('starting','blocked')")
 
@@ -73,6 +78,8 @@ class LifecycleWorker:
         with self.state.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             app = dict(db.execute('SELECT * FROM apps WHERE id=?', (app_id,)).fetchone())
+            secret = db.execute("SELECT * FROM deployments WHERE app_id=? AND kind='secret-change' "
+                                "AND state NOT IN ('succeeded','failed')", (app_id,)).fetchone()
             state = app['runtime_state']
             if state == 'running':
                 if app['last_http'] > self.clock() - IDLE_SECONDS or db.execute(
@@ -84,7 +91,17 @@ class LifecycleWorker:
             db.execute('UPDATE apps SET runtime_state=? WHERE id=?',
                        ('starting' if state == 'queued' else state, app_id))
         try:
+            if secret:
+                self.infrastructure.stop(app)
+                with self.state.connect() as db:
+                    db.execute('UPDATE retired_secrets SET expires=? WHERE app_id=? AND expires IS NULL',
+                               (self.clock() + 7 * 86400, app_id))
+                    db.execute("UPDATE deployments SET state='starting' WHERE id=?", (secret['id'],))
+                state = 'queued'
             if state == 'queued':
+                if not app['active_deployment_id']:
+                    raise Failure('STARTUP_FAILED', 'Configuration is saved; deploy a release before starting this app.', 503)
+                app['runtime_environment'] = self.secrets.environment(app_id)
                 target = self.infrastructure.wake(app, lambda values: self.registry.register(
                     app['active_deployment_id'], values) if self.registry else None)
                 self.infrastructure.ready(target)
@@ -107,7 +124,11 @@ class LifecycleWorker:
             failure = error if isinstance(error, Failure) else Failure('STARTUP_FAILED', 'App startup failed. Retry to start again.', 503)
             try:
                 self.infrastructure.stop(app)
-                result = 'failed' if state == 'queued' else 'stopped'
+                if secret:
+                    with self.state.connect() as db:
+                        db.execute('UPDATE retired_secrets SET expires=? WHERE app_id=? AND expires IS NULL',
+                                   (self.clock() + 7 * 86400, app_id))
+                result = 'failed' if state == 'queued' or secret else 'stopped'
             except (Failure, OSError, ValueError):
                 result = 'blocked'
                 failure = Failure('STARTUP_FAILED', 'Runtime cleanup requires operator inspection.', 503,
@@ -116,4 +137,17 @@ class LifecycleWorker:
                 db.execute('UPDATE apps SET runtime_state=?,target_host=NULL,target_port=NULL,container=NULL,runtime_error=? '
                            'WHERE id=?', (result, json.dumps({'code': failure.code, 'message': failure.message,
                                                            'details': failure.details}), app_id))
+        if secret:
+            with self.state.connect() as db:
+                current = db.execute('SELECT runtime_state,runtime_error FROM apps WHERE id=?', (app_id,)).fetchone()
+                error = json.loads(current['runtime_error']) if current['runtime_error'] else None
+                if error:
+                    error['code'] = 'STARTUP_FAILED'
+                    error['details']['configuration_saved'] = True
+                    error['details']['operation_id'] = secret['id']
+                    error['retryable'] = False
+                blocked = current['runtime_state'] == 'blocked'
+                db.execute('UPDATE deployments SET state=?,finished=?,error=? WHERE id=?',
+                           ('cleaning' if blocked else 'succeeded' if current['runtime_state'] == 'running' else 'failed',
+                            None if blocked else self.clock(), json.dumps(error) if error else None, secret['id']))
         return True

@@ -45,6 +45,7 @@ def prune(db, now):
         db.execute('UPDATE diagnostic_streams SET retained=retained-?,dropped=dropped+? WHERE id=?',
                    (row['size'], row['size'], row['stream']))
     db.execute('DELETE FROM diagnostic_records WHERE ingested<=?', (now - RETENTION,))
+    db.execute('DELETE FROM retired_secrets WHERE expires<=?', (now,))
     db.execute('DELETE FROM diagnostic_cursors WHERE expires<=?', (now,))
     db.execute('DELETE FROM diagnostic_values WHERE expires<=? AND deployment NOT IN '
                '(SELECT active_deployment_id FROM apps WHERE active_deployment_id IS NOT NULL '
@@ -100,7 +101,8 @@ class Registry:
         revision = tuple(row['value'] for row in rows)
         if app_id not in self.cached or self.cached[app_id][0] != revision:
             self.cached[app_id] = (revision, [self.cipher.decrypt(row['value']) for row in rows])
-        return self.cached[app_id][1]
+        from .app_secrets import Vault
+        return self.cached[app_id][1] + Vault(self.state).redactions(app_id, self.clock())
 
     def maintain(self):
         self.cached.clear()
@@ -264,7 +266,7 @@ def snapshot(db, actor, app, source, deployment, since, limit, cursor, now):
         if source == 'build' and deployment is None:
             deployment = saved['stream'].removeprefix('build:')
     if source == 'build':
-        row = db.execute('SELECT id FROM deployments WHERE app_id=? AND (? IS NULL OR id=?) '
+        row = db.execute("SELECT id FROM deployments WHERE kind='deploy' AND app_id=? AND (? IS NULL OR id=?) "
                          'ORDER BY created DESC,rowid DESC LIMIT 1', (app['id'], deployment, deployment)).fetchone()
         if row is None:
             raise Failure('NOT_FOUND', 'Deployment not found.', 404)

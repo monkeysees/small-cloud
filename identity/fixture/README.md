@@ -44,3 +44,7 @@ The database suite requires local Docker, builds a test-only PostgreSQL 16 image
 For live acceptance, publish two instances with distinct names, save a row through the protected app, restart the first app through the operator runtime CLI, and read the same row. Publish the same source to the same name again and repeat the read. Run isolation probes in both directions and verify `/network`. Never paste a CLI credential into shell arguments; load it inside a trusted HTTP client process. See [database acceptance](../../docs/acceptance/app-database-2026-09-09.md) for recorded outcomes.
 
 Dependency health checked 2026-09-09: Psycopg 3.3.5 was released 2026-08-31; its active upstream repository has approximately 2,500 stars. Sources: [official download](https://www.psycopg.org/download/), [upstream repository](https://github.com/psycopg/psycopg).
+
+## Disposable secret probe
+
+For controlled secrets acceptance only, configure `SERVICE_URL` and a disposable `SERVICE_TOKEN`, then POST `{}` to `/secret-probe`. The fixture sends the exact token in a JSON POST to that service and reports only whether it returned HTTP 204. Missing configuration reports `configured:false`. This route deliberately writes the disposable token to runtime stdout to exercise known-value redaction. Never use real credentials for this diagnostic fixture. Use an HTTPS service for hosted checks; local tests use an isolated loopback HTTP receiver.

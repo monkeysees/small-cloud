@@ -4,6 +4,8 @@ import argparse
 import fcntl
 import io
 import ipaddress
+import http.client
+import socket
 import json
 import os
 from pathlib import Path
@@ -304,7 +306,49 @@ def stop(tool):
     print(json.dumps({'stopped': True}))
 
 
-def launch(config, tool, image, candidate=False, env_file=None, deployment=None):
+DOCKER_SOCKET = '/var/run/docker.sock'
+
+
+def create_with_environment(config, name, tool, role, slot, network, resolver, image, deployment, values):
+    """Send confidential environment in a root-only Docker socket request, never argv."""
+    logging = {'Type': 'none', 'Config': {}}
+    if deployment:
+        logging = {'Type': 'syslog', 'Config': {
+            'syslog-address': 'unix:///run/small-cloud-diagnostics.sock', 'syslog-format': 'rfc5424micro',
+            'tag': deployment, 'cache-disabled': 'true', 'mode': 'blocking'}}
+    body = {
+        'Image': image, 'User': '65532:65532',
+        'Env': [key + '=' + value for key, value in {**values, 'PORT': '8080'}.items()],
+        'Labels': {'small-cloud.tool': tool, 'small-cloud.role': role, 'small-cloud.slot': slot},
+        'ExposedPorts': {'8080/tcp': {}},
+        'HostConfig': {
+            'Runtime': 'runsc', 'NetworkMode': network, 'Dns': ['1.1.1.1'], 'ReadonlyRootfs': True,
+            'Mounts': [{'Type': 'bind', 'Source': str(resolver), 'Target': '/etc/resolv.conf', 'ReadOnly': True}],
+            'Tmpfs': {'/tmp': 'rw,nosuid,nodev,noexec,size=1073741824,mode=1777'},
+            'ShmSize': 1048576, 'NanoCpus': 500000000, 'Memory': 536870912, 'MemorySwap': 536870912,
+            'PidsLimit': 128, 'CapDrop': ['ALL'], 'SecurityOpt': ['no-new-privileges'],
+            'Ulimits': [{'Name': name, 'Soft': bound, 'Hard': bound}
+                        for name, bound in [('nproc', 128), ('core', 0), ('nofile', 1024)]],
+            'LogConfig': logging,
+            'PortBindings': {'8080/tcp': [{'HostIp': config['runtime_private_ip'], 'HostPort': str(18080 + int(slot))}]}},
+        'NetworkingConfig': {'EndpointsConfig': {network: {'IPAMConfig': {'IPv4Address': f'172.30.{slot}.2'}}}}}
+    connection = http.client.HTTPConnection('localhost', timeout=60)
+    connection.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    connection.sock.settimeout(60)
+    try:
+        connection.sock.connect(DOCKER_SOCKET)
+        connection.request('POST', '/containers/create?name=' + name, json.dumps(body).encode(),
+                           {'Content-Type': 'application/json'})
+        response = connection.getresponse()
+        if response.status != 201:
+            raise ValueError('Runtime container creation failed')
+        if len(response.read(65537)) > 65536:
+            raise ValueError('Runtime container response exceeds bound')
+    finally:
+        connection.close()
+
+
+def launch(config, tool, image, candidate=False, env_file=None, deployment=None, env_json=None):
     logging = ['--log-driver', 'none']
     if deployment is not None:
         if not re.fullmatch(r'd-[0-9a-f]{24}', deployment):
@@ -318,6 +362,21 @@ def launch(config, tool, image, candidate=False, env_file=None, deployment=None)
         if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != 0 or stat.S_IMODE(metadata.st_mode) != 0o600:
             raise ValueError('environment file must be a root-owned regular file with mode 0600')
         environment = ['--env-file', str(env_file)]
+    if env_json is not None:
+        if env_file is not None:
+            raise ValueError('choose one environment format')
+        with os.fdopen(os.open(env_json, os.O_RDONLY | os.O_NOFOLLOW)) as stream:
+            metadata = os.fstat(stream.fileno())
+            if (not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != 0 or metadata.st_nlink != 1
+                    or stat.S_IMODE(metadata.st_mode) != 0o600 or metadata.st_size > 5242880):
+                raise ValueError('unsafe JSON environment file')
+            values = json.load(stream)
+        if (not isinstance(values, dict) or len(values) > 51
+                or any(not re.fullmatch(r'[A-Z_][A-Z0-9_]{0,127}', key) or key == 'PORT'
+                       or key.startswith('SMALL_CLOUD_') or not isinstance(value, str) or '\0' in value
+                       or not 1 <= len(value.encode()) <= 16384 for key, value in values.items())):
+            raise ValueError('invalid runtime environment')
+
     ca_path = Path('/etc/small-cloud/database-ca.crt')
     ca = ca_path.read_bytes()
     if not ca.startswith(b'-----BEGIN CERTIFICATE-----'):
@@ -366,17 +425,20 @@ def launch(config, tool, image, candidate=False, env_file=None, deployment=None)
     # Reinstall the full ruleset atomically before any untrusted process can run.
     install_policy(config)
     resolver = resolver_file()
-    run('docker', 'create', '--name', name, '--runtime', 'runsc', '--pull', 'never',
-        '--label', f'small-cloud.tool={tool}', '--label', f'small-cloud.role={role}',
-        '--label', f'small-cloud.slot={slot}', '--network', network,
-        '--ip', f'172.30.{slot}.2', '--dns', '1.1.1.1', '--read-only',
-        '--mount', f'type=bind,src={resolver},dst=/etc/resolv.conf,readonly',
-        '--tmpfs', '/tmp:rw,nosuid,nodev,noexec,size=1073741824,mode=1777',
-        '--shm-size', '1m', '--cpus', '0.5', '--memory', '512m', '--memory-swap', '512m',
-        '--pids-limit', '128', '--ulimit', 'nproc=128:128', '--ulimit', 'core=0:0', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-        '--user', '65532:65532', '--ulimit', 'nofile=1024:1024', *logging,
-        '--publish', f"{config['runtime_private_ip']}:{18080 + int(slot)}:8080",
-        *environment, '--env', 'PORT=8080', image)
+    if env_json is not None:
+        create_with_environment(config, name, tool, role, slot, network, resolver, image, deployment, values)
+    else:
+        run('docker', 'create', '--name', name, '--runtime', 'runsc', '--pull', 'never',
+            '--label', f'small-cloud.tool={tool}', '--label', f'small-cloud.role={role}',
+            '--label', f'small-cloud.slot={slot}', '--network', network,
+            '--ip', f'172.30.{slot}.2', '--dns', '1.1.1.1', '--read-only',
+            '--mount', f'type=bind,src={resolver},dst=/etc/resolv.conf,readonly',
+            '--tmpfs', '/tmp:rw,nosuid,nodev,noexec,size=1073741824,mode=1777',
+            '--shm-size', '1m', '--cpus', '0.5', '--memory', '512m', '--memory-swap', '512m',
+            '--pids-limit', '128', '--ulimit', 'nproc=128:128', '--ulimit', 'core=0:0', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+            '--user', '65532:65532', '--ulimit', 'nofile=1024:1024', *logging,
+            '--publish', f"{config['runtime_private_ip']}:{18080 + int(slot)}:8080",
+            *environment, '--env', 'PORT=8080', image)
     run('docker', 'start', name)
     print(json.dumps({'container': name, 'role': role, 'private_port': 18080 + int(slot)}))
 
@@ -412,12 +474,15 @@ def main():
     resume = commands.add_parser('resume', help='start the immutable retained release within normal runtime capacity')
     resume.add_argument('tool', metavar='app')
     resume.add_argument('release')
-    resume.add_argument('--env-file', type=Path, required=True)
+    resume_env = resume.add_mutually_exclusive_group(required=True)
+    resume_env.add_argument('--env-file', type=Path)
+    resume_env.add_argument('--env-json', type=Path)
     start = commands.add_parser('start')
     start.add_argument('tool', metavar='app')
     start.add_argument('image')
     start.add_argument('--candidate', action='store_true')
     start.add_argument('--env-file', type=Path, help='root-owned mode-0600 DATABASE_URL/app environment')
+    start.add_argument('--env-json', type=Path, help='root-owned JSON runtime environment preserving multiline values')
     start.add_argument('--deployment', help='Product deployment ID for collected, redacted diagnostics')
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
@@ -443,11 +508,11 @@ def main():
             image = release_records().get(args.tool + '/' + args.release)
             if image is None:
                 raise ValueError('retained release is unavailable; operator reconciliation required')
-            launch(config, args.tool, image, env_file=args.env_file, deployment=args.release)
+            launch(config, args.tool, image, env_file=args.env_file, deployment=args.release, env_json=args.env_json)
         elif args.command == 'forget-release':
             retain_release(args.tool, args.release)
         else:
-            launch(config, args.tool, args.image, args.candidate, args.env_file, args.deployment)
+            launch(config, args.tool, args.image, args.candidate, args.env_file, args.deployment, args.env_json)
 
 
 if __name__ == '__main__':

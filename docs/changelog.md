@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #12 creator-owned encrypted runtime secrets with hidden/stdin input, saved-configuration restarts, sharing acknowledgement, seven-day retired-value redaction and local CLI/HTTP/external-service regression coverage.
+
 - Deploy #9 and verify a real 30-minute idle stop, competing wake-ups, retained data, capacity/loading responses and failed/interrupted startup recovery; remove four acceptance apps/builders, retain 43 build seconds, and close acceptance with the operator accepting the unverified browser checks.
 
 - Add #9 authenticated HTTP idle stop/start with retained database data, visible loading and explicit retry, atomic five-app reservations shared with publishing, in-flight request protection, and restart-safe cleanup with local CLI/HTTP/PostgreSQL regression coverage.

@@ -103,7 +103,7 @@ class DatabaseAcceptance(unittest.TestCase):
                 with socket.socket() as listener:
                     listener.bind(('127.0.0.1', 0))
                     port = listener.getsockname()[1]
-                env = {**os.environ, 'DATABASE_URL': url, 'PORT': str(port)}
+                env = {**os.environ, **app.get('runtime_environment', {}), 'DATABASE_URL': url, 'PORT': str(port)}
                 if build_source:
                     name = operation['id']
                     result = subprocess.run(['docker', 'run', '-d', '--network', 'host', '--name', name,
@@ -467,6 +467,55 @@ class DatabaseAcceptance(unittest.TestCase):
         self.assertEqual(self.app_request(app, '/database/isolation?database=postgresql://evil.invalid/db')[0], 400)
         self.assertEqual(self.app_request(app, '/_small-cloud/ready')[0], 404)
         self.assertEqual(json.loads(self.app_request(app, '/data')[1])['entries'], [])
+
+    def test_secret_replacement_and_deletion_apply_to_owning_runtime_external_actions(self):
+        from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+        import threading
+        from identity.lifecycle import LifecycleWorker
+        expected = ['first-disposable-token\n']
+
+        class ExternalService(BaseHTTPRequestHandler):
+            def log_message(self, *_args):
+                pass
+
+            def do_POST(self):
+                body = json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                self.send_response(204 if body == {'token': expected[0]} else 403)
+                self.send_header('Content-Length', '0')
+                self.end_headers()
+
+        service = ThreadingHTTPServer(('127.0.0.1', 0), ExternalService)
+        threading.Thread(target=service.serve_forever, daemon=True).start()
+        self.addCleanup(service.server_close)
+        self.addCleanup(service.shutdown)
+        self.prepare()
+        app, other = self.publish('secrets'), self.publish('other')
+        lifecycle = LifecycleWorker(self.worker.state, self.worker.infrastructure)
+
+        def set_value(name, value):
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'secret', 'set',
+                                     'secrets', name, '--stdin'], env=self.env, capture_output=True,
+                                    text=True, input=value, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertNotIn(value, result.stdout + result.stderr)
+            lifecycle.once()
+            status = json.loads(self.cli('status', 'secrets').stdout)['data']
+            self.assertEqual(status['availability'], 'running', status)
+            self.assertEqual(status['active_deployment_id'], app['active_deployment_id'])
+
+        set_value('SERVICE_URL', 'http://127.0.0.1:' + str(service.server_port))
+        set_value('SERVICE_TOKEN', expected[0])
+        self.assertEqual(json.loads(self.app_request(app, '/secret-probe', {})[1]),
+                         {'configured': True, 'external_action': True})
+        self.assertEqual(json.loads(self.app_request(other, '/secret-probe', {})[1]),
+                         {'configured': False, 'external_action': False})
+        expected[0] = 'replacement-disposable-token\n\n'
+        set_value('SERVICE_TOKEN', expected[0])
+        self.assertTrue(json.loads(self.app_request(app, '/secret-probe', {})[1])['external_action'])
+        self.assertEqual(self.cli('secret', 'delete', 'secrets', 'SERVICE_TOKEN').returncode, 0)
+        lifecycle.once()
+        self.assertEqual(json.loads(self.app_request(app, '/secret-probe', {})[1]),
+                         {'configured': False, 'external_action': False})
 
 
 if __name__ == '__main__':

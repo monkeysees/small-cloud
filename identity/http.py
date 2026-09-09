@@ -69,11 +69,11 @@ class Handler(BaseHTTPRequestHandler):
     def set_cookie(name, value, age):
         return f'{name}={value}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age={age}'
 
-    def body(self):
+    def body(self, limit=16384):
         if self.headers.get('Transfer-Encoding') or len(self.headers.get_all('Content-Length', [])) != 1:
             raise Failure('INVALID_ARGUMENT', 'Transfer encoding is not accepted.')
         size = int(self.headers.get('Content-Length', '0'))
-        if size < 0 or size > 16384:
+        if size < 0 or size > limit:
             raise Failure('INVALID_ARGUMENT', 'Request body exceeds limit.')
         raw = self.rfile.read(size)
         if self.headers.get_content_type() == 'application/x-www-form-urlencoded':
@@ -210,6 +210,11 @@ class Handler(BaseHTTPRequestHandler):
             name = urllib.parse.unquote(path.removeprefix('/api/apps/').removesuffix('/share'))
             result = self.app.publishing.share(self.bearer(), name, self.body(), self.request_id)
             self.respond(200, envelope(result, request_id=self.request_id))
+        elif self.command == 'POST' and path.startswith('/api/apps/') and path.endswith(('/secrets/set', '/secrets/delete')):
+            target, action = path.removeprefix('/api/apps/').rsplit('/secrets/', 1)
+            result = self.app.publishing.secrets.change(self.app.publishing, self.bearer(),
+                urllib.parse.unquote(target), action, self.body(131072), self.request_id)
+            self.respond(202 if result['changed'] else 200, envelope(result, request_id=self.request_id))
         elif self.command == 'GET' and path == '/api/operations':
             result = self.app.publishing.operation(self.bearer(), request_id=query['request_id'][0])
             self.respond(200, envelope(result))
@@ -218,7 +223,9 @@ class Handler(BaseHTTPRequestHandler):
             self.respond(200, envelope(result))
         elif self.command == 'GET' and path.startswith('/api/apps/'):
             target = urllib.parse.unquote(path.removeprefix('/api/apps/'))
-            if target.endswith('/logs'):
+            if target.endswith('/secrets'):
+                result = self.app.publishing.secrets.names(self.app.publishing, self.bearer(), target.removesuffix('/secrets'))
+            elif target.endswith('/logs'):
                 result = self.app.publishing.logs(self.bearer(), target.removesuffix('/logs'),
                     source=query['source'][0], deployment=query.get('deployment', [None])[0],
                     since=query.get('since', [None])[0], limit=int(query.get('limit', ['100'])[0]),

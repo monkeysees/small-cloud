@@ -9,7 +9,7 @@ from urllib.parse import urlsplit
 
 from .common import Failure, digest, timestamp
 from .upload import validate_archive
-from . import allowance, diagnostics, lifecycle
+from . import allowance, diagnostics, lifecycle, app_secrets
 
 
 class Publishing:
@@ -37,9 +37,11 @@ class Publishing:
                     previous_container TEXT, cleanup_pending INTEGER NOT NULL DEFAULT 0);
             ''')
             diagnostics.initialize(db)
+            app_secrets.initialize(db)
             db.execute('BEGIN IMMEDIATE')
             allowance.initialize(db)
             lifecycle.initialize(db, self.clock())
+        self.secrets = app_secrets.Vault(store)
 
     def deploy(self, token, metadata, archive, request_id):
         name = metadata.get('name')
@@ -72,7 +74,7 @@ class Publishing:
             if app and db.execute("SELECT 1 FROM deployments WHERE app_id=? AND state NOT IN ('succeeded','failed')",
                                   (app['id'],)).fetchone():
                 raise Failure('OPERATION_CONFLICT', 'App already has an operation in progress.', 409)
-            if db.execute("SELECT 1 FROM deployments WHERE actor=? AND state NOT IN ('succeeded','failed')",
+            if db.execute("SELECT 1 FROM deployments WHERE actor=? AND kind='deploy' AND state NOT IN ('succeeded','failed')",
                           (user['id'],)).fetchone():
                 raise Failure('BUILD_BUSY', 'Creator already has an accepted build.', 409)
             if not app:
@@ -117,7 +119,9 @@ class Publishing:
         return 'https://' + app['id'] + '.' + self.domain
 
     def share(self, token, name, body, request_id):
-        if set(body) != {'scope'} or body['scope'] not in ('creator-only', 'workspace-wide'):
+        if ('scope' not in body or set(body) - {'scope', 'acknowledge_secret_authority'}
+                or ('acknowledge_secret_authority' in body and not isinstance(body['acknowledge_secret_authority'], bool))
+                or body['scope'] not in ('creator-only', 'workspace-wide')):
             raise Failure('INVALID_ARGUMENT', 'Supply scope creator-only or workspace-wide.')
         fingerprint = digest(json.dumps(['share', name, body], sort_keys=True))
         with self.store.connect() as db:
@@ -136,8 +140,12 @@ class Publishing:
                 if cached['fingerprint'] != fingerprint:
                     raise Failure('REQUEST_CONFLICT', 'Request ID was used with different inputs.', 409)
                 return json.loads(cached['result'])
+            has_secrets = db.execute('SELECT 1 FROM app_secrets WHERE app_id=?', (app['id'],)).fetchone() is not None
+            acknowledged = body.get('acknowledge_secret_authority') is True
+            if body['scope'] == 'workspace-wide' and has_secrets and not acknowledged:
+                raise Failure('ACKNOWLEDGEMENT_REQUIRED', app_secrets.NOTICE)
             db.execute('UPDATE apps SET sharing_scope=? WHERE id=?', (body['scope'], app['id']))
-            result = {'app': name, 'sharing_scope': body['scope'], 'secret_authority_acknowledged': False}
+            result = {'app': name, 'sharing_scope': body['scope'], 'secret_authority_acknowledged': acknowledged}
             db.execute('DELETE FROM requests WHERE actor=? AND id=?', (user['id'], request_id))
             db.execute('INSERT INTO requests VALUES(?,?,?,?,?)',
                        (user['id'], request_id, fingerprint, json.dumps(result), time.time() + 604800))
@@ -153,7 +161,7 @@ class Publishing:
 
     @staticmethod
     def operation_result(row, app):
-        return {'id': row['id'], 'kind': 'deploy', 'app': app,
+        return {'id': row['id'], 'kind': row['kind'], 'app': app,
                 'operation_id': row['id'], 'deployment_id': row['id'], 'state': row['state'],
                 'request_id': row['request_id'], 'created_at': timestamp(row['created']),
                 'updated_at': timestamp(row['finished'] or row['created']),
@@ -164,7 +172,7 @@ class Publishing:
     def status(self, token, name):
         with self.store.connect() as db:
             app = self.authorized_app(db, token, name)
-            latest = db.execute('SELECT * FROM deployments WHERE app_id=? ORDER BY created DESC LIMIT 1',
+            latest = db.execute('SELECT * FROM deployments WHERE app_id=? ORDER BY created DESC,rowid DESC LIMIT 1',
                                 (app['id'],)).fetchone()
             return {'app': app['name'], 'app_id': app['id'], 'description': app['description'],
                     'url': self.url(app), 'sharing_scope': app['sharing_scope'],
@@ -180,7 +188,7 @@ class Publishing:
         with self.store.connect() as db:
             _, user = self.store.credential(db, token)
             if request_id:
-                row = db.execute('SELECT * FROM deployments WHERE actor=? AND request_id=? ORDER BY created DESC LIMIT 1',
+                row = db.execute('SELECT * FROM deployments WHERE actor=? AND request_id=? ORDER BY created DESC,rowid DESC LIMIT 1',
                                  (user['id'], request_id)).fetchone()
             else:
                 row = db.execute('SELECT * FROM deployments WHERE id=?', (operation_id,)).fetchone()

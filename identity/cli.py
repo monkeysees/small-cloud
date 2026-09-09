@@ -1,5 +1,6 @@
 """Agent-callable Small Cloud CLI. Never prints credential or provider-token values."""
 import argparse
+import getpass
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,7 @@ import urllib.error
 import urllib.parse
 import uuid
 import webbrowser
+import warnings
 
 from .common import Failure, envelope, origin
 from .credentials import Credentials
@@ -41,6 +43,20 @@ def parser():
                                 epilog='Example: small-cloud share example --scope workspace-wide')
     share.set_defaults(action='share')
     share.add_argument('app')
+    share.add_argument('--acknowledge-secret-authority', action='store_true')
+    secret = commands.add_parser('secret', help='Manage confidential runtime configuration',
+        epilog='Example: small-cloud secret set example SERVICE_TOKEN --stdin')
+    secret_actions = secret.add_subparsers(dest='action', required=True)
+    for action in ('set', 'delete', 'list'):
+        command = secret_actions.add_parser(action, epilog='Example: small-cloud secret list example')
+        command.add_argument('app')
+        if action != 'list':
+            command.add_argument('name')
+            command.add_argument('--wait', action='store_true')
+            command.add_argument('--timeout', type=int, default=900)
+        if action == 'set':
+            command.add_argument('--stdin', action='store_true')
+            command.add_argument('--acknowledge-secret-authority', action='store_true')
     share.add_argument('--scope', required=True, choices=('creator-only', 'workspace-wide'))
     directory = commands.add_parser('directory', help='List apps you can access',
                                     epilog='Example: small-cloud directory --json')
@@ -215,6 +231,22 @@ def execute(args, request_id):
         return authenticated_command(args, request_id, client, credentials)
 
 
+def authority_request(args, client, path, body, token, request_id):
+    if getattr(args, 'acknowledge_secret_authority', False):
+        body['acknowledge_secret_authority'] = True
+    try:
+        return client.request(path, body, token, request_id)
+    except Failure as error:
+        if error.code != 'ACKNOWLEDGEMENT_REQUIRED' or args.no_input or args.json or not sys.stdin.isatty():
+            raise
+        print(error.message, file=sys.stderr)
+        print('Acknowledge this authority? Type yes: ', end='', file=sys.stderr, flush=True)
+        if input() != 'yes':
+            raise error
+        body['acknowledge_secret_authority'] = True
+        return client.request(path, body, token, request_id)
+
+
 def authenticated_command(args, request_id, client, credentials):
     if args.action == 'login':
         if args.no_input:
@@ -248,9 +280,51 @@ def authenticated_command(args, request_id, client, credentials):
         return client.request('/api/usage', token=token)
     if args.command == 'directory':
         return client.request('/api/directory', token=token)
+    if args.command == 'secret':
+        from .app_secrets import validate
+        path = '/api/apps/' + urllib.parse.quote(args.app, safe='') + '/secrets'
+        if args.action == 'list':
+            return client.request(path, token=token)
+        validate(args.name)
+        if args.timeout <= 0:
+            raise Failure('INVALID_ARGUMENT', 'Timeout must be positive.')
+        body = {'name': args.name}
+        if args.action == 'set':
+            if args.stdin:
+                raw = sys.stdin.buffer.read(16385)
+                try:
+                    value = raw.decode('utf-8')
+                except UnicodeDecodeError:
+                    raise Failure('INVALID_ARGUMENT', 'Secret input must be UTF-8.') from None
+            elif args.no_input or args.json or not sys.stdin.isatty():
+                raise Failure('INVALID_ARGUMENT', 'Use --stdin or an interactive hidden prompt for the value.')
+            else:
+                try:
+                    with warnings.catch_warnings():
+                        warnings.simplefilter('error', getpass.GetPassWarning)
+                        value = getpass.getpass('Secret value: ')
+                except getpass.GetPassWarning:
+                    raise Failure('INVALID_ARGUMENT', 'Cannot hide terminal input; use --stdin.') from None
+            validate(args.name, value)
+            body['value'] = value
+        result = authority_request(args, client, path + '/' + args.action, body, token, request_id)
+        if not args.wait or not result['changed']:
+            return result
+        deadline = time.monotonic() + args.timeout
+        while time.monotonic() < deadline:
+            operation = client.request('/api/operations/' + result['operation_id'], token=token,
+                                       timeout=min(30, max(.01, deadline - time.monotonic())))
+            if operation['state'] == 'succeeded':
+                return {**result, 'state': 'succeeded'}
+            if operation['state'] == 'failed':
+                error = operation['error']
+                raise Failure(error['code'], error['message'], 500, **error['details'])
+            time.sleep(min(2, max(0, deadline - time.monotonic())))
+        raise Failure('WAIT_TIMEOUT', 'Secret change continues; inspect its operation status.', 503,
+                      operation_id=result['operation_id'])
     if args.command == 'share':
-        return client.request('/api/apps/' + urllib.parse.quote(args.app, safe='') + '/share',
-                              {'scope': args.scope}, token, request_id)
+        return authority_request(args, client, '/api/apps/' + urllib.parse.quote(args.app, safe='') + '/share',
+                                 {'scope': args.scope}, token, request_id)
     if args.command == 'status':
         return client.request('/api/apps/' + urllib.parse.quote(args.app, safe=''), token=token)
     if args.command == 'operation':
@@ -302,7 +376,7 @@ def main(argv=None):
             request_id = None
         elif args.request_id:
             request_id = str(uuid.UUID(args.request_id))
-        elif args.action not in ('status', 'logs', 'directory', 'usage') and not getattr(args, 'dry_run', False):
+        elif args.action not in ('status', 'logs', 'directory', 'usage', 'list') and not getattr(args, 'dry_run', False):
             request_id = str(uuid.uuid4())
         if request_id:
             print('Request ID: ' + request_id, file=sys.stderr, flush=True)

@@ -10,6 +10,8 @@ For `small-cloud usage`, deployment capacity and the shared monthly build allowa
 
 For HTTP idle stopping, on-demand loading, active capacity and retry behavior, see [app lifecycle](LIFECYCLE.md).
 
+For confidential app configuration and restart behavior, see [runtime secrets](SECRETS.md).
+
 For authorized status, build/runtime log snapshots, redaction and retention, see [diagnostics](DIAGNOSTICS.md).
 
 For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](../docs/acceptance/app-database-2026-09-09.md) and the [starter guide](fixture/README.md).
