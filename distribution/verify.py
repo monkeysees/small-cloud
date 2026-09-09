@@ -83,7 +83,8 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         for name in ('.profile', '.bashrc', '.zshrc'):
             (home / name).write_text('# unchanged\n')
         installed = subprocess.run(['/bin/sh', str(ROOT / 'install.sh')], env=env,
-                                   capture_output=True, text=True, check=True)
+                                   capture_output=True, text=True)
+        assert installed.returncode == 0, (installed.stdout, installed.stderr)
         assert 'PATH' in installed.stdout
         executable = destination / 'small-cloud'
         assert executable.read_bytes() == binary.read_bytes()
