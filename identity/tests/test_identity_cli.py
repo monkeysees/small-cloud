@@ -35,7 +35,7 @@ class IdentityAcceptance(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.home = Path(self.temp.name)
+        self.home = Path(self.temp.name).resolve()
         self.config = self.home / 'server.json'
         self.config.write_text(json.dumps({
             'origin': 'https://cloud.example.test',

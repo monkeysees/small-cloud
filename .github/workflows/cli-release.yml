@@ -83,5 +83,5 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         shell: bash
         run: |
-          assets=(build/artifacts/small-cloud-*/small-cloud-*)
+          assets=(build/artifacts/small-cloud-*/release/small-cloud-*)
           gh release create "$RELEASE_TAG" "${assets[@]}" install.sh --draft --verify-tag --title "Small Cloud $RELEASE_TAG" --notes-file docs/changelog.md

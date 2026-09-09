@@ -51,7 +51,7 @@ def main():
     args = parser.parse_args()
     binary, fixture = args.binary.resolve(), args.fixture.resolve()
     with tempfile.TemporaryDirectory() as temporary:
-        home = Path(temporary)
+        home = Path(temporary).resolve()
         destination = home / 'installed bin'
         downloads = home / 'downloads'
         downloads.mkdir()
