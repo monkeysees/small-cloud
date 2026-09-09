@@ -11,6 +11,12 @@ shift
 umask 077
 # Consume this VM even when validation or setup fails; never reuse its daemon.
 (set -o noclobber; : > "$root/started")
+mkdir -p "$root/output"
+cleanup() {
+  python3 /opt/small-cloud-builder/worker.py terminate 2>/dev/null || true
+  systemctl stop sc-build-worker.service sc-build-daemon.service 2>/dev/null || true
+}
+trap cleanup EXIT
 python3 /opt/small-cloud-builder/worker.py prepare "$archive" "$@"
 sysctl -q -w net.ipv4.ip_forward=1 net.ipv6.conf.all.disable_ipv6=1 net.ipv6.conf.default.disable_ipv6=1
 ip netns add sc-build
@@ -26,11 +32,6 @@ ip netns exec sc-build sysctl -q -w net.ipv6.conf.all.disable_ipv6=1 net.ipv6.co
 install -d /etc/netns/sc-build
 printf 'nameserver 1.1.1.1\nnameserver 8.8.8.8\n' > /etc/netns/sc-build/resolv.conf
 nft -f "$root/policy.nft"
-cleanup() {
-  python3 /opt/small-cloud-builder/worker.py terminate 2>/dev/null || true
-  systemctl stop sc-build-worker.service sc-build-daemon.service 2>/dev/null || true
-}
-trap cleanup EXIT
 # This host timer is outside the build slice and survives an SSH disconnect.
 systemd-run --unit=sc-build-deadline --on-active=600s --timer-property=AccuracySec=1us \
   /usr/bin/python3 /opt/small-cloud-builder/worker.py terminate

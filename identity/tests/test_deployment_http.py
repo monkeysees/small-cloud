@@ -102,6 +102,8 @@ class DeploymentAcceptance(unittest.TestCase):
             fail = False
             def build(self, operation):
                 return {'archive': 'fixture-archive'}
+            def build_accounting(self, operation):
+                return {'terminated': True, 'duration_seconds': 1}
             def start(self, operation, artifact, app):
                 return {'host': '127.0.0.1', 'port': 18080, 'container': 'fixture-container'}
             def ready(self, target):
@@ -205,6 +207,8 @@ class DeploymentAcceptance(unittest.TestCase):
         class InfrastructureFixture(Infrastructure):
             def build(self, operation):
                 return {'archive': str(archive), 'sha256': archive_digest}
+            def build_accounting(self, operation):
+                return {'terminated': True, 'duration_seconds': 1}
             def ready(self, target):
                 pass
             def build_log(self, operation):

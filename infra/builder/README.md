@@ -43,6 +43,8 @@ the local timer does **not** delete the billable VM. Provider reconciliation is
 also necessary if the guest or controller fails. Do not release a build allowance
 reservation until termination has been confirmed by the controller.
 
+The trusted termination helper records `output/accounting.json` only after the build cgroup is empty. Its monotonic duration runs from worker entry through confirmed termination; retries retain the original receipt. The independent timer starts before daemon startup, so the execution budget is bounded by 600 seconds even if worker startup is delayed. The controller retrieves this receipt alongside build results and verifies VM deletion before product accounting settles. Missing receipts remain an operator reconciliation case, including when VM deletion succeeds but exact execution timing is unavailable. Preflight failures proven not to have attempted execution return the operator-only `BUILD_NOT_STARTED` response with exit 7, so the publishing worker can release their reservation without charging setup time.
+
 After a successful SSH command, retrieve `output/result.json`, `output/image.tar`,
 `output/build.log` and `output/daemon.log` from `/var/lib/small-cloud-build` over SSH. Check `ok` and
 verify the archive SHA-256 before accepting the image. The image archive is at

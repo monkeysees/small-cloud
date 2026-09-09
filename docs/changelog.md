@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #10 authenticated publishing usage, durable monthly build reservations and termination-based settlement, conservative exhaustion feedback, and deterministic capacity/concurrency/month-boundary regression checks.
+
 - Deploy #19, migrate all three hosted identities and both apps into the initial workspace, restart identity/publishing services, and verify retained credentials, unchanged database data and private-content denial.
 
 - Add #19 initial-workspace migration with separate membership and platform roles, saved defaults, preserved app URLs/data/credentials, workspace-authorized publishing and sharing, and restart/CLI/PostgreSQL regression checks; additional workspaces remain unavailable.

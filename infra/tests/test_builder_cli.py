@@ -1,6 +1,7 @@
 """Exercise the trusted source extraction boundary with real tar archives."""
 import importlib.util
 import io
+import json
 from pathlib import Path
 import stat
 import tarfile
@@ -79,6 +80,57 @@ class SourceBoundaryTests(unittest.TestCase):
         with self.assertRaises((ValueError, FileExistsError)):
             self.prepare()
         self.assertEqual((self.build / 'context/Dockerfile').read_bytes(), b'first')
+
+
+class TerminationEvidenceTests(unittest.TestCase):
+    def test_cleanup_before_execution_confirms_zero_charge(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'output').mkdir()
+            with patch.object(worker, 'ROOT', root), patch.object(worker.subprocess, 'check_output', return_value=''):
+                worker.terminate()
+            self.assertEqual(json.loads((root / 'output/accounting.json').read_text()),
+                             {'terminated': True, 'duration_seconds': 0})
+
+    def test_termination_receipt_includes_execution_and_is_not_retimed_on_retry(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = root / 'output'
+            output.mkdir()
+            (output / 'execution.json').write_text('{"monotonic": 100}')
+            cgroup = root / 'cgroups/small-cloud-build.slice'
+            cgroup.mkdir(parents=True)
+            (cgroup / 'cgroup.events').write_text('populated 0\n')
+            def path(value):
+                return root / 'cgroups' if value == '/sys/fs/cgroup' else Path(value)
+            with patch.object(worker, 'ROOT', root), patch.object(worker, 'Path', side_effect=path), \
+                    patch.object(worker.subprocess, 'check_output', return_value='/small-cloud-build.slice'), \
+                    patch.object(worker.time, 'monotonic', return_value=112.01):
+                worker.terminate()
+            self.assertEqual((cgroup / 'cgroup.kill').read_text(), '1\n')
+            receipt = json.loads((output / 'accounting.json').read_text())
+            self.assertTrue(receipt['terminated'])
+            self.assertAlmostEqual(receipt['duration_seconds'], 12.01)
+            with patch.object(worker, 'ROOT', root):
+                worker.terminate()
+            self.assertEqual(json.loads((output / 'accounting.json').read_text()), receipt)
+
+    def test_unconfirmed_group_cannot_issue_a_termination_receipt(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'output').mkdir()
+            (root / 'output/execution.json').write_text('{"monotonic": 100}')
+            cgroup = root / 'cgroups/small-cloud-build.slice'
+            cgroup.mkdir(parents=True)
+            (cgroup / 'cgroup.events').write_text('populated 1\n')
+            def path(value):
+                return root / 'cgroups' if value == '/sys/fs/cgroup' else Path(value)
+            with patch.object(worker, 'ROOT', root), patch.object(worker, 'Path', side_effect=path), \
+                    patch.object(worker.subprocess, 'check_output', return_value='/small-cloud-build.slice'), \
+                    patch.object(worker.time, 'monotonic', side_effect=[700, 706]):
+                with self.assertRaises(RuntimeError):
+                    worker.terminate()
+            self.assertFalse((root / 'output/accounting.json').exists())
 
 
 if __name__ == '__main__':

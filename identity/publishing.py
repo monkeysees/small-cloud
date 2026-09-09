@@ -8,11 +8,13 @@ from urllib.parse import urlsplit
 
 from .common import Failure, digest, timestamp
 from .upload import validate_archive
+from . import allowance
 
 
 class Publishing:
-    def __init__(self, store, origin):
+    def __init__(self, store, origin, clock=time.time):
         self.store = store
+        self.clock = clock
         domain = urlsplit(origin).hostname
         if not domain:
             raise ValueError('Publishing origin must have a hostname')
@@ -34,6 +36,8 @@ class Publishing:
                     candidate_host TEXT, candidate_port INTEGER, candidate_container TEXT,
                     previous_container TEXT, cleanup_pending INTEGER NOT NULL DEFAULT 0);
             ''')
+            db.execute('BEGIN IMMEDIATE')
+            allowance.initialize(db)
 
     def deploy(self, token, metadata, archive, request_id):
         name = metadata.get('name')
@@ -79,14 +83,32 @@ class Publishing:
             elif 'description' in metadata:
                 db.execute('UPDATE apps SET description=? WHERE id=?', (metadata['description'], app['id']))
             operation_id = 'd-' + uuid.uuid4().hex[:24]
+            now = self.clock()
+            allowance.reserve(db, operation_id, user['workspace_id'], now)
             db.execute('INSERT INTO deployments(id,app_id,actor,request_id,state,source,created) VALUES(?,?,?,?,?,?,?)',
-                       (operation_id, app['id'], user['id'], request_id, 'accepted', archive, time.time()))
+                       (operation_id, app['id'], user['id'], request_id, 'accepted', archive, now))
             result = {'operation_id': operation_id, 'state': 'accepted', 'app': name,
                       'url': self.url(app), 'active_deployment_id': app['active_deployment_id']}
             db.execute('DELETE FROM requests WHERE actor=? AND id=?', (user['id'], request_id))
             db.execute('INSERT INTO requests VALUES(?,?,?,?,?)',
                        (user['id'], request_id, fingerprint, json.dumps(result), time.time() + 604800))
             return result
+
+    def usage(self, token):
+        with self.store.connect() as db:
+            db.execute('BEGIN')
+            _, user = self.store.credential(db, token)
+            if not (user['creator'] or user['administrator']):
+                raise Failure('FORBIDDEN', 'Usage requires creator or administrator authority.', 403)
+            workspace = user['workspace_id']
+            creators = db.execute('SELECT COUNT(*) FROM memberships WHERE workspace_id=? AND creator=1 AND member=1',
+                                  (workspace,)).fetchone()[0]
+            apps = db.execute('SELECT COUNT(*), COUNT(*) FILTER (WHERE target_port IS NOT NULL OR id IN '
+                              "(SELECT app_id FROM deployments WHERE state IN ('starting','cleaning'))) "
+                              'FROM apps WHERE workspace_id=?', (workspace,)).fetchone()
+            return {'creators': {'used': creators, 'limit': 5}, 'deployed_apps': {'used': apps[0], 'limit': 30},
+                    'active_apps': {'used': apps[1], 'limit': 5},
+                    'build': allowance.usage(db, workspace, self.clock())}
 
     def url(self, app):
         return 'https://' + app['id'] + '.' + self.domain

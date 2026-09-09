@@ -20,6 +20,7 @@ import urllib.request
 
 from .common import Failure
 from .upload import validate_archive
+from . import allowance
 
 
 class State:
@@ -55,6 +56,13 @@ def command(arguments, timeout=900, data=None):
         result = subprocess.run(arguments, input=data, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                                 timeout=timeout, check=False)
         if result.returncode:
+            if result.returncode == 7:
+                try:
+                    unstarted = json.loads(result.stdout).get('error', {}).get('code') == 'BUILD_NOT_STARTED'
+                except (ValueError, AttributeError):
+                    unstarted = False
+                if unstarted:
+                    raise Failure('BUILD_FAILED', 'Remote build could not start.', 500, execution_not_started=True)
             if result.returncode == 5:
                 try:
                     capacity = json.loads(result.stdout).get('error', {}).get('code') == 'ACTIVE_CAPACITY'
@@ -84,6 +92,7 @@ class Infrastructure:
         if config.get('runtime_host_key_alias'):
             self.options += ['-o', 'HostKeyAlias=' + config['runtime_host_key_alias']]
         self.staging = Path('/srv/small-cloud/source')
+        self.unstarted_job = None
 
     def ssh(self, *arguments, data=None, timeout=900):
         return command(['ssh', *self.options, 'root@' + self.runtime, shlex.join(arguments)], timeout, data)
@@ -94,19 +103,19 @@ class Infrastructure:
 
     def build(self, operation):
         job = operation['id']
+        self.unstarted_job = job
         archive = bytes(operation['source'])
         validate_archive(archive)
         command([sys.executable, str(self.root / 'artifacts.py'), '--stage', job], data=archive)
         source = self.staging / ('upload-' + job) / 'source.tar'
         output = self.staging / job
         try:
+            self.unstarted_job = None
             command([sys.executable, str(self.root / 'remote.py'), 'build', '--context', str(source),
                      '--output', str(output), '--job', job, '--admin-cidr', self.admin_cidr], timeout=1800)
-        except Failure:
-            teardown = output / 'teardown.json'
-            if not teardown.is_file() or not json.loads(teardown.read_text()).get('deleted'):
-                raise Failure('INTERNAL', 'Build termination requires operator reconciliation.', 500,
-                              reconciliation_required=True) from None
+        except Failure as error:
+            if error.details.get('execution_not_started') is True:
+                self.unstarted_job = job
             raise Failure('BUILD_FAILED', 'Dockerfile build failed; inspect build logs.', 500) from None
         finally:
             source.unlink(missing_ok=True)
@@ -119,6 +128,22 @@ class Infrastructure:
             raise Failure('BUILD_FAILED', 'Build artifact verification failed.', 500)
         command([sys.executable, str(self.root / 'releases.py'), 'publish', operation['app_id'], job, str(image)])
         return {'archive': str(image), 'sha256': checksum}
+
+    def build_accounting(self, operation):
+        if self.unstarted_job == operation['id']:
+            return {'terminated': True, 'duration_seconds': 0}
+        try:
+            output = self.staging / operation['id']
+            evidence = json.loads((output / 'accounting.json').read_text())
+            if (evidence.get('execution_attempted') is False and evidence.get('terminated') is True
+                    and evidence.get('duration_seconds') == 0):
+                return evidence
+            teardown = json.loads((output / 'teardown.json').read_text())
+            if teardown.get('deleted') is True and isinstance(evidence, dict):
+                return evidence
+        except (OSError, ValueError, AttributeError):
+            pass
+        return {'terminated': False, 'duration_seconds': None}
 
     def build_log(self, operation):
         if not re.fullmatch(r'd-[0-9a-f]{24}', operation['id']):
@@ -258,7 +283,12 @@ class Worker:
                     or not re.fullmatch(r'a-[0-9a-f]{24}', operation['app_id'])):
                 raise Failure('INTERNAL', 'Invalid deployment identity requires operator reconciliation.', 500,
                               reconciliation_required=True)
-            artifact = self.infrastructure.build(operation)
+            try:
+                artifact = self.infrastructure.build(operation)
+            except Exception:
+                self.settle_build(operation)
+                raise
+            self.settle_build(operation)
             with self.state.connect() as db:
                 db.execute("UPDATE deployments SET state='starting',source=NULL WHERE id=?", (operation['id'],))
             starting = True
@@ -301,7 +331,7 @@ class Worker:
                                       reconciliation_required=True)
             with self.state.connect() as db:
                 db.execute('UPDATE deployments SET state=?,finished=?,source=NULL,error=?,cleanup_pending=? WHERE id=?',
-                           ('cleaning' if failure.details.get('reconciliation_required') else 'failed',
+                           (('cleaning' if starting else 'building') if failure.details.get('reconciliation_required') else 'failed',
                             None if failure.details.get('reconciliation_required') else time.time(),
                             json.dumps({'code': failure.code, 'message': failure.message, 'retryable': False,
                                         'details': failure.details}), int(bool(failure.details.get('reconciliation_required'))), operation['id']))
@@ -314,6 +344,14 @@ class Worker:
                 db.execute('UPDATE deployments SET source=NULL,build_log=?,dropped_bytes=? WHERE id=?',
                            (log, dropped, operation['id']))
         return True
+
+    def settle_build(self, operation):
+        try:
+            evidence = self.infrastructure.build_accounting(operation)
+        except (OSError, ValueError):
+            evidence = {}
+        with self.state.connect() as db:
+            allowance.settle(db, operation['id'], evidence)
 
 
 def main():

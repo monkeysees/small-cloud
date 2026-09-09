@@ -202,6 +202,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.respond(202, envelope(result, request_id=self.request_id))
             finally:
                 self.app.upload_slots.release()
+        elif self.command == 'GET' and path == '/api/usage':
+            self.respond(200, envelope(self.app.publishing.usage(self.bearer())))
         elif self.command == 'GET' and path == '/api/directory':
             self.respond(200, envelope(self.app.publishing.directory(self.bearer())))
         elif self.command == 'POST' and path.startswith('/api/apps/') and path.endswith('/share'):

@@ -76,6 +76,9 @@ class DatabaseAcceptance(unittest.TestCase):
             def build(self, operation):
                 return {}
 
+            def build_accounting(self, operation):
+                return {'terminated': True, 'duration_seconds': 1}
+
             def start(self, operation, artifact, app):
                 provisioned = json.loads(command('docker', 'exec', acceptance.database, 'python3',
                     '/usr/local/bin/app-database.py', operation['app_id']))

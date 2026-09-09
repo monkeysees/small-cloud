@@ -323,6 +323,7 @@ def enable_spending(args: argparse.Namespace) -> dict:
 
 
 def build(args: argparse.Namespace) -> dict:
+    args.execution_attempted = False
     if os.geteuid() != 0 or not Path("/etc/small-cloud/controller").is_file():
         raise Failure("Run builds only on the configured German control host; artifact staging must remain in the EU")
     source = args.context.resolve(strict=True)
@@ -358,6 +359,7 @@ def build(args: argparse.Namespace) -> dict:
         host.upload(copied_source, "/var/lib/small-cloud-build/context.tar")
         management = sorted(set(management) | set(management_addresses()))
         try:
+            args.execution_attempted = True
             host.command("bash", "/opt/small-cloud-builder/run.sh", "/var/lib/small-cloud-build/context.tar",
                          *management, timeout=660)
         finally:
@@ -367,7 +369,7 @@ def build(args: argparse.Namespace) -> dict:
             except Failure:
                 pass
             # Private output never reaches the console, including failed Dockerfile logs.
-            for name in ("build.log", "daemon.log", "result.json"):
+            for name in ("build.log", "daemon.log", "result.json", "accounting.json"):
                 try:
                     host.download("/var/lib/small-cloud-build/output/" + name, destination / name,
                                   10 * 1024 * 1024 if name.endswith('.log') else 65536)
@@ -381,6 +383,9 @@ def build(args: argparse.Namespace) -> dict:
         if created is not None:
             deletion = run([sys.executable, str(HERE / "builders.py"), "delete", str(created["id"])])
             (destination / "teardown.json").write_text(deletion)
+        if not args.execution_attempted:
+            (destination / 'accounting.json').write_text(json.dumps({
+                'execution_attempted': False, 'terminated': True, 'duration_seconds': 0}) + '\n')
 
 
 def main() -> int:
@@ -413,6 +418,9 @@ def main() -> int:
         return 130
     except (Failure, OSError, ValueError, subprocess.SubprocessError):
         print("ERROR: remote operation failed; inspect protected state, host health and builder reconciliation", file=sys.stderr)
+        if args.command == 'build' and not args.execution_attempted:
+            print(json.dumps({'error': {'code': 'BUILD_NOT_STARTED'}}))
+            return 7
         return 1
 
 

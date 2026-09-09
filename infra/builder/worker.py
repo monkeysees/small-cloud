@@ -2,6 +2,7 @@
 """Trusted disposable-builder entry point. No provider or registry credentials."""
 
 import hashlib
+import fcntl
 import ipaddress
 import json
 import os
@@ -31,14 +32,33 @@ def execution_timing():
 
 
 def terminate():
-    group = subprocess.check_output([
-        '/usr/bin/systemctl', 'show', '--property=ControlGroup', '--value',
-        'small-cloud-build.slice',
-    ], text=True, timeout=5).strip()
-    if not group.endswith('/small-cloud-build.slice') or '..' in group.split('/'):
-        raise RuntimeError('Cannot locate build cgroup; controller must delete VM')
-    # Kernel cgroup.kill recursively kills every descendant without fork races.
-    (Path('/sys/fs/cgroup') / group.lstrip('/') / 'cgroup.kill').write_text('1\n')
+    with (ROOT / 'termination.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        receipt = ROOT / 'output/accounting.json'
+        if receipt.exists():
+            return
+        group = subprocess.check_output([
+            '/usr/bin/systemctl', 'show', '--property=ControlGroup', '--value',
+            'small-cloud-build.slice',
+        ], text=True, timeout=5).strip()
+        started = ROOT / 'output/execution.json'
+        if not group and not started.exists():
+            receipt.write_text(json.dumps({'terminated': True, 'duration_seconds': 0}) + '\n')
+            return
+        if not group.endswith('/small-cloud-build.slice') or '..' in group.split('/'):
+            raise RuntimeError('Cannot locate build cgroup; controller must delete VM')
+        cgroup = Path('/sys/fs/cgroup') / group.lstrip('/')
+        # Kill every descendant, then confirm the group is empty before issuing evidence.
+        (cgroup / 'cgroup.kill').write_text('1\n')
+        deadline = time.monotonic() + 5
+        while (cgroup / 'cgroup.events').exists() and 'populated 1' in (cgroup / 'cgroup.events').read_text():
+            if time.monotonic() >= deadline:
+                raise RuntimeError('Build cgroup termination is unconfirmed')
+            time.sleep(0.01)
+        duration = time.monotonic() - json.loads(started.read_text())['monotonic'] if started.exists() else 0
+        temporary = receipt.with_suffix('.tmp')
+        temporary.write_text(json.dumps({'terminated': True, 'duration_seconds': duration}) + '\n')
+        temporary.replace(receipt)
 
 
 def daemon(arguments):
@@ -131,6 +151,9 @@ table ip sc_build_nat {
 
 def execute():
     global EXECUTION_STARTED_AT, EXECUTION_STARTED_MONOTONIC
+    EXECUTION_STARTED_AT = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+    EXECUTION_STARTED_MONOTONIC = time.monotonic()
+    (ROOT / 'output/execution.json').write_text(json.dumps({'monotonic': EXECUTION_STARTED_MONOTONIC}) + '\n')
     env = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'HOME': '/nonexistent',
            'DOCKER_CONFIG': '/nonexistent', 'DOCKER_BUILDKIT': '1'}
     for _ in range(120):
@@ -140,8 +163,6 @@ def execute():
         time.sleep(0.25)
     else:
         raise RuntimeError('Isolated build daemon did not become ready')
-    EXECUTION_STARTED_AT = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-    EXECUTION_STARTED_MONOTONIC = time.monotonic()
     (ROOT / 'output/result.json').write_text(json.dumps({
         'ok': False, 'error': 'ExecutionNotCompleted',
         'execution_started_at': EXECUTION_STARTED_AT,

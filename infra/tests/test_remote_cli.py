@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import subprocess
 import sys
 import tempfile
 import time
@@ -62,6 +63,13 @@ class RemoteTransportTests(unittest.TestCase):
         self.assertEqual(self.destination.read_bytes(), expected)
         self.assertEqual(stat.S_IMODE(self.destination.stat().st_mode), 0o600)
         self.assertEqual(list(self.root.glob('.download-*')), [])
+
+    def test_build_preflight_failure_reports_that_execution_never_started(self):
+        result = subprocess.run([sys.executable, str(Path(remote.__file__)), 'build',
+            '--context', str(self.root / 'missing-context'), '--output', str(self.root / 'output'),
+            '--admin-cidr', '203.0.113.1/32', '--job', 'd-preflight'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 7, result.stdout + result.stderr)
+        self.assertEqual(json.loads(result.stdout), {'error': {'code': 'BUILD_NOT_STARTED'}})
 
     def test_oversized_download_aborts_without_replacing_existing_file(self):
         self.destination.write_bytes(b'previous verified artifact')
