@@ -24,6 +24,8 @@ The CLI reports upload start and, with `--wait`, each observed deployment stage 
 
 ## Operator installation
 
+For an existing installation, follow the [initial workspace migration](WORKSPACE-MIGRATION.md) before starting the upgraded identity service and publishing worker together. All existing apps retain their IDs, URLs, sharing and databases in `ws-initial`. New publication uses that saved workspace; second-workspace creation is not available yet.
+
 Install the updated Python package in `/opt/small-cloud-identity`, preserving the identity configuration and database. Install the updated sandbox runner on the runtime host. Keep the identity service unprivileged; only the separate publishing worker holds infrastructure authority. Install [small-cloud-publishing.service](small-cloud-publishing.service) and the updated [identity unit](small-cloud-identity.service). The identity service admits one bounded upload at a time and has a 1 GiB memory ceiling.
 
 Create root-owned mode-0600 `/etc/small-cloud/publishing.json`:

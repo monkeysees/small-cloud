@@ -269,7 +269,8 @@ class Worker:
             self.infrastructure.ready(target)
             with self.state.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
-                allowed = db.execute('SELECT 1 FROM apps a JOIN users u ON u.id=a.owner '
+                allowed = db.execute('SELECT 1 FROM apps a JOIN memberships u ON u.user_id=a.owner '
+                                     'AND u.workspace_id=a.workspace_id '
                                      'WHERE a.id=? AND a.disabled=0 AND u.member=1 AND u.creator=1',
                                      (app['id'],)).fetchone()
                 if not allowed:

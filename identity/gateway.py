@@ -69,7 +69,7 @@ class Gateway:
             with self.store.connect() as db:
                 return dict(self.store.credential(db, handler.bearer())[1])
         with self.store.connect() as db:
-            user = db.execute('SELECT u.* FROM app_sessions s JOIN users u ON u.id=s.user_id '
+            user = db.execute('SELECT u.* FROM app_sessions s JOIN workspace_users u ON u.id=s.user_id '
                               'WHERE s.verifier=? AND s.app=? AND s.expires>? AND u.member=1',
                               (digest(handler.cookie(COOKIE)), app_id, time.time())).fetchone()
             if user:

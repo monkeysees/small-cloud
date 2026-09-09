@@ -125,6 +125,7 @@ class IdentityAcceptance(unittest.TestCase):
                         opener=opener)
         config = json.loads(self.config.read_text())
         server = create_server(config, port=0, google=google)
+        self.platform_server, self.server_tls = server, tls
         self.endpoint = f'https://localhost:{server.server_port}'
         server.application.origin = self.endpoint
         server.socket = tls.wrap_socket(server.socket, server_side=True)
@@ -141,6 +142,20 @@ class IdentityAcceptance(unittest.TestCase):
         self.browser = urllib.request.build_opener(
             urllib.request.HTTPSHandler(context=self.client_tls),
             urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+
+    def restart_platform(self):
+        from identity.http import create_server
+        previous = self.platform_server
+        previous.shutdown()
+        previous.server_close()
+        server = create_server(json.loads(self.config.read_text()), port=previous.server_port,
+                               google=previous.application.google)
+        server.application.origin = self.endpoint
+        server.socket = self.server_tls.wrap_socket(server.socket, server_side=True)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        self.platform_server = server
 
     def http(self, path, body=None, token=None, browser=None, headers=None):
         request_headers = dict(headers or {})

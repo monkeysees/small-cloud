@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import sqlite3
 import subprocess
 import sys
 import time
@@ -16,6 +17,7 @@ import uuid
 import urllib.parse
 
 from identity.tests import test_deployment_http as deployment_fixture
+from identity.tests import test_identity_cli as identity_fixture
 from identity.worker import State, Worker
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,6 +34,7 @@ class DatabaseAcceptance(unittest.TestCase):
     setUp = deployment_fixture.DeploymentAcceptance.setUp
     operator = deployment_fixture.DeploymentAcceptance.operator
     start_platform = deployment_fixture.DeploymentAcceptance.start_platform
+    restart_platform = identity_fixture.IdentityAcceptance.restart_platform
     http = deployment_fixture.DeploymentAcceptance.http
     approve = deployment_fixture.DeploymentAcceptance.approve
     http_login = deployment_fixture.DeploymentAcceptance.http_login
@@ -218,11 +221,45 @@ class DatabaseAcceptance(unittest.TestCase):
         status, raw = self.app_request(app, '/data')
         self.assertEqual(status, 200, raw)
         self.assertEqual(json.loads(raw)['entries'], [entry])
+
         updated = self.publish('persistence')
         self.assertEqual(updated['url'], app['url'])
         status, raw = self.app_request(updated, '/data')
         self.assertEqual(status, 200, raw)
         self.assertEqual(json.loads(raw)['entries'], [entry])
+
+    def test_legacy_control_migration_preserves_database_cli_and_redeployment(self):
+        self.prepare()
+        app = self.publish('migrated')
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Before workspace migration'})[0], 201)
+        self.assertEqual(self.cli('share', 'migrated', '--scope', 'workspace-wide').returncode, 0)
+        self.platform_server.shutdown()
+        self.platform_server.server_close()
+        # Serialize realistic running state into the frozen pre-workspace schema.
+        path = self.home / 'server' / 'identity.sqlite3'
+        legacy = self.home / 'legacy.sqlite3'
+        with sqlite3.connect(path) as current, sqlite3.connect(legacy) as old:
+            current.row_factory = sqlite3.Row
+            old.executescript(Path(__file__).with_name('legacy-workspace.sql').read_text())
+            for table in ('users', 'credentials', 'browser_sessions', 'logins', 'oauth', 'requests', 'apps', 'deployments'):
+                columns = [row[1] for row in old.execute('PRAGMA table_info(' + table + ')')]
+                source = 'workspace_users' if table == 'users' else table
+                for row in current.execute('SELECT * FROM ' + source):
+                    old.execute('INSERT INTO ' + table + ' VALUES(' + ','.join('?' for _ in columns) + ')',
+                                [row[column] for column in columns])
+        legacy.chmod(0o600)
+        legacy.replace(path)
+        self.restart_platform()
+        result = self.cli('auth', 'status')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(json.loads(result.stdout)['data']['default_workspace'], 'ws-initial')
+        self.assertEqual(json.loads(self.app_request(app, '/data')[1])['entries'][0]['value'],
+                         'Before workspace migration')
+        updated = self.publish('migrated')
+        self.assertEqual(updated['url'], app['url'])
+        self.assertEqual(updated['sharing_scope'], 'workspace-wide')
+        self.assertEqual(json.loads(self.app_request(updated, '/data')[1])['entries'][0]['value'],
+                         'Before workspace migration')
 
     def test_other_database_and_role_are_denied_on_the_same_server(self):
         self.prepare()

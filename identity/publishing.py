@@ -21,6 +21,7 @@ class Publishing:
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS apps (
                     id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, owner TEXT NOT NULL,
+                    workspace_id TEXT NOT NULL DEFAULT 'ws-initial' CHECK(workspace_id='ws-initial'),
                     description TEXT NOT NULL, sharing_scope TEXT NOT NULL DEFAULT 'creator-only',
                     disabled INTEGER NOT NULL DEFAULT 0, active_deployment_id TEXT,
                     target_host TEXT, target_port INTEGER, container TEXT,
@@ -50,7 +51,7 @@ class Publishing:
             if not user['creator']:
                 raise Failure('FORBIDDEN', 'Publishing requires creator authority.', 403)
             app = db.execute('SELECT * FROM apps WHERE name=?', (name,)).fetchone()
-            if app and app['owner'] != user['id']:
+            if app and (app['workspace_id'] != user['workspace_id'] or app['owner'] != user['id']):
                 raise Failure('NOT_FOUND', 'App not found.', 404)
             if app and app['disabled']:
                 raise Failure('APP_DISABLED', 'App is disabled.', 403)
@@ -72,8 +73,8 @@ class Publishing:
                 if db.execute('SELECT COUNT(*) FROM apps').fetchone()[0] >= 30:
                     raise Failure('DEPLOYED_CAPACITY', 'All thirty deployed app slots are occupied.', 409, limit=30)
                 app_id = 'a-' + uuid.uuid4().hex[:24]
-                db.execute('INSERT INTO apps(id,name,owner,description,created) VALUES(?,?,?,?,?)',
-                           (app_id, name, user['id'], metadata['description'], time.time()))
+                db.execute('INSERT INTO apps(id,name,owner,description,created,workspace_id) VALUES(?,?,?,?,?,?)',
+                           (app_id, name, user['id'], metadata['description'], time.time(), user['workspace_id']))
                 app = db.execute('SELECT * FROM apps WHERE id=?', (app_id,)).fetchone()
             elif 'description' in metadata:
                 db.execute('UPDATE apps SET description=? WHERE id=?', (metadata['description'], app['id']))
@@ -98,7 +99,7 @@ class Publishing:
             db.execute('BEGIN IMMEDIATE')
             _, user = self.store.credential(db, token)
             app = db.execute('SELECT * FROM apps WHERE name=? AND owner=?', (name, user['id'])).fetchone()
-            if not app:
+            if not app or app['workspace_id'] != user['workspace_id']:
                 raise Failure('NOT_FOUND', 'App not found.', 404)
             if not user['creator']:
                 raise Failure('FORBIDDEN', 'Sharing requires creator authority.', 403)
@@ -120,7 +121,8 @@ class Publishing:
     def authorized_app(self, db, token, name):
         _, user = self.store.credential(db, token)
         app = db.execute('SELECT * FROM apps WHERE name=?', (name,)).fetchone()
-        if not app or (app['owner'] != user['id'] and not user['administrator']):
+        if (not app or app['workspace_id'] != user['workspace_id']
+                or (app['owner'] != user['id'] and not user['administrator'])):
             raise Failure('NOT_FOUND', 'App not found.', 404)
         return app
 
@@ -156,7 +158,10 @@ class Publishing:
                 row = db.execute('SELECT * FROM deployments WHERE id=?', (operation_id,)).fetchone()
             if not row or (row['actor'] != user['id'] and not user['administrator']):
                 raise Failure('NOT_FOUND', 'Operation not found.', 404)
-            app = db.execute('SELECT name FROM apps WHERE id=?', (row['app_id'],)).fetchone()
+            app = db.execute('SELECT name FROM apps WHERE id=? AND workspace_id=?',
+                             (row['app_id'], user['workspace_id'])).fetchone()
+            if not app:
+                raise Failure('NOT_FOUND', 'Operation not found.', 404)
             return self.operation_result(row, app['name'])
 
     def logs(self, token, name, source, deployment=None, since=None, limit=100):
@@ -194,9 +199,11 @@ class Publishing:
     @staticmethod
     def accessible_apps(db, user_id, app_id=None):
         return db.execute('SELECT a.*, owner.name AS creator_name FROM apps a '
-                          'JOIN users owner ON owner.id=a.owner JOIN users viewer ON viewer.id=? '
-                          'WHERE owner.member=1 AND viewer.member=1 AND a.disabled=0 '
-                          "AND (a.owner=viewer.id OR a.sharing_scope='workspace-wide') "
+                          'JOIN users owner ON owner.id=a.owner '
+                          'JOIN memberships author ON author.user_id=a.owner AND author.workspace_id=a.workspace_id '
+                          'JOIN memberships viewer ON viewer.user_id=? AND viewer.workspace_id=a.workspace_id '
+                          'WHERE author.member=1 AND viewer.member=1 AND a.disabled=0 '
+                          "AND (a.owner=viewer.user_id OR a.sharing_scope='workspace-wide') "
                           'AND (? IS NULL OR a.id=?) ORDER BY a.name', (user_id, app_id, app_id))
 
     def directory(self, token):

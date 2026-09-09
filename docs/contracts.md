@@ -4,6 +4,8 @@ These are the provider-independent pilot contracts for [implementation #3](https
 
 ## CLI surface
 
+Implemented workspace migration (#19): existing identities and apps belong to `ws-initial`. Login and `auth status` additionally return `workspace:{id,name,owner_id}`, the service-persisted `default_workspace` ID and a separate `platform_administrator` boolean. `roles` remains the selected workspace's member/creator/administrator grants. Existing credentials require no new login or workspace prompt. Platform status does not grant workspace management or private-content access. Creation of additional workspaces and explicit selection remain #20; the broader multi-workspace requirements are in specification #18 and ADR 0009. See the [operator migration procedure](../identity/WORKSPACE-MIGRATION.md).
+
 `small-cloud [global flags] <command>` publishes and manages apps from Linux or macOS without local Docker. Native Windows distribution is deferred. App names are immutable, workspace-unique lowercase ASCII slugs matching `[a-z][a-z0-9-]{0,62}`; names identify apps in commands and are never reassigned after deletion. URLs use immutable app IDs so redeployment cannot change them. Descriptions are UTF-8 text of at most 500 characters.
 
 | Command | Inputs and result |

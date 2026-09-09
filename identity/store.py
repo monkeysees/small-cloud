@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from .common import Failure, digest, protected_directory, timestamp, validate_private_file
+from .workspaces import INITIAL_WORKSPACE, migrate
 
 
 def email_address(value):
@@ -31,10 +32,8 @@ class Store:
                 CREATE TABLE IF NOT EXISTS users (
                     id TEXT PRIMARY KEY, admission_email TEXT UNIQUE NOT NULL,
                     subject TEXT UNIQUE, name TEXT NOT NULL DEFAULT '', email TEXT NOT NULL,
-                    member INTEGER NOT NULL DEFAULT 1, creator INTEGER NOT NULL DEFAULT 0,
-                    administrator INTEGER NOT NULL DEFAULT 0);
-                CREATE UNIQUE INDEX IF NOT EXISTS sole_administrator ON users(administrator)
-                    WHERE administrator = 1;
+                    platform_administrator INTEGER NOT NULL DEFAULT 0,
+                    default_workspace TEXT REFERENCES workspaces(id));
                 CREATE TABLE IF NOT EXISTS credentials (
                     id TEXT PRIMARY KEY, verifier TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL,
                     expires REAL NOT NULL, revoked INTEGER NOT NULL DEFAULT 0);
@@ -50,6 +49,7 @@ class Store:
                     actor TEXT NOT NULL, id TEXT NOT NULL, fingerprint TEXT NOT NULL,
                     result TEXT NOT NULL, expires REAL NOT NULL, PRIMARY KEY(actor,id));
             ''')
+            migrate(db)
         self.path.chmod(0o600)
 
     @contextmanager
@@ -66,15 +66,18 @@ class Store:
         email = email_address(email)
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            existing = db.execute('SELECT * FROM users WHERE administrator=1').fetchone()
+            existing = db.execute('SELECT * FROM workspace_users WHERE id=owner_id').fetchone()
             if existing:
                 if existing['admission_email'] != email:
-                    raise Failure('REQUEST_CONFLICT', 'The sole administrator is already configured.', 409)
+                    raise Failure('REQUEST_CONFLICT', 'The initial workspace owner is already configured.', 409)
                 return self.membership(existing)
             user_id = 'usr_' + uuid.uuid4().hex
-            db.execute('INSERT INTO users(id,admission_email,email,administrator) VALUES(?,?,?,1)',
+            db.execute('INSERT INTO users(id,admission_email,email,platform_administrator,default_workspace) '
+                       "VALUES(?,?,?,1,'ws-initial')",
                        (user_id, email, email))
-            return self.membership(db.execute('SELECT * FROM users WHERE id=?', (user_id,)).fetchone())
+            db.execute('INSERT INTO workspaces VALUES(?,?,?)', (INITIAL_WORKSPACE, 'Initial workspace', user_id))
+            db.execute('INSERT INTO memberships VALUES(?,?,1,0,1)', (INITIAL_WORKSPACE, user_id))
+            return self.membership(db.execute('SELECT * FROM workspace_users WHERE id=?', (user_id,)).fetchone())
 
     @staticmethod
     def membership(user):
@@ -84,7 +87,10 @@ class Store:
     @staticmethod
     def identity(user):
         return {'user': {'id': user['id'], 'name': user['name'], 'email': user['email']},
-                'roles': [role for role in ('member', 'creator', 'administrator') if user[role]]}
+                'roles': [role for role in ('member', 'creator', 'administrator') if user[role]],
+                'workspace': {'id': user['workspace_id'], 'name': user['workspace_name'], 'owner_id': user['owner_id']},
+                'default_workspace': user['default_workspace'],
+                'platform_administrator': bool(user['platform_administrator'])}
 
     def start_login(self, poll_secret):
         if not isinstance(poll_secret, str) or len(poll_secret) < 40 or len(poll_secret) > 128:
@@ -131,9 +137,9 @@ class Store:
         subject, email = claims['sub'], email_address(claims['email'])
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            user = db.execute('SELECT * FROM users WHERE subject=?', (subject,)).fetchone()
+            user = db.execute('SELECT * FROM workspace_users WHERE subject=?', (subject,)).fetchone()
             if not user:
-                user = db.execute('SELECT * FROM users WHERE admission_email=? AND subject IS NULL AND member=1',
+                user = db.execute('SELECT * FROM workspace_users WHERE admission_email=? AND subject IS NULL AND member=1',
                                   (email,)).fetchone()
             if not user or not user['member']:
                 raise Failure('FORBIDDEN', 'This Google account has not been admitted to the workspace.', 403)
@@ -153,7 +159,7 @@ class Store:
         return row
 
     def browser_user(self, db, token):
-        row = db.execute('SELECT u.* FROM browser_sessions b JOIN users u ON u.id=b.user_id '
+        row = db.execute('SELECT u.* FROM browser_sessions b JOIN workspace_users u ON u.id=b.user_id '
                          'WHERE b.verifier=? AND b.expires>? AND u.member=1', (digest(token), time.time())).fetchone()
         if not row:
             raise Failure('AUTH_REQUIRED', 'Browser sign-in required.', 401)
@@ -182,7 +188,7 @@ class Store:
             db.execute('UPDATE logins SET last_poll=? WHERE code=?', (time.time(), row['code']))
             if not row['user_id']:
                 return {'state': 'pending', 'interval': 5}
-            user = db.execute('SELECT * FROM users WHERE id=? AND member=1', (row['user_id'],)).fetchone()
+            user = db.execute('SELECT * FROM workspace_users WHERE id=? AND member=1', (row['user_id'],)).fetchone()
             if not user:
                 raise Failure('FORBIDDEN', 'Workspace membership required.', 403)
             token, credential_id, expires = secrets.token_urlsafe(32), 'cred_' + uuid.uuid4().hex, time.time() + 2592000
@@ -196,8 +202,10 @@ class Store:
         row = db.execute('SELECT * FROM credentials WHERE verifier=?', (digest(token),)).fetchone()
         if not row:
             raise Failure('AUTH_REQUIRED', 'Sign in with small-cloud auth login.', 401)
-        user = db.execute('SELECT * FROM users WHERE id=?', (row['user_id'],)).fetchone()
-        if (row['revoked'] or row['expires'] <= time.time() or not user['member']) and not allow_revoked:
+        user = db.execute('SELECT * FROM workspace_users WHERE id=?', (row['user_id'],)).fetchone()
+        if not user or not user['member']:
+            raise Failure('FORBIDDEN', 'Saved workspace membership required; contact the operator.', 403)
+        if (row['revoked'] or row['expires'] <= time.time()) and not allow_revoked:
             raise Failure('CREDENTIAL_REVOKED', 'Credential revoked or expired; sign in again.', 401)
         return row, user
 
@@ -229,20 +237,26 @@ class Store:
                 result = {'revoked': True}
             elif action == 'admin/member/add':
                 email = email_address(body.get('email'))
-                member = db.execute('SELECT * FROM users WHERE admission_email=? OR email=?', (email, email)).fetchone()
+                member = db.execute('SELECT * FROM workspace_users WHERE workspace_id=? '
+                                    'AND (admission_email=? OR email=?)',
+                                    (user['workspace_id'], email, email)).fetchone()
                 if not member:
                     user_id = 'usr_' + uuid.uuid4().hex
-                    db.execute('INSERT INTO users(id,admission_email,email) VALUES(?,?,?)', (user_id, email, email))
-                    member = db.execute('SELECT * FROM users WHERE id=?', (user_id,)).fetchone()
+                    db.execute('INSERT INTO users(id,admission_email,email,default_workspace) VALUES(?,?,?,?)',
+                               (user_id, email, email, user['workspace_id']))
+                    db.execute('INSERT INTO memberships VALUES(?,?,1,0,0)', (user['workspace_id'], user_id))
+                    member = db.execute('SELECT * FROM workspace_users WHERE id=?', (user_id,)).fetchone()
                 result = self.membership(member)
             elif action == 'admin/creator/grant':
-                member = db.execute('SELECT * FROM users WHERE id=? AND member=1 AND subject IS NOT NULL',
-                                    (body.get('user_id'),)).fetchone()
+                member = db.execute('SELECT * FROM workspace_users WHERE id=? AND workspace_id=? '
+                                    'AND member=1 AND subject IS NOT NULL',
+                                    (body.get('user_id'), user['workspace_id'])).fetchone()
                 if not member:
                     raise Failure('NOT_FOUND', 'Member must complete Google sign-in before a creator grant.', 404)
-                if not member['creator'] and db.execute('SELECT COUNT(*) FROM users WHERE creator=1').fetchone()[0] >= 5:
+                if not member['creator'] and db.execute('SELECT COUNT(*) FROM memberships WHERE creator=1').fetchone()[0] >= 5:
                     raise Failure('CREATOR_CAPACITY', 'All five creator grants are occupied.', 409, limit=5)
-                db.execute('UPDATE users SET creator=1 WHERE id=?', (member['id'],))
+                db.execute('UPDATE memberships SET creator=1 WHERE user_id=? AND workspace_id=?',
+                           (member['id'], user['workspace_id']))
                 result = {**self.membership(member), 'creator': True}
             else:
                 raise Failure('NOT_FOUND', 'Unknown operation.', 404)

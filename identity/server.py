@@ -11,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description='Small Cloud identity service')
     parser.add_argument('--config', required=True, help='Owner-only service JSON file')
     commands = parser.add_subparsers(dest='command', required=True)
-    bootstrap = commands.add_parser('bootstrap', help='Set the sole administrator once')
+    bootstrap = commands.add_parser('bootstrap', help='Set the initial workspace owner and platform administrator once')
     bootstrap.add_argument('email')
     serve = commands.add_parser('serve', help='Serve loopback HTTP behind the management HTTPS proxy')
     serve.add_argument('--port', type=int, default=8765)

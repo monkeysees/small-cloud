@@ -10,5 +10,6 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 | [App publishing — 2026-09-09](app-publishing-2026-09-09.md) | #5 publication and protected app ingress acceptance. |
 | [App sharing — 2026-09-09](app-sharing-2026-09-09.md) | #7 local CLI/HTTP sharing, directory and shared PostgreSQL acceptance. |
 | [App database — 2026-09-09](app-database-2026-09-09.md) | #6 database persistence, isolation and acceptance-resource cleanup. |
+| [Initial workspace migration — 2026-09-09](workspace-migration-2026-09-09.md) | #19 local migration, saved defaults, workspace authorization and retained PostgreSQL data. |
 
 Setup and repeatable procedures remain in the [identity runbook](../../identity/README.md), [publishing runbook](../../identity/PUBLISHING.md), [database starter guide](../../identity/fixture/README.md), and [infrastructure runbook](../../infra/README.md).

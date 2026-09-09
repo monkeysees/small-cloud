@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #19 initial-workspace migration with separate membership and platform roles, saved defaults, preserved app URLs/data/credentials, workspace-authorized publishing and sharing, and restart/CLI/PostgreSQL regression checks; additional workspaces remain unavailable.
+
 - Record the confirmed multi-workspace design, owner and administrator boundaries, migration and capacity rules; publish specification #18 and implementation tickets #19–#28.
 
 - Complete #7 live acceptance with separate Google accounts: filtered discovery, owner-only sharing, administrator private-content denial, shared member writes and existing-session revocation with data preserved.
