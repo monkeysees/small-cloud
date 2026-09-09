@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Record the confirmed multi-workspace design, owner and administrator boundaries, migration and capacity rules; publish specification #18 and implementation tickets #19–#28.
+
 - Complete #7 live acceptance with separate Google accounts: filtered discovery, owner-only sharing, administrator private-content denial, shared member writes and existing-session revocation with data preserved.
 
 - Deploy #7 sharing and the directory route to the hosted pilot; verify owner CLI/HTTP smoke checks and restore the disposable probe to creator-only.
