@@ -1,0 +1,59 @@
+{
+  "commit": "641621e",
+  "endpoint": "https://small-cloud.monkeysees.one",
+  "app": "publishing-probe",
+  "original_scope": "creator-only",
+  "checks": {
+    "directory_unauthenticated": {
+      "status": 401,
+      "bytes": 178
+    },
+    "app_unauthenticated": {
+      "status": 401,
+      "bytes": 175
+    },
+    "app_creator_before": {
+      "status": 200,
+      "bytes": 171
+    },
+    "share_workspace_wide": {
+      "app": "publishing-probe",
+      "sharing_scope": "workspace-wide",
+      "secret_authority_acknowledged": false
+    },
+    "directory_workspace_wide": {
+      "apps": [
+        {
+          "name": "publishing-probe",
+          "description": "Disposable HTTP publishing acceptance probe",
+          "creator": {
+            "id": "usr_800a3dde642a45d5902244808a2e2f5c",
+            "name": "Aibek Katibov"
+          },
+          "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one"
+        }
+      ]
+    },
+    "app_creator_shared": {
+      "status": 200,
+      "bytes": 171
+    },
+    "share_creator_only": {
+      "app": "publishing-probe",
+      "sharing_scope": "creator-only",
+      "secret_authority_acknowledged": false
+    }
+  },
+  "unchanged_active_deployment": "d-cd728bf566aa4215b126f37b",
+  "verified_at": "2026-09-09T01:03:47.204911+00:00",
+  "services": {
+    "identity": "active",
+    "publishing": "active",
+    "caddy": "active"
+  },
+  "deployed_source_hashes_verified": true,
+  "remaining_live_checks": [
+    "Separate Google accounts: member, other creator, administrator private-content denial",
+    "Member read/write and existing browser session denial after unsharing"
+  ]
+}

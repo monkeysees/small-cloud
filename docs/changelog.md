@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Deploy #7 sharing and the directory route to the hosted pilot; verify owner CLI/HTTP smoke checks and restore the disposable probe to creator-only.
+
 - Add #7 creator-owned sharing in both directions, an authenticated accessible-app directory, and shared CLI/HTTP/PostgreSQL access checks.
 
 - Consolidate acceptance reports under `docs/acceptance/<topic>-YYYY-MM-DD.md`, extract identity/publishing outcomes from runbooks, and update report links.

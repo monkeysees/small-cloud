@@ -25,6 +25,14 @@ Typechecking passed with zero errors. All 40 identity, 81 infrastructure and fou
 
 Independent standards/specification review found no blocking implementation mismatch. The standards review noted optional duplication in request-receipt handling, consistent with existing mutation code. The specification review's browser-session evidence gap was addressed by the additional regression above.
 
+## Hosted deployment — 2026-09-09
+
+Commit `641621e` was pushed and installed on the existing German control host. The management proxy now routes `/api/directory`. Caddy validation passed; identity, publishing and Caddy services are active. Deployed CLI, HTTP adapter and publishing source hashes match the commit. The workstation CLI was updated while retaining its existing operator credential.
+
+[Deployed evidence](../evidence/app-sharing-2026-09-09.json) records authenticated CLI directory results, both sharing directions on the disposable `publishing-probe`, and owner HTTP 200 before and while shared. Unauthenticated directory and app requests return 401. The probe was restored to creator-only with the same active deployment; no runtime rebuild or data mutation was needed.
+
+Separate live Google-account member/other-creator/administrator checks, shared member data writes and existing-member-browser-session revocation remain pending. They passed local automated acceptance, but the hosted smoke check used only the existing operator credential and does not establish those multi-account results.
+
 ## Limits
 
-These are local CLI/HTTPS/PostgreSQL results. Google is replaced by a signed-token provider fixture and Docker supplies disposable PostgreSQL; the production identity, publishing and gateway implementations run locally. No production deployment, live Google sharing check or new EU infrastructure isolation claim is recorded here. Install the service package and updated Caddy directory route before using these commands on the hosted pilot. Creator-configured secrets and their acknowledgement remain #12; this change does not introduce secret management. Streaming and WebSocket support remain unavailable.
+These are local CLI/HTTPS/PostgreSQL results. Google is replaced by a signed-token provider fixture and Docker supplies disposable PostgreSQL; the production identity, publishing and gateway implementations run locally. The hosted deployment and operator smoke results are recorded above; no new multi-account Google sharing verification or EU infrastructure isolation claim is made. Creator-configured secrets and their acknowledgement remain #12; this change does not introduce secret management. Streaming and WebSocket support remain unavailable.
