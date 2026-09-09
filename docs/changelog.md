@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Deploy #10 and verify live usage, replay/concurrency refusal, a 15-second successful build charge and 600-second timeout charge with the previous app still serving; remove the temporary acceptance app and preserve existing apps.
+
 - Include #10 accounting receipts in the existing seven-day diagnostic cleanup, preserving recent reconciliation evidence without leaving expired staging directories behind.
 
 - Add #10 authenticated publishing usage, durable monthly build reservations and termination-based settlement, conservative exhaustion feedback, and deterministic capacity/concurrency/month-boundary regression checks.

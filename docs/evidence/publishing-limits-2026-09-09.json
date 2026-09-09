@@ -1,0 +1,399 @@
+{
+  "implementation_commit": "26ae52f38bded3b064cdc9a1615c19db640ca6bf",
+  "control_region": "nbg1",
+  "services": [
+    "small-cloud-identity",
+    "small-cloud-publishing",
+    "caddy"
+  ],
+  "request_replay": "same operation and single 600-second reservation",
+  "competing_build": "BUILD_BUSY",
+  "unauthenticated_usage_http_status": 401,
+  "observations": [
+    {
+      "at": "2026-09-09T03:05:48Z",
+      "usage": {
+        "creators": {
+          "used": 2,
+          "limit": 5
+        },
+        "deployed_apps": {
+          "used": 3,
+          "limit": 30
+        },
+        "active_apps": {
+          "used": 2,
+          "limit": 5
+        },
+        "build": {
+          "period_start": "2026-09-01T00:00:00Z",
+          "period_end": "2026-10-01T00:00:00Z",
+          "limit_seconds": 60000,
+          "charged_seconds": 0,
+          "reserved_seconds": 600,
+          "available_seconds": 59400
+        }
+      },
+      "app": {
+        "app": "limits-acceptance-10",
+        "app_id": "a-e3c45f9cd3ff433bbde2a20a",
+        "url": "https://a-e3c45f9cd3ff433bbde2a20a.small-cloud.monkeysees.one",
+        "availability": "unavailable",
+        "active_deployment_id": null
+      },
+      "retained_apps": [
+        {
+          "app": "publishing-probe",
+          "app_id": "a-9ce8504acd8242b98d681bc3",
+          "availability": "running",
+          "active_deployment_id": "d-cd728bf566aa4215b126f37b"
+        },
+        {
+          "app": "sharing-acceptance-7",
+          "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+          "availability": "running",
+          "active_deployment_id": "d-3ba4a171d346430cad297322"
+        }
+      ],
+      "build_evidence": [
+        {
+          "id": "d-af3ff2dc428d49afa3a39023",
+          "state": "building",
+          "error": null,
+          "charged_seconds": null,
+          "accounting.json": {
+            "terminated": true,
+            "duration_seconds": 14.889615702
+          },
+          "teardown.json": {
+            "id": 165249110,
+            "deleted": true
+          },
+          "builder.json": {
+            "id": 165249110,
+            "job": "d-af3ff2dc428d49afa3a39023",
+            "type": "cx23",
+            "location": "nbg1"
+          }
+        }
+      ],
+      "operation": {
+        "id": "d-af3ff2dc428d49afa3a39023",
+        "state": "building",
+        "request_id": "6cbf7447-f616-472c-9e22-14601d06f142",
+        "error": null
+      }
+    },
+    {
+      "at": "2026-09-09T03:06:42Z",
+      "usage": {
+        "creators": {
+          "used": 2,
+          "limit": 5
+        },
+        "deployed_apps": {
+          "used": 3,
+          "limit": 30
+        },
+        "active_apps": {
+          "used": 3,
+          "limit": 5
+        },
+        "build": {
+          "period_start": "2026-09-01T00:00:00Z",
+          "period_end": "2026-10-01T00:00:00Z",
+          "limit_seconds": 60000,
+          "charged_seconds": 15,
+          "reserved_seconds": 0,
+          "available_seconds": 59985
+        }
+      },
+      "app": {
+        "app": "limits-acceptance-10",
+        "app_id": "a-e3c45f9cd3ff433bbde2a20a",
+        "url": "https://a-e3c45f9cd3ff433bbde2a20a.small-cloud.monkeysees.one",
+        "availability": "running",
+        "active_deployment_id": "d-af3ff2dc428d49afa3a39023"
+      },
+      "retained_apps": [
+        {
+          "app": "publishing-probe",
+          "app_id": "a-9ce8504acd8242b98d681bc3",
+          "availability": "running",
+          "active_deployment_id": "d-cd728bf566aa4215b126f37b"
+        },
+        {
+          "app": "sharing-acceptance-7",
+          "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+          "availability": "running",
+          "active_deployment_id": "d-3ba4a171d346430cad297322"
+        }
+      ],
+      "build_evidence": [
+        {
+          "id": "d-af3ff2dc428d49afa3a39023",
+          "state": "succeeded",
+          "error": null,
+          "charged_seconds": 15,
+          "accounting.json": {
+            "terminated": true,
+            "duration_seconds": 14.889615702
+          },
+          "teardown.json": {
+            "id": 165249110,
+            "deleted": true
+          },
+          "builder.json": {
+            "id": 165249110,
+            "job": "d-af3ff2dc428d49afa3a39023",
+            "type": "cx23",
+            "location": "nbg1"
+          }
+        }
+      ],
+      "operation": {
+        "id": "d-af3ff2dc428d49afa3a39023",
+        "state": "succeeded",
+        "request_id": "6cbf7447-f616-472c-9e22-14601d06f142",
+        "error": null
+      },
+      "authenticated_probe": {
+        "status": 200,
+        "body": {
+          "acceptance": "publishing-limits-10",
+          "status": "running"
+        }
+      }
+    },
+    {
+      "at": "2026-09-09T03:07:02Z",
+      "usage": {
+        "creators": {
+          "used": 2,
+          "limit": 5
+        },
+        "deployed_apps": {
+          "used": 3,
+          "limit": 30
+        },
+        "active_apps": {
+          "used": 3,
+          "limit": 5
+        },
+        "build": {
+          "period_start": "2026-09-01T00:00:00Z",
+          "period_end": "2026-10-01T00:00:00Z",
+          "limit_seconds": 60000,
+          "charged_seconds": 15,
+          "reserved_seconds": 600,
+          "available_seconds": 59385
+        }
+      },
+      "app": {
+        "app": "limits-acceptance-10",
+        "app_id": "a-e3c45f9cd3ff433bbde2a20a",
+        "url": "https://a-e3c45f9cd3ff433bbde2a20a.small-cloud.monkeysees.one",
+        "availability": "running",
+        "active_deployment_id": "d-af3ff2dc428d49afa3a39023"
+      },
+      "retained_apps": [
+        {
+          "app": "publishing-probe",
+          "app_id": "a-9ce8504acd8242b98d681bc3",
+          "availability": "running",
+          "active_deployment_id": "d-cd728bf566aa4215b126f37b"
+        },
+        {
+          "app": "sharing-acceptance-7",
+          "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+          "availability": "running",
+          "active_deployment_id": "d-3ba4a171d346430cad297322"
+        }
+      ],
+      "build_evidence": [
+        {
+          "id": "d-af3ff2dc428d49afa3a39023",
+          "state": "succeeded",
+          "error": null,
+          "charged_seconds": 15,
+          "accounting.json": {
+            "terminated": true,
+            "duration_seconds": 14.889615702
+          },
+          "teardown.json": {
+            "id": 165249110,
+            "deleted": true
+          },
+          "builder.json": {
+            "id": 165249110,
+            "job": "d-af3ff2dc428d49afa3a39023",
+            "type": "cx23",
+            "location": "nbg1"
+          }
+        },
+        {
+          "id": "d-f1b880b35e1e43e2a29e2ca2",
+          "state": "building",
+          "error": null,
+          "charged_seconds": null
+        }
+      ],
+      "operation": {
+        "id": "d-f1b880b35e1e43e2a29e2ca2",
+        "state": "building",
+        "request_id": "a7a4ec53-d487-4d5c-9480-dcbd4dc9025b",
+        "error": null
+      },
+      "authenticated_probe": {
+        "status": 200,
+        "body": {
+          "acceptance": "publishing-limits-10",
+          "status": "running"
+        }
+      }
+    },
+    {
+      "at": "2026-09-09T03:18:29Z",
+      "usage": {
+        "creators": {
+          "used": 2,
+          "limit": 5
+        },
+        "deployed_apps": {
+          "used": 3,
+          "limit": 30
+        },
+        "active_apps": {
+          "used": 3,
+          "limit": 5
+        },
+        "build": {
+          "period_start": "2026-09-01T00:00:00Z",
+          "period_end": "2026-10-01T00:00:00Z",
+          "limit_seconds": 60000,
+          "charged_seconds": 615,
+          "reserved_seconds": 0,
+          "available_seconds": 59385
+        }
+      },
+      "app": {
+        "app": "limits-acceptance-10",
+        "app_id": "a-e3c45f9cd3ff433bbde2a20a",
+        "url": "https://a-e3c45f9cd3ff433bbde2a20a.small-cloud.monkeysees.one",
+        "availability": "running",
+        "active_deployment_id": "d-af3ff2dc428d49afa3a39023"
+      },
+      "retained_apps": [
+        {
+          "app": "publishing-probe",
+          "app_id": "a-9ce8504acd8242b98d681bc3",
+          "availability": "running",
+          "active_deployment_id": "d-cd728bf566aa4215b126f37b"
+        },
+        {
+          "app": "sharing-acceptance-7",
+          "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+          "availability": "running",
+          "active_deployment_id": "d-3ba4a171d346430cad297322"
+        }
+      ],
+      "build_evidence": [
+        {
+          "id": "d-af3ff2dc428d49afa3a39023",
+          "state": "succeeded",
+          "error": null,
+          "charged_seconds": 15,
+          "accounting.json": {
+            "terminated": true,
+            "duration_seconds": 14.889615702
+          },
+          "teardown.json": {
+            "id": 165249110,
+            "deleted": true
+          },
+          "builder.json": {
+            "id": 165249110,
+            "job": "d-af3ff2dc428d49afa3a39023",
+            "type": "cx23",
+            "location": "nbg1"
+          }
+        },
+        {
+          "id": "d-f1b880b35e1e43e2a29e2ca2",
+          "state": "failed",
+          "error": "{\"code\": \"BUILD_FAILED\", \"message\": \"Dockerfile build failed; inspect build logs.\", \"retryable\": false, \"details\": {}}",
+          "charged_seconds": 600,
+          "accounting.json": {
+            "terminated": true,
+            "duration_seconds": 600.013726374
+          },
+          "teardown.json": {
+            "id": 165249296,
+            "deleted": true
+          },
+          "builder.json": {
+            "id": 165249296,
+            "job": "d-f1b880b35e1e43e2a29e2ca2",
+            "type": "cx23",
+            "location": "nbg1"
+          }
+        }
+      ],
+      "operation": {
+        "id": "d-f1b880b35e1e43e2a29e2ca2",
+        "state": "failed",
+        "request_id": "a7a4ec53-d487-4d5c-9480-dcbd4dc9025b",
+        "error": {
+          "code": "BUILD_FAILED",
+          "message": "Dockerfile build failed; inspect build logs.",
+          "retryable": false,
+          "details": {}
+        }
+      },
+      "authenticated_probe": {
+        "status": 200,
+        "body": {
+          "acceptance": "publishing-limits-10",
+          "status": "running"
+        }
+      }
+    }
+  ],
+  "cleanup": {
+    "acceptance_app_removed": "a-e3c45f9cd3ff433bbde2a20a",
+    "database_and_credentials_removed": true,
+    "source_staging_removed": true,
+    "artifacts": "retired for existing janitors",
+    "retained_app_routes": 2,
+    "charged_seconds_preserved": 615
+  },
+  "retention_fix_commit": "8931e58f210b7a4a1b8b7b9263e9c8c685d110b0",
+  "runtime_limits": {
+    "cpu": 0.5,
+    "memory_bytes": 536870912,
+    "tasks": 128,
+    "runtime": "runsc"
+  },
+  "final_usage": {
+    "creators": {
+      "used": 2,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 2,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 2,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 615,
+      "reserved_seconds": 0,
+      "available_seconds": 59385
+    }
+  }
+}
