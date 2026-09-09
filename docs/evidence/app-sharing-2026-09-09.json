@@ -52,8 +52,24 @@
     "caddy": "active"
   },
   "deployed_source_hashes_verified": true,
-  "remaining_live_checks": [
-    "Separate Google accounts: member, other creator, administrator private-content denial",
-    "Member read/write and existing browser session denial after unsharing"
-  ]
+  "remaining_live_checks": [],
+  "guided_acceptance": {
+    "recorded_at": "2026-09-09T01:27:54.168490+00:00",
+    "source": "Operator-reported browser and Mac CLI outcomes; administrator denials and final scopes independently checked through authenticated HTTP/CLI",
+    "other_creator_private_denied": true,
+    "other_creator_shared_identity_verified": true,
+    "other_creator_directory_filtered": true,
+    "other_creator_sharing_mutations_denied_both_scopes": true,
+    "administrator_private_directory_and_content_denied": true,
+    "ordinary_member_private_denied": true,
+    "ordinary_member_shared_read_write": true,
+    "existing_member_session_denied_after_unshare": true,
+    "owner_retains_both_entries_after_unshare": true,
+    "final_scopes": {
+      "publishing-probe": "creator-only",
+      "sharing-acceptance-7": "creator-only"
+    },
+    "retained_acceptance_app": "sharing-acceptance-7",
+    "retained_member": "ishanmoscow43@gmail.com"
+  }
 }

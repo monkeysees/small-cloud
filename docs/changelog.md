@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Complete #7 live acceptance with separate Google accounts: filtered discovery, owner-only sharing, administrator private-content denial, shared member writes and existing-session revocation with data preserved.
+
 - Deploy #7 sharing and the directory route to the hosted pilot; verify owner CLI/HTTP smoke checks and restore the disposable probe to creator-only.
 
 - Add #7 creator-owned sharing in both directions, an authenticated accessible-app directory, and shared CLI/HTTP/PostgreSQL access checks.
