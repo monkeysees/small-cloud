@@ -769,7 +769,10 @@
   },
   "browser_verification": {
     "rendered": false,
-    "reason": "No existing Chrome automation available; permission for an isolated browser is pending.",
+    "reason": "No existing Chrome automation available; rendered browser checks were not performed.",
+    "operator_accepted_without_rendered_verification": true,
+    "acceptance_date": "2026-09-09",
+    "acceptance_basis": "Operator instructed us to assume the browser test passes and authorized finalization after the capacity/Retry visual gap was disclosed.",
     "live_authenticated_html_verified": true
   },
   "final": {

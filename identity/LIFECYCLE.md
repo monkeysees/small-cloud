@@ -26,4 +26,4 @@ Run `python -m unittest identity.tests.test_lifecycle_http` with the repository'
 
 Local verification on 2026-09-09 passed 72 identity tests, 88 infrastructure CLI tests and 4 hosting-fixture tests (164 total), plus Pyright 1.1.413 with zero errors. Standards and Spec reviews had no remaining findings after correcting cold-start framing validation.
 
-The [hosted acceptance report](../docs/acceptance/app-lifecycle-2026-09-09.md) records deployment, an untouched 30-minute idle interval, competing starts, persistence, failure/restart recovery and cleanup. Live HTTP/CLI checks passed; rendered-browser verification remains pending access or explicit authorization for an isolated browser.
+The [hosted acceptance report](../docs/acceptance/app-lifecycle-2026-09-09.md) records deployment, an untouched 30-minute idle interval, competing starts, persistence, failure/restart recovery and cleanup. Live HTTP/CLI checks passed. The operator accepted closure on 2026-09-09 assuming the remaining browser checks pass; rendered-browser verification was not performed.

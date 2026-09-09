@@ -24,7 +24,7 @@ After wake-up, A retained its exact database row and selected deployment ID. Its
 
 A second interruption probe confirmed the new gVisor container was actually running while its product state was still `starting`, killed the lifecycle worker, observed all five reservations still counted, and then verified the container was absent before its slot was released. Retrying preserved the saved database row. A separate runtime inspection confirmed five physical running gVisor app containers at full capacity. Installed source hashes match the pushed commit on both hosts.
 
-The [hosted evidence](../evidence/app-lifecycle-2026-09-09.json) records the observations and final inventory. Live HTTP/CLI checks are complete; the rendered-browser boundary below remains open.
+The [hosted evidence](../evidence/app-lifecycle-2026-09-09.json) records the observations and final inventory. Live HTTP/CLI checks are complete; the operator accepted the browser evidence boundary below for closure.
 
 ## Cleanup and retained state
 
@@ -36,7 +36,7 @@ Both pre-existing containers retained their exact IDs and start times throughout
 
 ## Browser evidence boundary
 
-Authenticated live HTML and HTTP response checks use the retained creator credential. This session has no callable Chrome plugin, MCPorter/OpenClaw executable or reachable local Chrome debugging endpoint. No isolated browser was substituted; explicit authorization was requested and remains pending. Rendered-browser verification and a fresh hosted Google browser sign-in therefore remain unverified; local tests cover the browser handoff and response behavior. Issue #9 remains open rather than claiming this last requested acceptance check was completed.
+Authenticated live HTML and HTTP response checks use the retained creator credential. This session has no callable Chrome plugin, MCPorter/OpenClaw executable or reachable local Chrome debugging endpoint. No isolated browser was substituted. Rendered-browser verification and a fresh hosted Google browser sign-in remain unverified; local tests cover the browser handoff and response behavior. On 2026-09-09 the operator instructed us to assume the browser test passes and then authorized finalization and closure after the remaining capacity/Retry visual check was disclosed. Issue #9 is accepted on that basis, including loading and capacity/Retry presentation, without claiming an observed browser pass. No browser-access approval remains necessary for this closeout.
 
 ## Operator and creator guidance
 
