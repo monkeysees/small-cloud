@@ -133,7 +133,7 @@ class Store:
             db.execute('DELETE FROM oauth WHERE state=?', (digest(state),))
             return dict(row)
 
-    def bind_google(self, claims):
+    def bind_google(self, claims, browser_token=''):
         subject, email = claims['sub'], email_address(claims['email'])
         with self.connect() as db:
             db.execute('BEGIN IMMEDIATE')
@@ -145,6 +145,11 @@ class Store:
                 raise Failure('FORBIDDEN', 'This Google account has not been admitted to the workspace.', 403)
             db.execute('UPDATE users SET subject=?,email=?,name=? WHERE id=?',
                        (subject, email, claims['name'], user['id']))
+            # Preserve open approval forms only for the same still-valid browser identity.
+            existing = db.execute('SELECT 1 FROM browser_sessions WHERE verifier=? AND user_id=? AND expires>?',
+                                  (digest(browser_token), user['id'], time.time())).fetchone()
+            if existing:
+                return browser_token
             token = secrets.token_urlsafe(32)
             db.execute('INSERT INTO browser_sessions VALUES(?,?,?)',
                        (digest(token), user['id'], time.time() + 43200))

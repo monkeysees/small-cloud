@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix simultaneous open CLI approval forms by retaining valid same-account browser sessions without extending expiry or weakening origin/CSRF checks.
+
 ## 0.2.0 — 2026-09-09
 
 - Add #32 headless `auth login start/finish` with protected pending state, resumable browser approval, actionable setup status, and readable authentication outcomes.

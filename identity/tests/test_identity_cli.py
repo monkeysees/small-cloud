@@ -540,6 +540,64 @@ with patch('os.replace', side_effect=failure), patch('urllib.request.OpenerDirec
         self.assertEqual(status, 200)
         self.assertNotIn(token, raw)
 
+    def test_two_open_browser_approval_forms_remain_usable(self):
+        import re
+        import secrets
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        forms = []
+        for _ in range(2):
+            poll_secret = secrets.token_urlsafe(32)
+            _, raw = self.http('/api/auth/login', {'poll_secret': poll_secret})
+            login = json.loads(raw)['data']
+            with self.browser.open(login['verification_url']) as response:
+                html = response.read().decode()
+            csrf = re.search(r'name="csrf" value="([^"]+)"', html).group(1)
+            forms.append((login['user_code'], csrf, poll_secret))
+        for code, csrf, poll_secret in forms:
+            status, raw = self.http('/auth/approve', {'code': code, 'csrf': csrf},
+                                    browser=self.browser, headers={'Origin': self.endpoint})
+            self.assertEqual(status, 200, raw)
+            status, raw = self.http('/api/auth/poll', {'poll_secret': poll_secret})
+            self.assertEqual(status, 200, raw)
+            self.assertEqual(json.loads(raw)['data']['user']['email'], 'admin@example.test')
+
+    def test_switching_google_accounts_rejects_an_old_approval_form(self):
+        import re
+        import secrets
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        admin = self.http_login('admin@example.test')
+        self.http('/api/admin/member/add', {'email': 'member@example.test'}, admin['credential'],
+                  headers={'X-Request-ID': str(uuid.uuid4())})
+        _, raw = self.http('/api/auth/login', {'poll_secret': secrets.token_urlsafe(32)})
+        login = json.loads(raw)['data']
+        with self.browser.open(login['verification_url']) as response:
+            html = response.read().decode()
+        csrf = re.search(r'name="csrf" value="([^"]+)"', html).group(1)
+        member = self.http_login('member@example.test')
+        self.assertEqual(member['user']['email'], 'member@example.test')
+        status, raw = self.http('/auth/approve', {'code': login['user_code'], 'csrf': csrf},
+                                browser=self.browser, headers={'Origin': self.endpoint})
+        self.assertEqual(status, 403, raw)
+
+    def test_repeated_google_sign_in_does_not_extend_browser_session_expiry(self):
+        import secrets
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        now = time.time()
+        self.http_login('admin@example.test')
+        with patch('identity.store.time', SimpleNamespace(time=lambda: now + 43100)):
+            self.http_login('admin@example.test')
+        with patch('identity.store.time', SimpleNamespace(time=lambda: now + 43210)):
+            _, raw = self.http('/api/auth/login', {'poll_secret': secrets.token_urlsafe(32)})
+            login = json.loads(raw)['data']
+            status, raw = self.http('/auth/approval?code=' + login['user_code'], browser=self.browser)
+        self.assertEqual(status, 401, raw)
+        self.assertEqual(json.loads(raw)['error']['code'], 'AUTH_REQUIRED')
+
     def test_actor_scoped_request_id_deduplicates_and_rejects_changed_inputs(self):
         self.operator('bootstrap', 'admin@example.test')
         self.start_platform()

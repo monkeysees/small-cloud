@@ -156,7 +156,7 @@ class Handler(BaseHTTPRequestHandler):
                 return
             flow = store.take_oauth(query['state'][0], self.cookie(FLOW_COOKIE))
             claims = self.app.google.exchange(query['code'][0], self.app.origin + '/auth/callback', flow['nonce'], flow['pkce'])
-            session = store.bind_google(claims)
+            session = store.bind_google(claims, self.cookie(COOKIE))
             self.respond(302, '', 'text/html', {'Location': '/auth/approval?code=' + flow['code'],
                          'Set-Cookie': self.set_cookie(COOKIE, session, 43200)})
         elif self.command == 'GET' and path == '/auth/approval':
