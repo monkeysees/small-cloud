@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #7 creator-owned sharing in both directions, an authenticated accessible-app directory, and shared CLI/HTTP/PostgreSQL access checks.
+
 - Consolidate acceptance reports under `docs/acceptance/<topic>-YYYY-MM-DD.md`, extract identity/publishing outcomes from runbooks, and update report links.
 
 - Ship and close #6 with verified persistence/isolation evidence, unblock #9, and remove the two acceptance apps and their resources while preserving the existing publishing probe.

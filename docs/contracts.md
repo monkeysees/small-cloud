@@ -16,6 +16,7 @@ These are the provider-independent pilot contracts for [implementation #3](https
 | `status <app>` | Current availability, active deployment, latest operation and cleanup status. Creator or administrator only. |
 | `operation status <id>` / `operation status --request-id <UUID>` | Observe an accepted operation, including after a lost connection; owner or administrator only. |
 | `logs <app> --source build\|runtime` | Bounded snapshot; optional `--deployment <id>` for build logs (default latest), `--since <RFC3339>` and `--limit <1..1000>` (default 100). No streaming mode in v1. |
+| `directory` | List accessible apps sorted by name, with name, description, creator and URL. |
 | `share <app> --scope creator-only\|workspace-wide` | Owner changes audience; workspace-wide with secrets requires `--acknowledge-secret-authority` or interactive acknowledgement. |
 | `secret set <app> <name> [--stdin] [--acknowledge-secret-authority]` | Create or replace using hidden TTY prompt or stdin bytes; never an argument value. |
 | `secret delete <app> <name>` | Delete if present; absent is successful without restart. |

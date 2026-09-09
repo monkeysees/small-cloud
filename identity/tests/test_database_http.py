@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 import unittest
+import uuid
 import urllib.parse
 
 from identity.tests import test_deployment_http as deployment_fixture
@@ -139,6 +140,66 @@ class DatabaseAcceptance(unittest.TestCase):
     def app_request(self, app, path='/', body=None, token=True, headers=None):
         return self.http(path, body, token=self.token if token else None,
                          headers={'Host': urllib.parse.urlsplit(app['url']).netloc, **(headers or {})})
+
+    def test_shared_members_read_and_modify_the_same_app_database(self):
+        self.prepare()
+        app = self.publish('shared')
+        owner_token = self.token
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Owner entry'})[0], 201)
+        self.http('/api/admin/member/add', {'email': 'member@example.test'}, token=owner_token,
+                  headers={'X-Request-ID': str(uuid.uuid4())})
+        member = self.http_login('member@example.test')['credential']
+        self.token = member
+        self.assertEqual(self.app_request(app, '/data')[0], 404)
+        result = self.cli('share', 'shared', '--scope', 'workspace-wide')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        status, raw = self.app_request(app, '/data')
+        self.assertEqual(status, 200, raw)
+        self.assertEqual(json.loads(raw)['entries'][0]['value'], 'Owner entry')
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Member contribution'})[0], 201)
+        # Follow the app's real browser sign-in while mapping its hostname to local TLS.
+        def browser_get(path, cookie='', app_host=True):
+            platform = urllib.parse.urlsplit(self.endpoint)
+            connection = http.client.HTTPSConnection(platform.hostname, platform.port, context=self.client_tls)
+            try:
+                connection.request('GET', path, headers={
+                    'Host': urllib.parse.urlsplit(app['url']).netloc if app_host else platform.netloc,
+                    'Accept': 'text/html', 'Cookie': cookie})
+                response = connection.getresponse()
+                return response.status, response.read(), dict(response.getheaders())
+            finally:
+                connection.close()
+
+        status, _, headers = browser_get('/data')
+        self.assertEqual(status, 302)
+        flow_cookie = headers['Set-Cookie'].split(';')[0]
+        provider = urllib.parse.urlsplit(headers['Location'])
+        connection = http.client.HTTPSConnection(provider.hostname, provider.port, context=self.client_tls)
+        try:
+            connection.request('GET', provider.path + '?' + provider.query)
+            response = connection.getresponse()
+            response.read()
+            callback = urllib.parse.urlsplit(response.getheader('Location'))
+        finally:
+            connection.close()
+        status, _, headers = browser_get(callback.path + '?' + callback.query, app_host=False)
+        self.assertEqual(status, 302)
+        finish = urllib.parse.urlsplit(headers['Location'])
+        status, _, headers = browser_get(finish.path + '?' + finish.query, flow_cookie)
+        self.assertEqual(status, 302)
+        app_cookie = headers['Set-Cookie'].split(';')[0]
+        self.assertEqual(browser_get('/data', app_cookie)[0], 200)
+        self.token = owner_token
+        entries = json.loads(self.app_request(app, '/data')[1])['entries']
+        self.assertEqual([entry['value'] for entry in entries], ['Owner entry', 'Member contribution'])
+        result = self.cli('share', 'shared', '--scope', 'creator-only')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(browser_get('/data', app_cookie)[0], 404)
+        self.token = member
+        self.assertEqual(self.app_request(app, '/data')[0], 404)
+        self.assertEqual(self.app_request(app, '/data', {'value': 'Denied'})[0], 404)
+        self.token = owner_token
+        self.assertEqual(json.loads(self.app_request(app, '/data')[1])['entries'], entries)
 
     def test_rows_survive_restart_and_repeated_publication(self):
         self.prepare()

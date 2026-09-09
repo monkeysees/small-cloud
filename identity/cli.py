@@ -33,6 +33,14 @@ def parser():
     root.add_argument('--request-id')
     root.add_argument('--version', action='version', version='small-cloud 0.1.0')
     commands = root.add_subparsers(dest='command', required=True)
+    share = commands.add_parser('share', help='Change an app’s sharing scope',
+                                epilog='Example: small-cloud share example --scope workspace-wide')
+    share.set_defaults(action='share')
+    share.add_argument('app')
+    share.add_argument('--scope', required=True, choices=('creator-only', 'workspace-wide'))
+    directory = commands.add_parser('directory', help='List apps you can access',
+                                    epilog='Example: small-cloud directory --json')
+    directory.set_defaults(action='directory')
     deploy = commands.add_parser('deploy', help='Publish a local Dockerfile source folder',
                                 epilog='Example: small-cloud deploy . --name example --description demo --dry-run')
     deploy.set_defaults(action='deploy')
@@ -230,6 +238,11 @@ def authenticated_command(args, request_id, client, credentials):
             interval = max(5, min(result.get('interval', 5), 60))
         raise Failure('LOGIN_EXPIRED', 'Login expired; start again.', 401)
     token = credentials.read()
+    if args.command == 'directory':
+        return client.request('/api/directory', token=token)
+    if args.command == 'share':
+        return client.request('/api/apps/' + urllib.parse.quote(args.app, safe='') + '/share',
+                              {'scope': args.scope}, token, request_id)
     if args.command == 'status':
         return client.request('/api/apps/' + urllib.parse.quote(args.app, safe=''), token=token)
     if args.command == 'operation':
@@ -277,7 +290,7 @@ def main(argv=None):
             request_id = None
         elif args.request_id:
             request_id = str(uuid.UUID(args.request_id))
-        elif args.action not in ('status', 'logs') and not getattr(args, 'dry_run', False):
+        elif args.action not in ('status', 'logs', 'directory') and not getattr(args, 'dry_run', False):
             request_id = str(uuid.uuid4())
         if request_id:
             print('Request ID: ' + request_id, file=sys.stderr, flush=True)

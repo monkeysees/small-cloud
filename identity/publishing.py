@@ -90,6 +90,33 @@ class Publishing:
     def url(self, app):
         return 'https://' + app['id'] + '.' + self.domain
 
+    def share(self, token, name, body, request_id):
+        if set(body) != {'scope'} or body['scope'] not in ('creator-only', 'workspace-wide'):
+            raise Failure('INVALID_ARGUMENT', 'Supply scope creator-only or workspace-wide.')
+        fingerprint = digest(json.dumps(['share', name, body], sort_keys=True))
+        with self.store.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            _, user = self.store.credential(db, token)
+            app = db.execute('SELECT * FROM apps WHERE name=? AND owner=?', (name, user['id'])).fetchone()
+            if not app:
+                raise Failure('NOT_FOUND', 'App not found.', 404)
+            if not user['creator']:
+                raise Failure('FORBIDDEN', 'Sharing requires creator authority.', 403)
+            if app['disabled']:
+                raise Failure('APP_DISABLED', 'App is disabled.', 403)
+            cached = db.execute('SELECT * FROM requests WHERE actor=? AND id=? AND expires>?',
+                                (user['id'], request_id, time.time())).fetchone()
+            if cached:
+                if cached['fingerprint'] != fingerprint:
+                    raise Failure('REQUEST_CONFLICT', 'Request ID was used with different inputs.', 409)
+                return json.loads(cached['result'])
+            db.execute('UPDATE apps SET sharing_scope=? WHERE id=?', (body['scope'], app['id']))
+            result = {'app': name, 'sharing_scope': body['scope'], 'secret_authority_acknowledged': False}
+            db.execute('DELETE FROM requests WHERE actor=? AND id=?', (user['id'], request_id))
+            db.execute('INSERT INTO requests VALUES(?,?,?,?,?)',
+                       (user['id'], request_id, fingerprint, json.dumps(result), time.time() + 604800))
+            return result
+
     def authorized_app(self, db, token, name):
         _, user = self.store.credential(db, token)
         app = db.execute('SELECT * FROM apps WHERE name=?', (name,)).fetchone()
@@ -164,11 +191,24 @@ class Publishing:
                     'dropped_bytes': row['dropped_bytes'], 'oldest_available_at': recorded if lines else None,
                     'next_cursor': None}
 
+    @staticmethod
+    def accessible_apps(db, user_id, app_id=None):
+        return db.execute('SELECT a.*, owner.name AS creator_name FROM apps a '
+                          'JOIN users owner ON owner.id=a.owner JOIN users viewer ON viewer.id=? '
+                          'WHERE owner.member=1 AND viewer.member=1 AND a.disabled=0 '
+                          "AND (a.owner=viewer.id OR a.sharing_scope='workspace-wide') "
+                          'AND (? IS NULL OR a.id=?) ORDER BY a.name', (user_id, app_id, app_id))
+
+    def directory(self, token):
+        with self.store.connect() as db:
+            _, user = self.store.credential(db, token)
+            return {'apps': [{'name': app['name'], 'description': app['description'],
+                              'creator': {'id': app['owner'], 'name': app['creator_name']},
+                              'url': self.url(app)} for app in self.accessible_apps(db, user['id'])]}
+
     def gateway_target(self, app_id, user_id):
         with self.store.connect() as db:
-            app = db.execute('SELECT a.* FROM apps a JOIN users u ON u.id=a.owner '
-                             'WHERE a.id=? AND a.owner=? AND a.disabled=0 AND u.member=1',
-                             (app_id, user_id)).fetchone()
+            app = self.accessible_apps(db, user_id, app_id).fetchone()
             if not app:
                 raise Failure('NOT_FOUND', 'App not found.', 404)
             if not app['target_host'] or not app['target_port']:

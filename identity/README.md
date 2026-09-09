@@ -1,5 +1,7 @@
 # Workspace identity and CLI
 
+For creator-only/workspace-wide access and the accessible app directory, see [sharing and discovery](SHARING.md).
+
 For source upload, remote builds and protected app URLs, see [publishing](PUBLISHING.md).
 
 For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](../docs/acceptance/app-database-2026-09-09.md) and the [starter guide](fixture/README.md).
