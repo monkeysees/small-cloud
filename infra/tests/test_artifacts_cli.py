@@ -71,6 +71,18 @@ class ArtifactsCLI(unittest.TestCase):
         self.assertEqual([path.name for path in job.iterdir()], ['caller-original.tar'])
         self.assertEqual((job / 'caller-original.tar').read_text(), 'keep')
 
+    def test_accounting_receipt_obeys_diagnostic_retention(self):
+        job = self.job(2 * 86400)
+        receipt = job / 'accounting.json'
+        receipt.write_text('{"terminated":true,"duration_seconds":12.01}')
+        receipt.chmod(0o600)
+        self.assertEqual(self.invoke().returncode, 0)
+        self.assertTrue(receipt.exists())
+        (job / '.small-cloud-build.json').write_text(json.dumps({'created_at': time.time() - 8 * 86400}))
+        self.assertEqual(self.invoke().returncode, 0)
+        self.assertFalse(receipt.exists())
+        self.assertFalse(job.exists())
+
     def test_fresh_job_and_unmarked_directory_untouched(self):
         job = self.job(60)
         unrelated = self.root / 'unmarked'

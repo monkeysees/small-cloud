@@ -13,7 +13,7 @@ import time
 
 MARKER = '.small-cloud-build.json'
 ARTIFACTS = ('image.tar', 'source.tar')
-DIAGNOSTICS = ('admission.log', 'builder.json', 'build.log', 'daemon.log', 'result.json', 'teardown.json', 'resources.json')
+DIAGNOSTICS = ('admission.log', 'builder.json', 'build.log', 'daemon.log', 'result.json', 'teardown.json', 'resources.json', 'accounting.json')
 MAX_JOB_ENTRIES = 64
 MAX_MARKER_BYTES = 4096
 
