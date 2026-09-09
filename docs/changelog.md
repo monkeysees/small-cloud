@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #31 native standalone CLI packaging and checksum-verified installation for Linux/macOS ARM64/x86-64, bind the CLI to the hosted service, and preserve exact-origin credentials with an undistributed HTTPS test launcher.
+
 - Verify #30 through 68 installed-executable discovery/hosted-read checks and the final CLI/HTTPS suite; record acceptance without modifying hosted apps or services.
 
 - Add #30 grouped CLI commands, shared offline help and scoped versioned catalog, bundled task guides, readable app inspection and actionable human errors; remove superseded command paths and verify CLI/HTTPS authorization contracts.

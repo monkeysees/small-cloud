@@ -16,7 +16,6 @@ ACK = argument('--acknowledge-secret-authority', 'Allow workspace members to tri
 GLOBALS = [argument('--json', 'Emit one schema_version: 1 JSON envelope; never prompt.', action='store_true'),
     argument('--no-input', 'Prohibit terminal prompts.', action='store_true'),
     argument('--no-color', 'Use output without color (also the default).', action='store_true'),
-    argument('--endpoint', 'HTTPS service origin; overrides SMALL_CLOUD_ENDPOINT and user config.'),
     argument('--request-id', 'Mutation retry UUID; operation status accepts this instead of an ID.'),
     argument('--version', 'Print installed CLI version.', action='version', version='small-cloud 0.1.0')]
 
@@ -175,7 +174,7 @@ def parser():
 
 
 def help_parser(argv, parsers, children):
-    # Skip option values: an endpoint or app called "auth" is not a command.
+    # Skip option values: an app or request ID called "auth" is not a command.
     path, index = '', 0
     while index < len(argv):
         word = argv[index]

@@ -1,0 +1,6 @@
+# Merge inside the existing management site before its fallback handle.
+handle_path /cli/* {
+    root * /srv/small-cloud/cli
+    header Cache-Control "no-cache"
+    file_server
+}

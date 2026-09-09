@@ -26,6 +26,11 @@ from cryptography.x509.oid import NameOID
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def cli_command():
+    binary = os.environ.get('SMALL_CLOUD_TEST_BINARY')
+    return [binary] if binary else [sys.executable, '-m', 'identity.tests.cli']
+
+
 class IdentityAcceptance(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -136,7 +141,7 @@ class IdentityAcceptance(unittest.TestCase):
         self.env = {**os.environ, 'HOME': str(self.home),
                     'XDG_STATE_HOME': str(self.home / 'state'),
                     'XDG_CONFIG_HOME': str(self.home / 'config'),
-                    'SSL_CERT_FILE': str(cert_path), 'SMALL_CLOUD_ENDPOINT': self.endpoint,
+                    'SSL_CERT_FILE': str(cert_path), 'SMALL_CLOUD_TEST_ORIGIN': self.endpoint,
                     'PYTHONPATH': os.pathsep.join([str(ROOT), os.environ.get('PYTHONPATH', '')]),
                     'PYTHON_KEYRING_BACKEND': 'keyring.backends.fail.Keyring'}
         self.browser = urllib.request.build_opener(
@@ -188,11 +193,11 @@ class IdentityAcceptance(unittest.TestCase):
             self.assertEqual(response.status, 200)
 
     def cli(self, *args, cwd=ROOT):
-        return subprocess.run([sys.executable, '-m', 'identity.cli', '--json', *args],
+        return subprocess.run([*cli_command(), '--json', *args],
                               cwd=cwd, env=self.env, capture_output=True, text=True, timeout=10)
 
     def login(self, cwd=ROOT):
-        process = subprocess.Popen([sys.executable, '-m', 'identity.cli', '--json',
+        process = subprocess.Popen([*cli_command(), '--json',
                                     'auth', 'login', '--no-browser'], cwd=cwd, env=self.env,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self.addCleanup(lambda: process.poll() is None and process.kill())

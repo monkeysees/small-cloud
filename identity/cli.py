@@ -1,10 +1,9 @@
 """Agent-callable Small Cloud CLI. Never prints credential or provider-token values."""
 import getpass
 import json
-import os
-from pathlib import Path
 import re
 import secrets
+import ssl
 import sys
 import time
 import urllib.request
@@ -14,6 +13,8 @@ import uuid
 import webbrowser
 import warnings
 
+import certifi
+
 from .common import Failure, envelope, origin
 from .credentials import Credentials
 from .google import NoRedirect
@@ -22,6 +23,8 @@ from .google import NoRedirect
 from .commands import parser, help_parser, catalog, guide
 from .render import human, human_error
 
+SERVICE_ORIGIN = 'https://small-cloud.monkeysees.one'
+
 
 def global_first(argv):
     flags, rest, index = [], [], 0
@@ -29,12 +32,12 @@ def global_first(argv):
         arg = argv[index]
         if arg in ('--json', '--no-input', '--no-color', '--version'):
             flags.append(arg)
-        elif arg in ('--endpoint', '--request-id'):
+        elif arg == '--request-id':
             if index + 1 >= len(argv):
                 raise Failure('INVALID_ARGUMENT', 'Missing global flag value.')
             flags.extend(argv[index:index + 2])
             index += 1
-        elif arg.startswith(('--endpoint=', '--request-id=')):
+        elif arg.startswith('--request-id='):
             flags.append(arg)
         else:
             rest.append(arg)
@@ -42,21 +45,13 @@ def global_first(argv):
     return flags + rest
 
 
-def endpoint(args):
-    value = args.endpoint or os.environ.get('SMALL_CLOUD_ENDPOINT')
-    if not value:
-        config = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config'))) / 'small-cloud/config.json'
-        try:
-            value = json.loads(config.read_text())['endpoint']
-        except FileNotFoundError:
-            raise Failure('INVALID_ARGUMENT', 'Set --endpoint or configure your platform endpoint.') from None
-    return origin(value)
-
-
 class Client:
     def __init__(self, endpoint):
         self.endpoint = endpoint
-        self.opener = urllib.request.build_opener(NoRedirect())
+        context = ssl.create_default_context()
+        # Frozen Python's build-time CA paths may not exist on the user's machine.
+        context.load_verify_locations(certifi.where())
+        self.opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPSHandler(context=context))
 
     def request(self, path, body=None, token=None, request_id=None, timeout=30):
         headers = {'Content-Type': 'application/x-tar' if isinstance(body, bytes) else 'application/json'}
@@ -86,7 +81,7 @@ class Client:
             raise Failure('NETWORK_ERROR', 'Platform request failed; retry with the same request ID.', 503) from None
 
 
-def execute(args, request_id):
+def execute(args, request_id, service_origin):
     if args.command == 'catalog':
         return catalog(args.query)
     if args.command == 'guide':
@@ -100,7 +95,7 @@ def execute(args, request_id):
         summary, archive = package(args.folder)
         if args.dry_run:
             return summary
-        client = Client(endpoint(args))
+        client = Client(service_origin)
         credentials = Credentials(client.endpoint)
         with credentials.locked():
             token = credentials.read()
@@ -136,7 +131,7 @@ def execute(args, request_id):
                     raise Failure(code, error['message'], 409 if code == 'ACTIVE_CAPACITY' else 500,
                                   operation_id=result['operation_id'])
                 time.sleep(min(2, max(0, deadline - time.monotonic())))
-    client = Client(endpoint(args))
+    client = Client(service_origin)
     credentials = Credentials(client.endpoint)
     with credentials.locked():
         return authenticated_command(args, request_id, client, credentials)
@@ -268,7 +263,7 @@ def authenticated_command(args, request_id, client, credentials):
     return result
 
 
-def main(argv=None):
+def main(argv=None, *, service_origin=SERVICE_ORIGIN):
     argv = list(sys.argv[1:] if argv is None else argv)
     json_mode, request_id = '--json' in argv, None
     try:
@@ -286,7 +281,7 @@ def main(argv=None):
             request_id = str(uuid.uuid4())
         if request_id:
             print('Request ID: ' + request_id, file=sys.stderr, flush=True)
-        result = envelope(execute(args, request_id), request_id=request_id)
+        result = envelope(execute(args, request_id, origin(service_origin)), request_id=request_id)
         print(json.dumps(result) if json_mode else human(result['data'], args.command_path))
         return 0
     except Failure as exc:

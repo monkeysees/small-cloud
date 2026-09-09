@@ -62,7 +62,7 @@ class SecretsAcceptance(unittest.TestCase):
         self.prepare()
         self.publish('secrets')
         self.login()
-        result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'app', 'secrets', 'set',
+        result = subprocess.run([sys.executable, '-m', 'identity.tests.cli', '--json', 'app', 'secrets', 'set',
                                  'secrets', 'SERVICE_TOKEN', '--stdin'], env=self.env, capture_output=True,
                                 text=True, input='cli-value\n', timeout=10)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

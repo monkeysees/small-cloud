@@ -493,7 +493,7 @@ class DatabaseAcceptance(unittest.TestCase):
         lifecycle = LifecycleWorker(self.worker.state, self.worker.infrastructure)
 
         def set_value(name, value):
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'app', 'secrets', 'set',
+            result = subprocess.run([sys.executable, '-m', 'identity.tests.cli', '--json', 'app', 'secrets', 'set',
                                      'secrets', name, '--stdin'], env=self.env, capture_output=True,
                                     text=True, input=value, timeout=10)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

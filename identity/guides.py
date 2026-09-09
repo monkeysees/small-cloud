@@ -17,19 +17,21 @@ Replace example with a name returned by app list. Listing is available to member
 status requires the app creator or workspace administrator. Administrators do not
 receive private app content or saved secret values.
 
-Currently install the Python package in a virtual environment (Python 3.11+),
-then run small-cloud. The operator supplies your HTTPS endpoint: use --endpoint,
-SMALL_CLOUD_ENDPOINT, or endpoint in ~/.config/small-cloud/config.json (respects
-XDG_CONFIG_HOME). Credentials stay in protected per-user storage outside source
-folders, bound to that origin. No repository config or .env is loaded.
+Standalone releases bundle Python for Linux and macOS on ARM64 and x86-64.
+Installation does not sign in or modify your shell startup files; add the install
+directory to PATH if necessary. The service is always
+https://small-cloud.monkeysees.one; no endpoint setup is needed or supported.
+Credentials stay in protected per-user storage outside source folders, bound
+to that exact origin. Old endpoint environment variables and configuration are
+ignored. No repository config or .env is loaded.
 
 Login requires human Google browser approval. --no-browser prints a verification
 URL and code on stderr; compare the code before approving. The same process waits
 and saves the credential; --no-input refuses login. Never paste credentials into
-commands. Split headless login and fixed-service setup are not delivered yet.
+commands. Split headless login and setup-status guidance are not delivered yet.
 
-The delivered CLI has app, workspace, auth and operation groups. Standalone
-installation, project linking, local app check, default deployment waiting, live
+The delivered CLI has app, workspace, auth and operation groups. Project
+linking, local app check, default deployment waiting, live
 logs and additional workspace controls are still pending. Use catalog for only
 implemented commands. Bare invocation, help, catalog and guides work offline.
 '''),

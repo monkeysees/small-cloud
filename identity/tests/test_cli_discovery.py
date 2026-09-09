@@ -18,7 +18,7 @@ class DiscoveryAcceptance(unittest.TestCase):
     def test_bare_and_nested_help_are_offline_and_take_precedence(self):
         for args in ((), ('--help',), ('app', '--help'),
                      ('app', 'deploy', '--help'), ('app', 'secrets', 'set', '--help'),
-                     ('--endpoint', 'auth', 'app', 'status', '--help', '--request-id')):
+                     ('--request-id', 'auth', 'app', 'status', '--help', '--request-id')):
             with self.subTest(args=args):
                 result = self.run_cli(*args)
                 self.assertEqual(result.returncode, 0, result.stderr)
@@ -27,6 +27,16 @@ class DiscoveryAcceptance(unittest.TestCase):
                 self.assertIn('small-cloud catalog', result.stdout)
                 if 'status' in args:
                     self.assertIn('usage: small-cloud app status', result.stdout)
+
+    def test_service_is_fixed_without_endpoint_setup(self):
+        result = self.run_cli('auth', 'status', '--json')
+        self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
+        self.assertEqual(json.loads(result.stdout)['error']['code'], 'AUTH_REQUIRED')
+        for args in (('--endpoint', 'https://example.test'), ('--endpoint=https://example.test',)):
+            result = self.run_cli(*args, 'auth', 'status', '--json')
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        result = self.run_cli('catalog', '--json')
+        self.assertNotIn('--endpoint', result.stdout)
 
     def test_catalog_queries_and_guides_only_advertise_delivered_commands(self):
         result = self.run_cli('catalog', 'app', '--json')

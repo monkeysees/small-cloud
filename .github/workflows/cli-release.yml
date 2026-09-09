@@ -1,0 +1,87 @@
+name: Standalone CLI
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths: ['identity/**', 'distribution/**', 'install.sh', 'pyproject.toml', '.github/workflows/cli-release.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: linux-x86_64
+          - runner: ubuntu-24.04-arm
+            target: linux-arm64
+          - runner: macos-15-intel
+            target: macos-x86_64
+          - runner: macos-15
+            target: macos-arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Install build dependencies
+        run: python -m pip install . -r distribution/requirements.txt
+      - name: Build production and internal test executables
+        run: |
+          python distribution/build.py
+          python distribution/build.py --fixture
+      - name: Check installed release and file credential fallback
+        run: python distribution/verify.py build/release/small-cloud-${{ matrix.target }} build/release/small-cloud-fixture > build/file-acceptance.json
+      - name: Install Linux Secret Service
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y gnome-keyring dbus-x11
+      - name: Verify native Linux credential storage
+        if: runner.os == 'Linux'
+        env:
+          SMALL_CLOUD_TEST_NATIVE_KEYRING: '1'
+        run: |
+          dbus-run-session -- sh -eu -c '
+            printf "acceptance-only\n" | gnome-keyring-daemon --unlock --components=secrets
+            python distribution/verify.py build/release/small-cloud-${{ matrix.target }} build/release/small-cloud-fixture > build/native-acceptance.json
+          '
+      - name: Verify native macOS credential storage
+        if: runner.os == 'macOS'
+        env:
+          SMALL_CLOUD_TEST_NATIVE_KEYRING: '1'
+        run: python distribution/verify.py build/release/small-cloud-${{ matrix.target }} build/release/small-cloud-fixture > build/native-acceptance.json
+      - name: Upload only production artifacts and evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: small-cloud-${{ matrix.target }}
+          path: |
+            build/release/small-cloud-${{ matrix.target }}
+            build/release/small-cloud-${{ matrix.target }}.sha256
+            build/file-acceptance.json
+            build/native-acceptance.json
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: native
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/download-artifact@v8.0.1
+        with:
+          path: build/artifacts
+      - name: Publish verified native artifacts as a draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          assets=(build/artifacts/small-cloud-*/small-cloud-*)
+          gh release create "$RELEASE_TAG" "${assets[@]}" install.sh --draft --verify-tag --title "Small Cloud $RELEASE_TAG" --notes-file docs/changelog.md

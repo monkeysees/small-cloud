@@ -114,14 +114,14 @@ class SharingAcceptance(unittest.TestCase):
         self.login()
         status, deployed = self.deploy(description='Team board\x1b[31m')
         self.assertEqual(status, 202)
-        result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'list'],
+        result = subprocess.run([sys.executable, '-m', 'identity.tests.cli', 'app', 'list'],
                                 env=self.env, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('Team board', result.stdout)
         self.assertIn(deployed['data']['url'], result.stdout)
         self.assertNotIn('\x1b', result.stdout)
         self.assertFalse(result.stdout.startswith('{'))
-        state = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'status', 'example'],
+        state = subprocess.run([sys.executable, '-m', 'identity.tests.cli', 'app', 'status', 'example'],
                                env=self.env, capture_output=True, text=True)
         self.assertEqual(state.returncode, 0, state.stderr)
         self.assertIn('Availability:', state.stdout)
@@ -132,13 +132,13 @@ class SharingAcceptance(unittest.TestCase):
         self.assertEqual(data['data']['app'], 'example')
         self.admit('member@example.test')
         self.login()
-        empty = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'list'],
+        empty = subprocess.run([sys.executable, '-m', 'identity.tests.cli', 'app', 'list'],
                                env=self.env, capture_output=True, text=True)
         self.assertIn('No accessible apps', empty.stdout)
         denied = self.cli('app', 'status', 'example')
         self.assertEqual(denied.returncode, 4)
         self.assertEqual(json.loads(denied.stdout)['error']['code'], 'NOT_FOUND')
-        human = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'status', 'example'],
+        human = subprocess.run([sys.executable, '-m', 'identity.tests.cli', 'app', 'status', 'example'],
                               env=self.env, capture_output=True, text=True)
         self.assertEqual(human.returncode, 4)
         self.assertEqual(human.stdout, '')

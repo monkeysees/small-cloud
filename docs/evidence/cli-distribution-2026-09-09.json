@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-09",
+  "issue": 31,
+  "linux_x86_64_file": {
+    "platform": "Linux",
+    "architecture": "x86_64",
+    "sha256": "2597be7f1b3d2201eb227087bf8f16a03565e42608501dbdf74a8dfbe9290b56",
+    "installed_checks": 9,
+    "installer_integrity": "passed",
+    "public_https_without_system_ca_paths": "passed",
+    "credential_storage": "file",
+    "frozen_https_login_status_logout": "passed"
+  },
+  "other_native_targets": "pending GitHub workflow",
+  "public_download": "pending publication",
+  "linux_x86_64_secret_service": {
+    "platform": "Linux",
+    "architecture": "x86_64",
+    "sha256": "2597be7f1b3d2201eb227087bf8f16a03565e42608501dbdf74a8dfbe9290b56",
+    "installed_checks": 9,
+    "installer_integrity": "passed",
+    "public_https_without_system_ca_paths": "passed",
+    "credential_storage": "native",
+    "frozen_https_login_status_logout": "passed"
+  },
+  "automated": {
+    "identity_tests": 86,
+    "infrastructure_tests": 89,
+    "hosting_fixture_tests": 4,
+    "skipped": 0,
+    "typecheck": "passed",
+    "actionlint": "passed",
+    "shell_syntax": "passed",
+    "standards_review_findings": 0,
+    "spec_implementation_findings": 0,
+    "spec_pending_acceptance": [
+      "other native targets",
+      "published HTTPS installation"
+    ]
+  }
+}

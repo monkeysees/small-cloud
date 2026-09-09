@@ -22,19 +22,13 @@ Implements [#4](https://github.com/monkeysees/small-cloud/issues/4) and [#19](ht
 
 Start with `small-cloud`, `small-cloud app --help`, or `small-cloud catalog app --json`. Read bundled guidance using `small-cloud guide` and `small-cloud guide getting-started`; these work offline without credentials or this checkout. Groups are `app`, `workspace`, `auth` and `operation`; superseded top-level command paths have been removed. App list/status have readable default results, and every command supports `--json` for the unchanged versioned envelope. Use `small-cloud app list` to discover accessible apps; detailed `app status NAME` requires the creator or a workspace administrator.
 
-Catalog version 1 describes only delivered commands, including permissions, inputs, output contracts and effects. Later #29 slices deliver standalone installation, fixed-service setup, split login, project linking, default completion waits, live logs and additional workspace commands. The instructions below retain the currently delivered setup.
+Catalog version 1 describes only delivered commands, including permissions, inputs, output contracts and effects. Later #29 slices deliver setup-status guidance, split login, project linking, default completion waits, live logs and additional workspace commands.
 
 ## Install the CLI
 
-Use Python 3.11+ on Linux or macOS. From this checkout, install into a virtual environment outside source folders:
+Use a standalone Linux or macOS executable for ARM64 or x86-64; Python and a source checkout are not required. See [installation and downloads](../distribution/README.md). Installation does not sign in or modify shell startup files. Add the install directory (default `~/.local/bin`) to PATH when needed.
 
-```bash
-python3 -m venv "$HOME/.local/share/small-cloud-venv"
-"$HOME/.local/share/small-cloud-venv/bin/python" -m pip install .
-"$HOME/.local/share/small-cloud-venv/bin/small-cloud" --help
-```
-
-Add that environment's `bin` directory to your PATH. The operator supplies the HTTPS endpoint. Set `SMALL_CLOUD_ENDPOINT` or put `{"endpoint":"https://small-cloud.monkeysees.one"}` in `~/.config/small-cloud/config.json` (or `$XDG_CONFIG_HOME/small-cloud/config.json`). `--endpoint` overrides both; no repository configuration or `.env` is loaded.
+The CLI always connects to `https://small-cloud.monkeysees.one`. No endpoint setup is needed: `--endpoint` is removed, and old endpoint environment variables and config files are ignored. Existing credentials for the hosted origin keep working; credentials belonging to other origins are not used. No repository configuration or `.env` is loaded.
 
 ```bash
 small-cloud auth login
