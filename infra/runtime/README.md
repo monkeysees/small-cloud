@@ -1,6 +1,6 @@
 # Runtime host operator harness
 
-This operator harness was exercised on the permanent German runtime VM for #17. It is not the product admission controller. Creator admission remains closed pending product integration and verification #15; see the [infrastructure acceptance report](../../docs/hosting-acceptance-2026-09-08.md).
+This operator harness was exercised on the permanent German runtime VM for #17. It is not the product admission controller. Creator admission remains closed pending product integration and verification #15; see the [infrastructure acceptance report](../../docs/acceptance/hosting-foundation-2026-09-08.md).
 
 `install.sh` installs Ubuntu's Docker package and a supplied immutable, checksum-verified gVisor release. Set `RUNSC_URL` to an official versioned `gvisor.tar.bz2` release bundle and `RUNSC_SHA256` to its independently obtained hash. Record the resulting Docker/runsc/kernel versions in evidence. Reapplication accepts the matching managed daemon configuration and refuses unknown settings; do not use this bootstrap on a shared machine.
 

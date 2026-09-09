@@ -1,6 +1,6 @@
 # Hetzner operator infrastructure
 
-The permanent CPX32 control and CPX42 runtime foundation for [#17](https://github.com/monkeysees/small-cloud/issues/17) is deployed in Nuremberg. The [infrastructure acceptance report](../docs/hosting-acceptance-2026-09-08.md) records live isolation, capacity, persistence, renewal, retention and alert checks. Creator admission remains closed pending the separate authentication, routing and product lifecycle tickets and final integrated verification #15.
+The permanent CPX32 control and CPX42 runtime foundation for [#17](https://github.com/monkeysees/small-cloud/issues/17) is deployed in Nuremberg. The [infrastructure acceptance report](../docs/acceptance/hosting-foundation-2026-09-08.md) records live isolation, capacity, persistence, renewal, retention and alert checks. Creator admission remains closed pending the separate authentication, routing and product lifecycle tickets and final integrated verification #15.
 
 ## Prerequisites and scope
 
@@ -79,7 +79,7 @@ python3 -m unittest discover -s probes/hosting/fixture -p 'test_*.py'
 PROBE_POSTGRES_IMAGE=postgres:16 bash probes/hosting/database.sh
 ```
 
-Pyright is a pinned development check, not a host runtime dependency. The database check removes its disposable local container on exit. Live checks and their limitations are recorded in [hosting validation](../docs/hosting-validation.md).
+Pyright is a pinned development check, not a host runtime dependency. The database check removes its disposable local container on exit. Live checks and their limitations are recorded in [hosting validation](../docs/acceptance/hosting-validation-2026-09-08.md).
 
 ## Maintenance and teardown
 
@@ -95,4 +95,4 @@ Permanent foundation teardown is deliberately an explicit operator procedure, no
 
 ## Acceptance and handoff
 
-The [dated report](../docs/hosting-acceptance-2026-09-08.md) maps #17 criteria to evidence and records the approved budget exception. Later invoices can reconcile estimates; they are not a prerequisite under the operator's decision. Product authentication/lifecycle, per-app log APIs, build allowance accounting and the final integrated gate remain their existing tickets. Keep the public gateway at 503 until those checks pass.
+The [dated report](../docs/acceptance/hosting-foundation-2026-09-08.md) maps #17 criteria to evidence and records the approved budget exception. Later invoices can reconcile estimates; they are not a prerequisite under the operator's decision. Product authentication/lifecycle, per-app log APIs, build allowance accounting and the final integrated gate remain their existing tickets. Keep the public gateway at 503 until those checks pass.

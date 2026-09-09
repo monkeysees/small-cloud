@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Consolidate acceptance reports under `docs/acceptance/<topic>-YYYY-MM-DD.md`, extract identity/publishing outcomes from runbooks, and update report links.
+
 - Ship and close #6 with verified persistence/isolation evidence, unblock #9, and remove the two acceptance apps and their resources while preserving the existing publishing probe.
 
 - Add #6 database-backed starter with repeatable initialization, parameterized entry writes, visible disposable-data notice and CLI/authenticated HTTP persistence and cross-app PostgreSQL isolation checks.

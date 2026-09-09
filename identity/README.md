@@ -2,7 +2,7 @@
 
 For source upload, remote builds and protected app URLs, see [publishing](PUBLISHING.md).
 
-For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](DATABASE.md) and the [starter guide](fixture/README.md).
+For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](../docs/acceptance/app-database-2026-09-09.md) and the [starter guide](fixture/README.md).
 
 Implements [#4](https://github.com/monkeysees/small-cloud/issues/4) against the [CLI and identity contracts](../docs/contracts.md). One operator bootstraps the sole administrator, explicitly admits Google emails, and grants creator privileges separately. A member can sign in to establish their immutable user ID; membership and administrator authority alone do not grant publishing privileges. There are at most five creators, including the administrator if separately granted that role.
 
@@ -84,11 +84,9 @@ Management requests use `Authorization: Bearer …` and mutation header `X-Reque
 
 The one-time login delivery is confidential protocol traffic; the CLI removes the credential before rendering the standard output envelope. Server state stores credential and browser-session verifiers, not their reusable values. SQLite transactions serialize admission, binding, grants, delivery and revocation on the trusted EU control disk. The protected database also contains short-lived OAuth nonce/PKCE material, pending logins and seven-day request receipts. Expired transient rows are pruned on new logins, with at most 100 login sessions and 200 OAuth attempts outstanding. Credential history stays available for idempotent logout; monitor disk use. This is disposable control-host state without backup guarantees; loss requires rebootstrap and user sign-in.
 
-## Validation and live acceptance
+## Verification
 
-The identity service is installed on control host `165120313` in Nuremberg, using the operator-provided Google web client and administrator `monkeyseesone@gmail.com`. It runs as the dedicated `small-cloud-identity` user. On this workstation, `~/.local/bin/small-cloud` points to the installation in `~/.local/share/small-cloud-venv`, and `~/.config/small-cloud/config.json` selects the live HTTPS endpoint. [Deployment evidence](../docs/evidence/identity-2026-09-08.json) records live route denials, protected configuration, service/listener state and a forced proxy-error log-redaction check. Responses use `Referrer-Policy: strict-origin`: unlike `no-referrer`, it preserves the Origin header required for HTML form approval while excluding URL paths and queries from referrers.
-
-On 2026-09-08 the operator completed real Google sign-in and browser approval. Fresh CLI invocations verified retained credentials and the separately granted creator role. A second browser approval produced a replacement credential; revoking the original immediately caused authenticated HTTP status to return `CREDENTIAL_REVOKED`, repeated revocation succeeded, and the replacement remained authorized. The workstation is left signed in as member, creator and administrator. The full alternate-identity/role matrix and five-creator boundary pass in the local signed-provider suite; the operator subsequently verified a separate creator on macOS with retained member/creator roles, denial of both administrator commands, and rejection of an unadmitted Google account. These alternate-identity results are operator-reported, not direct agent observations.
+See [workspace identity acceptance — 2026-09-09](../docs/acceptance/workspace-identity-2026-09-09.md) for recorded local and deployed outcomes.
 
 Install the package and starter dependencies in your test environment, then run from the repository root. The HTTP/database suite also requires Docker for its disposable PostgreSQL 16 server:
 
@@ -101,9 +99,5 @@ python3 -m unittest discover -s probes/hosting/fixture -p 'test_*.py'
 ```
 
 Identity acceptance launches the real CLI in subprocesses and the real HTTP service over locally trusted TLS. Only Google is replaced by a signed-token HTTP fixture; production configuration cannot select a fixture issuer or bypass verification. Assertions cover administrator bootstrap, browser approval, retained credentials, explicit roles, capacity, Google subject binding, invalid identity claims, CSRF, revocation, request replay, and protected storage.
-
-Local verification on 2026-09-08 passed: 14 identity acceptance tests, 80 infrastructure tests, four hosting-fixture tests, the production Pyright check, wheel installation/CLI entry-point smoke check, and the PostgreSQL 16 own-database/cross-database isolation probe. Independent Standards review has no remaining findings; the live acceptance gap was subsequently resolved by the operator-reported checks below.
-
-Local checks do not establish deployed acceptance. The Google web client, administrator/creator sign-in, retained credential and revocation checks above were verified against the live HTTPS endpoint while app routes remained closed for #4. The operator confirmed the remaining deployed creator/admin-denial and unadmitted-account checks passed on a separate macOS machine. Member-only behavior and the five-creator boundary are covered by the local suite; no separate live member-only or quota probe is claimed. Together these checks complete #4 acceptance. See [publishing](PUBLISHING.md) for subsequent #5 implementation and evidence; workspace sharing/directory, creator removal and integrated infrastructure verification remain #7, #14 and #15.
 
 Dependency review (2026-09-08): [PyJWT](https://pypi.org/project/PyJWT/2.12.1/) provides maintained JWT validation with the [PyCA cryptography](https://github.com/pyca/cryptography) RSA backend; [keyring](https://pypi.org/project/keyring/25.7.0/) provides native OS storage. These established projects have active upstream releases and commits. Direct runtime dependencies are pinned in `pyproject.toml`. Google behavior follows the [official OpenID Connect documentation](https://developers.google.com/identity/openid-connect/openid-connect); no custom signature implementation is used.

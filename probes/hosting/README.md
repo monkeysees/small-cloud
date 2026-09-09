@@ -1,6 +1,6 @@
 # Hosting acceptance probes
 
-Retained from [issue #2](https://github.com/monkeysees/small-cloud/issues/2) for live acceptance in [#17](https://github.com/monkeysees/small-cloud/issues/17). These checks exercise the infrastructure boundaries in `docs/spec.md`. Hetzner provisioning is authorized; creator admission stays closed until every mandatory deployment check passes. A local pass is not deployment evidence. See [current results](../../docs/hosting-validation.md).
+Retained from [issue #2](https://github.com/monkeysees/small-cloud/issues/2) for live acceptance in [#17](https://github.com/monkeysees/small-cloud/issues/17). These checks exercise the infrastructure boundaries in `docs/spec.md`. Hetzner provisioning is authorized; creator admission stays closed until every mandatory deployment check passes. A local pass is not deployment evidence. See [current results](../../docs/acceptance/hosting-validation-2026-09-08.md).
 
 ## Database probe
 
@@ -53,7 +53,7 @@ Retain a redacted result row per check: `check | build/runtime | expected | obse
 
 ## Reproducing the completed matrix
 
-The [2026-09-08 report](../../docs/hosting-acceptance-2026-09-08.md) links separate actual Dockerfile and gVisor observations. `adversarial.py --config PATH --phase build|runtime` combines the direct targets in `network.py` with controlled HTTPS nonce correlation, proxy bypass, redirect, filesystem and real DNS-change checks. Its configuration and exact target addresses are retained alongside the synthetic results. Do not reuse dated canary addresses: the temporary VM and DNS records were deleted.
+The [2026-09-08 report](../../docs/acceptance/hosting-foundation-2026-09-08.md) links separate actual Dockerfile and gVisor observations. `adversarial.py --config PATH --phase build|runtime` combines the direct targets in `network.py` with controlled HTTPS nonce correlation, proxy bypass, redirect, filesystem and real DNS-change checks. Its configuration and exact target addresses are retained alongside the synthetic results. Do not reuse dated canary addresses: the temporary VM and DNS records were deleted.
 
 For a new session, obtain a disposable EU builder through the normal controller admission/reaper with an explicit expiry. Before execution, create a root-only canary directory with `dns.json` containing `{"build.rebind.YOUR_DOMAIN":"PUBLIC_CANARY_IPV4","runtime.rebind.YOUR_DOMAIN":"PUBLIC_CANARY_IPV4"}`. `canary.py --public-ip PUBLIC_CANARY_IPV4 --zone rebind.YOUR_DOMAIN --directory PRIVATE_DIRECTORY` serves authoritative UDP DNS and a loopback HTTP nonce sink. Point a dedicated A record at that VM and delegate the isolated rebinding zone to it. Run Caddy in front of loopback port 8081 for valid HTTPS on a dedicated hostname; open only TCP 80/443 and UDP/TCP 53 in a temporary canary firewall. Bound the service lifetime with systemd and the provider expiry; this helper is not a public production DNS service. It stores only bounded synthetic `/issue17-...` nonces, never request bodies or headers.
 
