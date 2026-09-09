@@ -23,6 +23,8 @@ class FrozenIdentity(IdentityAcceptance):
         self.env['PATH'] = '/nonexistent-small-cloud-acceptance-path'
         if os.environ.get('SMALL_CLOUD_TEST_NATIVE_KEYRING') == '1':
             self.env.pop('PYTHON_KEYRING_BACKEND', None)
+            # Native credential services belong to the runner's real OS account.
+            self.env['HOME'] = os.environ['HOME']
 
     def test_packaged_credential_roundtrip(self):
         self.operator('bootstrap', 'admin@example.test')
