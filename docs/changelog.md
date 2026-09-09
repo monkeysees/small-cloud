@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Verify #30 through 68 installed-executable discovery/hosted-read checks and the final CLI/HTTPS suite; record acceptance without modifying hosted apps or services.
+
 - Add #30 grouped CLI commands, shared offline help and scoped versioned catalog, bundled task guides, readable app inspection and actionable human errors; remove superseded command paths and verify CLI/HTTPS authorization contracts.
 
 - Deploy #12 and verify exact multiline runtime secrets, hidden input, sharing/authorization boundaries, encrypted storage, retained-value redaction and failed/interrupted restart recovery; remove acceptance resources and retain 41 build seconds.

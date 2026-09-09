@@ -4,6 +4,7 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 
 | Report | Scope |
 | --- | --- |
+| [CLI discovery — 2026-09-09](cli-discovery-2026-09-09.md) | #30 installed offline discovery, hosted read-only human/JSON app inspection and local CLI/HTTPS authorization acceptance. |
 | [Hosting validation — 2026-09-08](hosting-validation-2026-09-08.md) | Historical #2/#17 validation, including incomplete checks; superseded by hosting foundation acceptance. |
 | [Hosting foundation — 2026-09-08](hosting-foundation-2026-09-08.md) | #17 infrastructure acceptance. |
 | [Workspace identity — 2026-09-09](workspace-identity-2026-09-09.md) | #4 identity and CLI authentication acceptance. |

@@ -1,0 +1,306 @@
+{
+  "date": "2026-09-09",
+  "issue": 30,
+  "implementation_commit": "437714e",
+  "artifact": "small_cloud-0.1.0-py3-none-any.whl",
+  "artifact_sha256": "efd8fdf0a54b555ded98d5042514953f6f561139243295fb7034f659d44ab8d5",
+  "scope": "Installed Python executable, offline discovery and read-only hosted inspection",
+  "installed_command_count": 18,
+  "checks_passed": 68,
+  "checks": [
+    {
+      "command": "small-cloud ",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud workspace --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud auth --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud operation --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app status --help --request-id",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app list --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app list --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app status --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app status --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app deploy --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app deploy --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app logs --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app logs --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app share --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app share --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app secrets list --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app secrets list --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app secrets set --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app secrets set --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app secrets delete --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud app secrets delete --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog workspace usage --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud workspace usage --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog workspace member add --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud workspace member add --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog workspace creator grant --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud workspace creator grant --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog auth login --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud auth login --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog auth status --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud auth status --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog auth logout --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud auth logout --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog auth revoke --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud auth revoke --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog operation status --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud operation status --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog catalog --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog guide --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud guide --help",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud guide --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud guide getting-started",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud guide publishing",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud guide secrets-sharing",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud guide workspace",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud catalog app check --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud deploy --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud status --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud logs --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud directory --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud secret --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud share --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud usage --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud admin --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud app status --json",
+      "exit_code": 2
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one auth status --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one app list --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one app list",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one app status publishing-probe --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one app status publishing-probe",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one operation status d-cd728bf566aa4215b126f37b --json",
+      "exit_code": 0
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one app status acceptance-missing-30 --json",
+      "exit_code": 4
+    },
+    {
+      "command": "small-cloud --endpoint https://small-cloud.monkeysees.one app status acceptance-missing-30",
+      "exit_code": 4
+    }
+  ],
+  "hosted_apps": [
+    {
+      "name": "publishing-probe",
+      "availability": "stopped",
+      "url_matches_directory": true,
+      "human_and_json_agree": true
+    }
+  ],
+  "hosted_mutations": 0,
+  "limitations": [
+    "Hosted caller is the existing administrator; cross-role denial is covered by the isolated HTTPS suite.",
+    "No standalone binary distribution, fresh-agent trial, or new interactive browser approval.",
+    "Server deployment is unnecessary for this CLI-only change; hosted service was not modified."
+  ],
+  "final_identity_suite": {
+    "command": "/tmp/small-cloud-19-venv/bin/python -m unittest discover -s identity/tests -p 'test_*.py'",
+    "tests": 85,
+    "duration_seconds": 311.959,
+    "exit_code": 0,
+    "failures": 0,
+    "skips": 0
+  }
+}
