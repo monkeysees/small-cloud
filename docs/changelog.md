@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.1.0 — 2026-09-09
+
+- Publish #31 standalone downloads and one-command installation; verify all four native platforms, file/OS credentials, bundled TLS trust, public installation without Python, and retained hosted credentials.
+
 - Add #31 native standalone CLI packaging and checksum-verified installation for Linux/macOS ARM64/x86-64, bind the CLI to the hosted service, and preserve exact-origin credentials with an undistributed HTTPS test launcher.
 
 - Verify #30 through 68 installed-executable discovery/hosted-read checks and the final CLI/HTTPS suite; record acceptance without modifying hosted apps or services.

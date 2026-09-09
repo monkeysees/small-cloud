@@ -4,7 +4,7 @@ Small Cloud runs without a Python installation or source checkout. The native ex
 
 ## Install and sign in
 
-The public download location below requires operator publication; see the [acceptance record](../docs/acceptance/cli-distribution-2026-09-09.md) for current availability.
+Version 0.1.0 is published and verified on all four supported targets; see the [acceptance record](../docs/acceptance/cli-distribution-2026-09-09.md).
 
 ```sh
 curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
@@ -74,3 +74,5 @@ Dispatch `Standalone CLI` to build and verify the current branch. A `v*` tag run
 On the existing control host, merge [the static-download fragment](Caddyfile.fragment) into the management site, preserving its TLS, logging, authentication and app routing. Validate the complete Caddyfile before restarting Caddy (this installation has `admin off`). Upload verified production files into a new `/srv/small-cloud/cli/releases/VERSION` directory, readable by Caddy. Never reuse a published version with different bytes. Install `install.sh` at `/srv/small-cloud/cli/install.sh`, then atomically replace the `releases/latest` symlink with the verified version. Do not expose a fixture executable or release evidence containing credentials. The download route is intentionally unauthenticated and has no directory browsing.
 
 Verify all eight public asset/checksum URLs and execute the real one-command installer into a temporary directory. Run its installed binary's help and hosted `auth status` using retained credentials, then remove only that temporary installation. Preserve the current `latest` link if any target fails acceptance.
+
+After publication, dispatch [Published CLI installation](../.github/workflows/cli-installation.yml) with the released version. It verifies the real HTTPS installer on all four native targets without a source checkout or Python setup, including unchanged shell files and installation without login. Keep those results with the native build evidence before marking a release accepted.

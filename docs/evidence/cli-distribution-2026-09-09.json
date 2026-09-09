@@ -1,30 +1,241 @@
 {
   "date": "2026-09-09",
   "issue": 31,
-  "linux_x86_64_file": {
-    "platform": "Linux",
-    "architecture": "x86_64",
-    "sha256": "2597be7f1b3d2201eb227087bf8f16a03565e42608501dbdf74a8dfbe9290b56",
-    "installed_checks": 9,
-    "installer_integrity": "passed",
-    "public_https_without_system_ca_paths": "passed",
-    "credential_storage": "file",
-    "frozen_https_login_status_logout": "passed"
+  "version": "v0.1.0",
+  "source_commit": "4419e01ccee4765f1a24da05a4430d921f258f0e",
+  "complete": true,
+  "release_workflow": "https://github.com/monkeysees/small-cloud/actions/runs/34371563986",
+  "public_installation_workflow": "https://github.com/monkeysees/small-cloud/actions/runs/34372352212",
+  "targets": {
+    "linux-x86_64": {
+      "file": {
+        "platform": "Linux",
+        "architecture": "x86_64",
+        "sha256": "c5a38986802a12881ff401a760c453b5fbb288cc29fb03a7be6ba492c365952f",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "native": {
+        "platform": "Linux",
+        "architecture": "x86_64",
+        "sha256": "c5a38986802a12881ff401a760c453b5fbb288cc29fb03a7be6ba492c365952f",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "public_installation": {
+        "target": "linux-x86_64",
+        "version": "v0.1.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      }
+    },
+    "linux-arm64": {
+      "file": {
+        "platform": "Linux",
+        "architecture": "aarch64",
+        "sha256": "a979d651d41e99d52a43897aa69750097c2b110cc7d1312dbe04cac9a8e6d437",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "native": {
+        "platform": "Linux",
+        "architecture": "aarch64",
+        "sha256": "a979d651d41e99d52a43897aa69750097c2b110cc7d1312dbe04cac9a8e6d437",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "public_installation": {
+        "target": "linux-arm64",
+        "version": "v0.1.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      }
+    },
+    "macos-x86_64": {
+      "file": {
+        "platform": "Darwin",
+        "architecture": "x86_64",
+        "sha256": "9fdfa2a189d43d27dc63756e6c01845742be54a0ad3f2047263c68601f19ec90",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "native": {
+        "platform": "Darwin",
+        "architecture": "x86_64",
+        "sha256": "9fdfa2a189d43d27dc63756e6c01845742be54a0ad3f2047263c68601f19ec90",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "public_installation": {
+        "target": "macos-x86_64",
+        "version": "v0.1.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      }
+    },
+    "macos-arm64": {
+      "file": {
+        "platform": "Darwin",
+        "architecture": "arm64",
+        "sha256": "6c59f69f66b794a941fc424b408b37c608b45818ce45dfc381aa1ba45caf2335",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "native": {
+        "platform": "Darwin",
+        "architecture": "arm64",
+        "sha256": "6c59f69f66b794a941fc424b408b37c608b45818ce45dfc381aa1ba45caf2335",
+        "installed_checks": 9,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed"
+      },
+      "public_installation": {
+        "target": "macos-arm64",
+        "version": "v0.1.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      }
+    }
   },
-  "other_native_targets": "pending GitHub workflow",
-  "public_download": "pending publication",
-  "linux_x86_64_secret_service": {
-    "platform": "Linux",
+  "public_url_checks": [
+    {
+      "path": "install.sh",
+      "status": 200,
+      "bytes": 2658,
+      "sha256": "ac8cb73f1e4ee6c2bc1174e7241972b3023b9c1e751e053f6c24f66268db7949"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-linux-x86_64",
+      "status": 200,
+      "bytes": 26801520,
+      "sha256": "c5a38986802a12881ff401a760c453b5fbb288cc29fb03a7be6ba492c365952f"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-linux-x86_64.sha256",
+      "status": 200,
+      "bytes": 91,
+      "sha256": "87b0cba9667db680b2cde12d030134cd14603b6f99fb29e6ab6cbc4b7b6a05ce"
+    },
+    {
+      "path": "releases/latest/small-cloud-linux-x86_64.sha256",
+      "status": 200,
+      "bytes": 91,
+      "sha256": "87b0cba9667db680b2cde12d030134cd14603b6f99fb29e6ab6cbc4b7b6a05ce"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-linux-arm64",
+      "status": 200,
+      "bytes": 26029832,
+      "sha256": "a979d651d41e99d52a43897aa69750097c2b110cc7d1312dbe04cac9a8e6d437"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-linux-arm64.sha256",
+      "status": 200,
+      "bytes": 90,
+      "sha256": "b3011c0fd0cd47d0587e9406853577bfa7c82ced68d33fc640ff755b10c9c0b5"
+    },
+    {
+      "path": "releases/latest/small-cloud-linux-arm64.sha256",
+      "status": 200,
+      "bytes": 90,
+      "sha256": "b3011c0fd0cd47d0587e9406853577bfa7c82ced68d33fc640ff755b10c9c0b5"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-macos-x86_64",
+      "status": 200,
+      "bytes": 13402960,
+      "sha256": "9fdfa2a189d43d27dc63756e6c01845742be54a0ad3f2047263c68601f19ec90"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-macos-x86_64.sha256",
+      "status": 200,
+      "bytes": 91,
+      "sha256": "76004938dcf3b663da5810550a296e690f57b616771ade2d4e51e362a4f1a9ce"
+    },
+    {
+      "path": "releases/latest/small-cloud-macos-x86_64.sha256",
+      "status": 200,
+      "bytes": 91,
+      "sha256": "76004938dcf3b663da5810550a296e690f57b616771ade2d4e51e362a4f1a9ce"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-macos-arm64",
+      "status": 200,
+      "bytes": 12806112,
+      "sha256": "6c59f69f66b794a941fc424b408b37c608b45818ce45dfc381aa1ba45caf2335"
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-macos-arm64.sha256",
+      "status": 200,
+      "bytes": 90,
+      "sha256": "ae11b5c66c30fa8c9c0c3a7a689a3a92b4a642cc1384d7da28e379859548aab6"
+    },
+    {
+      "path": "releases/latest/small-cloud-macos-arm64.sha256",
+      "status": 200,
+      "bytes": 90,
+      "sha256": "ae11b5c66c30fa8c9c0c3a7a689a3a92b4a642cc1384d7da28e379859548aab6"
+    },
+    {
+      "path": "releases/v0.1.0/",
+      "status": 404
+    },
+    {
+      "path": "releases/v0.1.0/small-cloud-fixture",
+      "status": 404
+    },
+    {
+      "path": "releases/v0.1.0/native-acceptance.json",
+      "status": 404
+    }
+  ],
+  "python_free_container": {
+    "os": "Ubuntu 24.04",
     "architecture": "x86_64",
-    "sha256": "2597be7f1b3d2201eb227087bf8f16a03565e42608501dbdf74a8dfbe9290b56",
-    "installed_checks": 9,
-    "installer_integrity": "passed",
-    "public_https_without_system_ca_paths": "passed",
-    "credential_storage": "native",
-    "frozen_https_login_status_logout": "passed"
+    "python_installed": false,
+    "latest_installation": "passed",
+    "pinned_installation": "passed",
+    "sha256": "c5a38986802a12881ff401a760c453b5fbb288cc29fb03a7be6ba492c365952f",
+    "retained_credential_auth_status": "passed",
+    "hosted_app_directory": "passed",
+    "shell_files_unchanged": true,
+    "installation_did_not_login": true,
+    "temporary_credential_cleanup": "automatic"
   },
   "automated": {
     "identity_tests": 86,
+    "identity_seconds": 317.369,
     "infrastructure_tests": 89,
     "hosting_fixture_tests": 4,
     "skipped": 0,
@@ -32,10 +243,6 @@
     "actionlint": "passed",
     "shell_syntax": "passed",
     "standards_review_findings": 0,
-    "spec_implementation_findings": 0,
-    "spec_pending_acceptance": [
-      "other native targets",
-      "published HTTPS installation"
-    ]
+    "spec_review_findings": 0
   }
 }
