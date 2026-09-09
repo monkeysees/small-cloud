@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Deploy #9 and verify a real 30-minute idle stop, competing wake-ups, retained data, capacity/loading responses and failed/interrupted startup recovery; remove four acceptance apps/builders, retain 43 build seconds, and record the remaining rendered-browser verification gap.
+
 - Add #9 authenticated HTTP idle stop/start with retained database data, visible loading and explicit retry, atomic five-app reservations shared with publishing, in-flight request protection, and restart-safe cleanup with local CLI/HTTP/PostgreSQL regression coverage.
 
 - Complete #8 hosted redeployment acceptance across seven EU builds, verify preserved releases/data and creator-led schema repair, remove temporary resources, and preserve both existing apps and the 92-second build charge.

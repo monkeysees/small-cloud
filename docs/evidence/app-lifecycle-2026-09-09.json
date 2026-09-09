@@ -1,0 +1,972 @@
+{
+  "deployment": {
+    "implementation_commit": "f550a3c",
+    "retained_apps": [
+      {
+        "id": "a-9ce8504acd8242b98d681bc3",
+        "name": "publishing-probe",
+        "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+        "target_host": "10.42.0.3",
+        "target_port": 18082,
+        "container": "sc-a-9ce8504acd8242b98d681bc3-active",
+        "sharing_scope": "creator-only"
+      },
+      {
+        "id": "a-ff8207a35ca74d7b9bbe3a33",
+        "name": "sharing-acceptance-7",
+        "active_deployment_id": "d-3ba4a171d346430cad297322",
+        "target_host": "10.42.0.3",
+        "target_port": 18080,
+        "container": "sc-a-ff8207a35ca74d7b9bbe3a33-active",
+        "sharing_scope": "creator-only"
+      }
+    ],
+    "services": [
+      "active",
+      "active",
+      "active",
+      "active",
+      "active",
+      "active"
+    ],
+    "deployed_at": 1788947463.3135962
+  },
+  "source_directory": "/tmp/small-cloud-9-source-5jt_0uyq/fixture",
+  "usage_before": {
+    "creators": {
+      "used": 2,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 2,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 2,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 734,
+      "reserved_seconds": 0,
+      "available_seconds": 59266
+    }
+  },
+  "apps": {
+    "a": {
+      "app": "lifecycle-acceptance-9-a",
+      "app_id": "a-0c3d2d1f871c489884413d39",
+      "description": "Temporary issue 9 lifecycle acceptance",
+      "url": "https://a-0c3d2d1f871c489884413d39.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "runtime_error": null,
+      "active_deployment_id": "d-75ad40d08685481ab99150bd",
+      "latest_operation": {
+        "id": "d-75ad40d08685481ab99150bd",
+        "kind": "deploy",
+        "app": "lifecycle-acceptance-9-a",
+        "operation_id": "d-75ad40d08685481ab99150bd",
+        "deployment_id": "d-75ad40d08685481ab99150bd",
+        "state": "succeeded",
+        "request_id": "497ffbfb-cc90-4777-83aa-a10f86dc6e59",
+        "created_at": "2026-09-09T09:52:56.273024Z",
+        "updated_at": "2026-09-09T09:54:32.098522Z",
+        "completed_at": "2026-09-09T09:54:32.098522Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null,
+      "observed_stages": [
+        "accepted",
+        "building",
+        "starting",
+        "succeeded"
+      ]
+    },
+    "b": {
+      "app": "lifecycle-acceptance-9-b",
+      "app_id": "a-818fe7f95a274cbc8f5cf346",
+      "description": "Temporary issue 9 lifecycle acceptance",
+      "url": "https://a-818fe7f95a274cbc8f5cf346.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "runtime_error": null,
+      "active_deployment_id": "d-7885af25f8d9401cba3ef508",
+      "latest_operation": {
+        "id": "d-7885af25f8d9401cba3ef508",
+        "kind": "deploy",
+        "app": "lifecycle-acceptance-9-b",
+        "operation_id": "d-7885af25f8d9401cba3ef508",
+        "deployment_id": "d-7885af25f8d9401cba3ef508",
+        "state": "succeeded",
+        "request_id": "14c4d761-1cdb-4a3e-9b01-53ff55094432",
+        "created_at": "2026-09-09T09:54:41.794506Z",
+        "updated_at": "2026-09-09T09:56:12.725795Z",
+        "completed_at": "2026-09-09T09:56:12.725795Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null,
+      "observed_stages": [
+        "accepted",
+        "building",
+        "starting",
+        "succeeded"
+      ]
+    },
+    "c": {
+      "app": "lifecycle-acceptance-9-c",
+      "app_id": "a-ddd60e584828405bbb483bc8",
+      "description": "Temporary issue 9 lifecycle acceptance",
+      "url": "https://a-ddd60e584828405bbb483bc8.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "runtime_error": null,
+      "active_deployment_id": "d-389ddddbadce4ac09a62385a",
+      "latest_operation": {
+        "id": "d-389ddddbadce4ac09a62385a",
+        "kind": "deploy",
+        "app": "lifecycle-acceptance-9-c",
+        "operation_id": "d-389ddddbadce4ac09a62385a",
+        "deployment_id": "d-389ddddbadce4ac09a62385a",
+        "state": "succeeded",
+        "request_id": "7ed3e623-1f5c-42c8-ae51-1fafa488f7af",
+        "created_at": "2026-09-09T09:56:16.295717Z",
+        "updated_at": "2026-09-09T09:57:58.238437Z",
+        "completed_at": "2026-09-09T09:57:58.238437Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null,
+      "observed_stages": [
+        "accepted",
+        "building",
+        "starting",
+        "succeeded"
+      ]
+    },
+    "d": {
+      "app": "lifecycle-acceptance-9-d",
+      "app_id": "a-8ea711ed73a94f7a97df3af8",
+      "description": "Temporary issue 9 lifecycle acceptance",
+      "url": "https://a-8ea711ed73a94f7a97df3af8.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "runtime_error": null,
+      "active_deployment_id": "d-6ec874b9479842f8aae9ea03",
+      "latest_operation": {
+        "id": "d-6ec874b9479842f8aae9ea03",
+        "kind": "deploy",
+        "app": "lifecycle-acceptance-9-d",
+        "operation_id": "d-6ec874b9479842f8aae9ea03",
+        "deployment_id": "d-6ec874b9479842f8aae9ea03",
+        "state": "succeeded",
+        "request_id": "5ebf18fa-a6fd-4870-9eb0-c20623e4d0e3",
+        "created_at": "2026-09-09T09:58:04.976356Z",
+        "updated_at": "2026-09-09T09:59:50.953648Z",
+        "completed_at": "2026-09-09T09:59:50.953648Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null,
+      "observed_stages": [
+        "accepted",
+        "building",
+        "starting",
+        "succeeded"
+      ]
+    }
+  },
+  "saved_entry": {
+    "id": 1,
+    "value": "Issue 9 database row survives a real 30-minute idle stop"
+  },
+  "before_stop_memory": {
+    "boot_id": "62ad8dbe9bf144f2840f9eed18e8b1bd",
+    "temporary": "temporary state before stop"
+  },
+  "natural_idle": {
+    "last_http": 1788947680.6908922,
+    "due_at": 1788949480.6908922,
+    "observed_at": 1788947681.5885465,
+    "state": "running",
+    "observations": [
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948259.6073081
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948290.9813027
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948322.500613
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948353.8447564
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948385.2814536
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948416.5446825
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948447.9492617
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948479.2132945
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948510.7554379
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948541.829239
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948573.379968
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948604.757387
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948636.3025181
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948667.5360405
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948699.1259532
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948730.4191182
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948761.9170954
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948793.2086184
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948824.78923
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948856.1285293
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948887.6480706
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948918.9504368
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948950.449885
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788948981.6748834
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949013.2579346
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949044.5701537
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949076.14196
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949107.3187516
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949138.8864915
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949170.1919003
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949201.7076705
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949232.998027
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949264.509179
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949295.824314
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949327.3623416
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949358.619541
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949390.1284587
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949421.4356825
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949452.991921
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "running",
+        "target_port": 18081,
+        "observed_at": 1788949479.8569624
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "stopping",
+        "target_port": 18081,
+        "observed_at": 1788949481.952878
+      },
+      {
+        "last_http": 1788947680.6908922,
+        "runtime_state": "stopped",
+        "target_port": null,
+        "observed_at": 1788949484.044372
+      }
+    ],
+    "stopped_at_observation": 1788949484.044372,
+    "denied_requests_did_not_reset_timer": true
+  },
+  "capacity_fixture_clock": {
+    "app": "lifecycle-acceptance-9-c",
+    "test_clock_advanced_seconds": 1801
+  },
+  "full_capacity": {
+    "status": 503,
+    "retry_button": true,
+    "html": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Workspace at capacity</title><main><h1>Workspace at capacity</h1><p role=\"status\">All five active app slots are occupied. Retry when capacity is available.</p><p>Database data is retained. Temporary files and memory may be lost.</p><p>If you submitted a change, retry it yourself after the app is ready.</p><form method=\"get\" action=\"/_small-cloud/retry\"><input type=\"hidden\" name=\"return\" value=\"/\"><button type=\"submit\">Retry</button></form></main></html>",
+    "usage": {
+      "creators": {
+        "used": 2,
+        "limit": 5
+      },
+      "deployed_apps": {
+        "used": 6,
+        "limit": 30
+      },
+      "active_apps": {
+        "used": 5,
+        "limit": 5
+      },
+      "build": {
+        "period_start": "2026-09-01T00:00:00Z",
+        "period_end": "2026-10-01T00:00:00Z",
+        "limit_seconds": 60000,
+        "charged_seconds": 777,
+        "reserved_seconds": 0,
+        "available_seconds": 59223
+      }
+    }
+  },
+  "startup_failure": {
+    "status": {
+      "app": "lifecycle-acceptance-9-b",
+      "app_id": "a-818fe7f95a274cbc8f5cf346",
+      "description": "Temporary issue 9 lifecycle acceptance",
+      "url": "https://a-818fe7f95a274cbc8f5cf346.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "unavailable",
+      "runtime_error": {
+        "code": "STARTUP_FAILED",
+        "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+        "details": {}
+      },
+      "active_deployment_id": "d-7885af25f8d9401cba3ef508",
+      "latest_operation": {
+        "id": "d-7885af25f8d9401cba3ef508",
+        "kind": "deploy",
+        "app": "lifecycle-acceptance-9-b",
+        "operation_id": "d-7885af25f8d9401cba3ef508",
+        "deployment_id": "d-7885af25f8d9401cba3ef508",
+        "state": "succeeded",
+        "request_id": "14c4d761-1cdb-4a3e-9b01-53ff55094432",
+        "created_at": "2026-09-09T09:54:41.794506Z",
+        "updated_at": "2026-09-09T09:56:12.725795Z",
+        "completed_at": "2026-09-09T09:56:12.725795Z",
+        "error": null,
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    },
+    "slot_released": true,
+    "explicit_retry_succeeded": true,
+    "database_preserved": true
+  },
+  "worker_restart": {
+    "worker_killed_during_start": true,
+    "reservations_immediately_after_kill": 5,
+    "uncertain_allocation_removed": true,
+    "slot_released": true,
+    "retry_succeeded": true,
+    "database_preserved": true
+  },
+  "recovery_app": "a-818fe7f95a274cbc8f5cf346",
+  "usage_after_tests": {
+    "creators": {
+      "used": 2,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 6,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 5,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 777,
+      "reserved_seconds": 0,
+      "available_seconds": 59223
+    }
+  },
+  "retained_runtime_before_acceptance": [
+    {
+      "app": "publishing-probe",
+      "container_state": "\"c9ca4c0e2caf073bb024c9e21a202c0efc61b520fe4873c6bed44c3eefbaad1d\" \"2026-09-09T04:13:56.465319487Z\" true"
+    },
+    {
+      "app": "sharing-acceptance-7",
+      "container_state": "\"4a72375be9a4a8d6214cf0a040bca1a0fd743d91f4df85f94d97bafadd877b00\" \"2026-09-09T04:14:03.337019637Z\" true"
+    }
+  ],
+  "competing_starts": {
+    "outcomes": [
+      {
+        "app": "a",
+        "status": 503,
+        "error": "STARTING",
+        "elapsed_seconds": 0.11128962878137827
+      },
+      {
+        "app": "c",
+        "status": 503,
+        "error": "ACTIVE_CAPACITY",
+        "elapsed_seconds": 0.15457397140562534
+      }
+    ],
+    "active_used": 5,
+    "winner": "a",
+    "loser": "c",
+    "used_apps_preserved": true
+  },
+  "loading": {
+    "status": 503,
+    "retry_after": "2",
+    "html": "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>Starting your app</title><meta http-equiv=\"refresh\" content=\"2;url=/\"><main><h1>Starting your app</h1><p role=\"status\">Starting app. This can take up to two minutes after runtime launch.</p><p>Database data is retained. Temporary files and memory may be lost.</p><p>If you submitted a change, retry it yourself after the app is ready.</p><form method=\"get\" action=\"/_small-cloud/retry\"><input type=\"hidden\" name=\"return\" value=\"/\"><button type=\"submit\">Retry</button></form></main></html>"
+  },
+  "persistence": {
+    "entry_retained": true,
+    "release_retained": true,
+    "new_process": true,
+    "temporary_file_lost": true
+  },
+  "retry_after_capacity_available": true,
+  "cleanup": {
+    "apps": [
+      {
+        "id": "a-0c3d2d1f871c489884413d39",
+        "name": "lifecycle-acceptance-9-a",
+        "runtime_database_credentials_source_logs_removed": true
+      },
+      {
+        "id": "a-818fe7f95a274cbc8f5cf346",
+        "name": "lifecycle-acceptance-9-b",
+        "runtime_database_credentials_source_logs_removed": true
+      },
+      {
+        "id": "a-ddd60e584828405bbb483bc8",
+        "name": "lifecycle-acceptance-9-c",
+        "runtime_database_credentials_source_logs_removed": true
+      },
+      {
+        "id": "a-8ea711ed73a94f7a97df3af8",
+        "name": "lifecycle-acceptance-9-d",
+        "runtime_database_credentials_source_logs_removed": true
+      }
+    ],
+    "builders": [
+      {
+        "operation": "d-75ad40d08685481ab99150bd",
+        "teardown": {
+          "id": 165290557,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 9.207475019999997
+        },
+        "builder": {
+          "id": 165290557,
+          "location": "nbg1",
+          "type": "cpx22",
+          "job": "d-75ad40d08685481ab99150bd"
+        }
+      },
+      {
+        "operation": "d-7885af25f8d9401cba3ef508",
+        "teardown": {
+          "id": 165290740,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 10.661766999000001
+        },
+        "builder": {
+          "id": 165290740,
+          "location": "nbg1",
+          "type": "cpx22",
+          "job": "d-7885af25f8d9401cba3ef508"
+        }
+      },
+      {
+        "operation": "d-389ddddbadce4ac09a62385a",
+        "teardown": {
+          "id": 165290917,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 10.576655162000002
+        },
+        "builder": {
+          "id": 165290917,
+          "location": "nbg1",
+          "type": "cpx22",
+          "job": "d-389ddddbadce4ac09a62385a"
+        }
+      },
+      {
+        "operation": "d-6ec874b9479842f8aae9ea03",
+        "teardown": {
+          "id": 165291097,
+          "deleted": true,
+          "addresses_removed": true,
+          "estimated_billed_hours": 1,
+          "invoice_verified": false
+        },
+        "accounting": {
+          "terminated": true,
+          "duration_seconds": 10.975655834999998
+        },
+        "builder": {
+          "id": 165291097,
+          "location": "nbg1",
+          "type": "cpx22",
+          "job": "d-6ec874b9479842f8aae9ea03"
+        }
+      }
+    ],
+    "charged_seconds_preserved": 43,
+    "retained_apps_unchanged": true,
+    "artifacts_retired_for_existing_janitors": true,
+    "cleanup_timers": [
+      "active",
+      "active"
+    ],
+    "runtime_cleanup_timer": "active",
+    "finished_at": 1788949589.4319303,
+    "deployment_staging_removed": true,
+    "local_fixture_removed": true
+  },
+  "gateway_denials": {
+    "malformed_framing": 400,
+    "foreign_origin_mutation": 403,
+    "unsupported_upgrade": 400,
+    "unauthenticated_json": 401,
+    "unauthenticated_html": {
+      "status": 302,
+      "redirect_host": "accounts.google.com",
+      "secure_host_cookie": true
+    },
+    "denials_did_not_wake": true
+  },
+  "installed_source_sha256": {
+    "identity.lifecycle": "ef4242aa18fef672a35dcb40aac06241a125ac7a07b7f20a99ace84d1109740a",
+    "identity.gateway": "3a4eb38c6370376b847c87bae632474f6979e6771737d3ef741ebfa62962282b",
+    "identity.publishing": "09bf9735d2184c27eb6676b692de54ba4320c6d8ecc5dbf00c226557c63a6a00",
+    "identity.worker": "3de8cdb00969acc9624d8d35eda3f812855bd99b0cf09c239296527b346a42d4",
+    "sandbox": "81758eae07ca9121a72a39d73e3b83aad99ae01b5384adfe2f852c7d1b7c068c"
+  },
+  "full_capacity_runtime": [
+    {
+      "container": "sc-a-818fe7f95a274cbc8f5cf346-active",
+      "runtime": "runsc",
+      "running": true
+    },
+    {
+      "container": "sc-a-8ea711ed73a94f7a97df3af8-active",
+      "runtime": "runsc",
+      "running": true
+    },
+    {
+      "container": "sc-a-0c3d2d1f871c489884413d39-active",
+      "runtime": "runsc",
+      "running": true
+    },
+    {
+      "container": "sc-a-ff8207a35ca74d7b9bbe3a33-active",
+      "runtime": "runsc",
+      "running": true
+    },
+    {
+      "container": "sc-a-9ce8504acd8242b98d681bc3-active",
+      "runtime": "runsc",
+      "running": true
+    }
+  ],
+  "worker_restart_confirmed": {
+    "before_kill": {
+      "container_present": true,
+      "container_running": true,
+      "runtime_state": "starting"
+    },
+    "reservations_immediately_after_kill": 5,
+    "after_recovery_cleanup": {
+      "container_present": false,
+      "container_running": false,
+      "runtime_state": "stopped"
+    },
+    "slot_released": true,
+    "retry_succeeded": true,
+    "database_preserved": true
+  },
+  "browser_verification": {
+    "rendered": false,
+    "reason": "No existing Chrome automation available; permission for an isolated browser is pending.",
+    "live_authenticated_html_verified": true
+  },
+  "final": {
+    "retained_runtime_at_cleanup": [
+      {
+        "app": "publishing-probe",
+        "container_state": "\"c9ca4c0e2caf073bb024c9e21a202c0efc61b520fe4873c6bed44c3eefbaad1d\" \"2026-09-09T04:13:56.465319487Z\" true"
+      },
+      {
+        "app": "sharing-acceptance-7",
+        "container_state": "\"4a72375be9a4a8d6214cf0a040bca1a0fd743d91f4df85f94d97bafadd877b00\" \"2026-09-09T04:14:03.337019637Z\" true"
+      }
+    ],
+    "preservation_guard_removed": true,
+    "services": [
+      "active",
+      "active",
+      "active",
+      "active",
+      "active"
+    ],
+    "retained_apps": [
+      {
+        "app": "publishing-probe",
+        "app_id": "a-9ce8504acd8242b98d681bc3",
+        "description": "Disposable HTTP publishing acceptance probe",
+        "url": "https://a-9ce8504acd8242b98d681bc3.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "runtime_error": null,
+        "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+        "latest_operation": {
+          "id": "d-cd728bf566aa4215b126f37b",
+          "kind": "deploy",
+          "app": "publishing-probe",
+          "operation_id": "d-cd728bf566aa4215b126f37b",
+          "deployment_id": "d-cd728bf566aa4215b126f37b",
+          "state": "succeeded",
+          "request_id": "2de4a7d1-6506-4639-96b5-6911a6068da6",
+          "created_at": "2026-09-08T23:58:50.964936Z",
+          "updated_at": "2026-09-09T00:01:16.726066Z",
+          "completed_at": "2026-09-09T00:01:16.726066Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      {
+        "app": "sharing-acceptance-7",
+        "app_id": "a-ff8207a35ca74d7b9bbe3a33",
+        "description": "Disposable sharing acceptance",
+        "url": "https://a-ff8207a35ca74d7b9bbe3a33.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "stopped",
+        "runtime_error": null,
+        "active_deployment_id": "d-3ba4a171d346430cad297322",
+        "latest_operation": {
+          "id": "d-3ba4a171d346430cad297322",
+          "kind": "deploy",
+          "app": "sharing-acceptance-7",
+          "operation_id": "d-3ba4a171d346430cad297322",
+          "deployment_id": "d-3ba4a171d346430cad297322",
+          "state": "succeeded",
+          "request_id": "7a4552c9-728d-49b0-bcb2-f8684e6bcd89",
+          "created_at": "2026-09-09T01:18:09.118965Z",
+          "updated_at": "2026-09-09T01:20:18.364241Z",
+          "completed_at": "2026-09-09T01:20:18.364241Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      }
+    ],
+    "usage": {
+      "creators": {
+        "used": 2,
+        "limit": 5
+      },
+      "deployed_apps": {
+        "used": 2,
+        "limit": 30
+      },
+      "active_apps": {
+        "used": 1,
+        "limit": 5
+      },
+      "build": {
+        "period_start": "2026-09-01T00:00:00Z",
+        "period_end": "2026-10-01T00:00:00Z",
+        "limit_seconds": 60000,
+        "charged_seconds": 777,
+        "reserved_seconds": 0,
+        "available_seconds": 59223
+      }
+    },
+    "temporary_authenticated_urls_return_404": true,
+    "owner_app_http": 200,
+    "other_creator_private_app_http": 404,
+    "provider_inventory": {
+      "servers": [
+        {
+          "id": 165120313,
+          "name": "small-cloud-control",
+          "status": "running",
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud",
+            "role": "control"
+          },
+          "created": "2026-09-08T10:29:10Z"
+        },
+        {
+          "id": 165120370,
+          "name": "small-cloud-runtime",
+          "status": "running",
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud",
+            "role": "runtime"
+          },
+          "created": "2026-09-08T10:29:29Z"
+        }
+      ],
+      "networks": [
+        {
+          "name": "small-cloud-private",
+          "created": "2026-09-08T10:29:09Z",
+          "id": 12629549,
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud"
+          }
+        }
+      ],
+      "volumes": [],
+      "firewalls": [
+        {
+          "id": 11591901,
+          "created": "2026-09-08T10:29:09Z",
+          "name": "small-cloud-control",
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud"
+          }
+        },
+        {
+          "id": 11591902,
+          "created": "2026-09-08T10:29:29Z",
+          "name": "small-cloud-runtime",
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud"
+          }
+        },
+        {
+          "id": 11592043,
+          "created": "2026-09-08T11:04:15Z",
+          "name": "small-cloud-builder",
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud"
+          }
+        }
+      ],
+      "ssh_keys": [
+        {
+          "id": 118508493,
+          "name": "small-cloud-operator",
+          "labels": {
+            "issue": "17",
+            "managed-by": "small-cloud"
+          },
+          "created": "2026-09-08T10:29:09Z"
+        }
+      ],
+      "primary_ips": [
+        {
+          "assignee_id": 165120313,
+          "auto_delete": true,
+          "created": "2026-09-08T10:29:10Z",
+          "id": 148618556,
+          "ip": "2.28.60.91",
+          "labels": {},
+          "name": "primary_ip-148618556"
+        },
+        {
+          "assignee_id": 165120370,
+          "auto_delete": true,
+          "created": "2026-09-08T10:29:29Z",
+          "id": 148618592,
+          "ip": "2.28.67.62",
+          "labels": {},
+          "name": "primary_ip-148618592"
+        }
+      ]
+    },
+    "finished_at": 1788949663.334305
+  },
+  "fixture_source_sha256": "7a394d90f813438ab6e1a2d343059c35486d1e58156c7edfe0ef5d7a8b6566df"
+}
