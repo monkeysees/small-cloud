@@ -70,6 +70,21 @@ class LimitsAcceptance(unittest.TestCase):
         self.assertEqual(status, 200, raw)
         return json.loads(raw)['data']
 
+    def competing_deploys(self, contenders):
+        identities = [json.loads(self.http('/api/auth/status', token=token)[1])['data']['user']['id']
+                      for _, token in contenders]
+        self.assertEqual(len(set(identities)), len(contenders))
+        with ThreadPoolExecutor(2) as pool:
+            results = list(pool.map(lambda item: self.deploy(name=item[0], token=item[1]), contenders))
+        self.assertEqual(sorted(status for status, _ in results), [202, 409])
+        for index, (status, body) in enumerate(results):
+            if status == 409 and body['error']['code'] == 'BUILD_BUSY':
+                # The single-upload gate can refuse before quota admission. Once both
+                # uploads finish, the losing creator must still hit the quota boundary.
+                name, token = contenders[index]
+                results[index] = self.deploy(name=name, token=token)
+        return results
+
     def test_usage_reports_capacity_and_reserves_once_through_cli_and_http(self):
         self.creator()
         self.login()
@@ -171,13 +186,14 @@ class LimitsAcceptance(unittest.TestCase):
         worker = self.worker(infrastructure)
         # Exercise the full ledger through admission and execution, without SQL seeding.
         for _ in range(99):
-            self.assertEqual(self.deploy()[0], 202)
+            status, accepted = self.deploy()
+            self.assertEqual(status, 202, accepted)
             worker.once()
+            _, raw = self.http('/api/operations/' + accepted['data']['operation_id'], token=self.token)
+            self.assertEqual(json.loads(raw)['data']['state'], 'succeeded', raw)
         self.assertEqual(self.usage()['build']['charged_seconds'], 59400)
         other_token = self.admit_creator('other@example.test')
-        with ThreadPoolExecutor(2) as pool:
-            results = list(pool.map(lambda item: self.deploy(name=item[0], token=item[1]),
-                                   [('first', self.token), ('second', other_token)]))
+        results = self.competing_deploys([('first', self.token), ('second', other_token)])
         self.assertEqual(sorted(status for status, _ in results), [202, 409])
         refused = next(body for status, body in results if status == 409)
         self.assertEqual(refused['error']['code'], 'ALLOWANCE_RESERVED')
@@ -223,9 +239,7 @@ class LimitsAcceptance(unittest.TestCase):
             self.assertEqual(self.deploy(name=f'app-{index}')[0], 202)
             worker.once()
         other_token = self.admit_creator('other@example.test')
-        with ThreadPoolExecutor(2) as pool:
-            results = list(pool.map(lambda item: self.deploy(name=item[0], token=item[1]),
-                                   [('last-one', self.token), ('last-two', other_token)]))
+        results = self.competing_deploys([('last-one', self.token), ('last-two', other_token)])
         self.assertEqual(sorted(status for status, _ in results), [202, 409])
         refused = next(body for status, body in results if status == 409)
         self.assertEqual(refused['error']['code'], 'DEPLOYED_CAPACITY')
