@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.0 — 2026-09-09
+
 - Add #32 headless `auth login start/finish` with protected pending state, resumable browser approval, actionable setup status, and readable authentication outcomes.
 
 ## 0.1.0 — 2026-09-09

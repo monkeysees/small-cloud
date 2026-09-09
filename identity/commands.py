@@ -17,7 +17,7 @@ GLOBALS = [argument('--json', 'Emit one schema_version: 1 JSON envelope; never p
     argument('--no-input', 'Prohibit terminal prompts.', action='store_true'),
     argument('--no-color', 'Use output without color (also the default).', action='store_true'),
     argument('--request-id', 'Mutation retry UUID; operation status accepts this instead of an ID.'),
-    argument('--version', 'Print installed CLI version.', action='version', version='small-cloud 0.1.0')]
+    argument('--version', 'Print installed CLI version.', action='version', version='small-cloud 0.2.0')]
 
 
 def command(path, description, example, permission, outputs, effects='Read only.', inputs=(), guide='getting-started', **dispatch) -> dict[str, Any]:

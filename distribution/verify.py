@@ -131,7 +131,12 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         assert refused.returncode != 0 and 'Checksum mismatch' in refused.stderr
         assert executable.read_bytes() == binary.read_bytes()
     os.environ['SMALL_CLOUD_TEST_BINARY'] = str(fixture)
-    suite = unittest.TestSuite([FrozenIdentity('test_packaged_credential_roundtrip')])
+    suite = unittest.TestSuite(FrozenIdentity(name) for name in (
+        'test_packaged_credential_roundtrip',
+        'test_split_login_saves_credential_only_after_browser_approval',
+        'test_pending_split_login_can_resume_after_bounded_wait',
+        'test_split_login_protects_pending_material_and_origin',
+        'test_split_login_server_expiry_removes_pending_state'))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful():
         raise SystemExit(1)
@@ -140,7 +145,8 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
                       'installed_checks': len(checks) + 1, 'installer_integrity': 'passed',
                       'public_https_without_system_ca_paths': 'passed',
                       'credential_storage': 'native' if os.environ.get('SMALL_CLOUD_TEST_NATIVE_KEYRING') == '1' else 'file',
-                      'frozen_https_login_status_logout': 'passed'}))
+                      'frozen_https_login_status_logout': 'passed',
+                      'frozen_https_split_login_pending_expiry_protection': 'passed'}))
 
 
 if __name__ == '__main__':
