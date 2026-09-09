@@ -4,11 +4,12 @@ import json
 import re
 import time
 import uuid
+from contextlib import contextmanager
 from urllib.parse import urlsplit
 
 from .common import Failure, digest, timestamp
 from .upload import validate_archive
-from . import allowance, diagnostics
+from . import allowance, diagnostics, lifecycle
 
 
 class Publishing:
@@ -38,6 +39,7 @@ class Publishing:
             diagnostics.initialize(db)
             db.execute('BEGIN IMMEDIATE')
             allowance.initialize(db)
+            lifecycle.initialize(db, self.clock())
 
     def deploy(self, token, metadata, archive, request_id):
         name = metadata.get('name')
@@ -65,6 +67,8 @@ class Publishing:
                 if cached['fingerprint'] != fingerprint:
                     raise Failure('REQUEST_CONFLICT', 'Request ID was used with different inputs.', 409)
                 return json.loads(cached['result'])
+            if app and app['runtime_state'] in ('queued', 'starting', 'stopping', 'cleaning', 'blocked'):
+                raise Failure('OPERATION_CONFLICT', 'App runtime has an operation in progress.', 409)
             if app and db.execute("SELECT 1 FROM deployments WHERE app_id=? AND state NOT IN ('succeeded','failed')",
                                   (app['id'],)).fetchone():
                 raise Failure('OPERATION_CONFLICT', 'App already has an operation in progress.', 409)
@@ -103,9 +107,8 @@ class Publishing:
             workspace = user['workspace_id']
             creators = db.execute('SELECT COUNT(*) FROM memberships WHERE workspace_id=? AND creator=1 AND member=1',
                                   (workspace,)).fetchone()[0]
-            apps = db.execute('SELECT COUNT(*), COUNT(*) FILTER (WHERE target_port IS NOT NULL OR id IN '
-                              "(SELECT app_id FROM deployments WHERE state IN ('starting','cleaning'))) "
-                              'FROM apps WHERE workspace_id=?', (workspace,)).fetchone()
+            apps = db.execute('SELECT COUNT(*), COUNT(*) FILTER (WHERE ' + lifecycle.RESERVED + ') '
+                              'FROM apps a WHERE workspace_id=?', (workspace,)).fetchone()
             return {'creators': {'used': creators, 'limit': 5}, 'deployed_apps': {'used': apps[0], 'limit': 30},
                     'active_apps': {'used': apps[1], 'limit': 5},
                     'build': allowance.usage(db, workspace, self.clock())}
@@ -165,7 +168,10 @@ class Publishing:
                                 (app['id'],)).fetchone()
             return {'app': app['name'], 'app_id': app['id'], 'description': app['description'],
                     'url': self.url(app), 'sharing_scope': app['sharing_scope'],
-                    'availability': 'disabled' if app['disabled'] else 'running' if app['target_port'] else 'unavailable',
+                    'availability': 'disabled' if app['disabled'] else 'running' if app['target_port'] else
+                                    'starting' if app['runtime_state'] in ('queued', 'starting', 'stopping') else
+                                    'stopped' if app['runtime_state'] == 'stopped' else 'unavailable',
+                    'runtime_error': json.loads(app['runtime_error']) if app['runtime_error'] else None,
                     'active_deployment_id': app['active_deployment_id'],
                     'latest_operation': self.operation_result(latest, app['name']) if latest else None,
                     'cleanup': None}
@@ -210,16 +216,52 @@ class Publishing:
                               'creator': {'id': app['owner'], 'name': app['creator_name']},
                               'url': self.url(app)} for app in self.accessible_apps(db, user['id'])]}
 
-    def gateway_target(self, app_id, user_id):
+    def check_access(self, app_id, user_id):
         with self.store.connect() as db:
+            if not self.accessible_apps(db, user_id, app_id).fetchone():
+                raise Failure('NOT_FOUND', 'App not found.', 404)
+
+    @contextmanager
+    def gateway_request(self, app_id, user_id, retry=False):
+        self.check_access(app_id, user_id)
+        with lifecycle.app_lock(self.store, app_id) as acquired:
+            if not acquired:
+                raise Failure('STARTING', 'App is starting or stopping. Retry shortly.', 503)
+            target = self.gateway_target(app_id, user_id, retry)
+            try:
+                yield target
+            finally:
+                if target.get('forwarded'):
+                    with self.store.connect() as db:
+                        db.execute('UPDATE apps SET last_http=? WHERE id=?', (self.clock(), app_id))
+
+    def gateway_target(self, app_id, user_id, retry=False):
+        failure = None
+        with self.store.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
             app = self.accessible_apps(db, user_id, app_id).fetchone()
             if not app:
                 raise Failure('NOT_FOUND', 'App not found.', 404)
-            if not app['target_host'] or not app['target_port']:
+            if app['target_host'] and app['target_port']:
+                return {'host': app['target_host'], 'port': app['target_port']}
+            if app['runtime_state'] == 'blocked':
+                raise Failure('STARTUP_FAILED', 'Runtime cleanup requires operator inspection.', 503, reconciliation_required=True)
+            if app['runtime_state'] == 'failed' and not retry:
+                raise Failure('STARTUP_FAILED', 'App startup failed. Retry to start again.', 503)
+            if app['runtime_state'] in ('stopped', 'failed'):
                 pending = db.execute("SELECT 1 FROM deployments WHERE app_id=? AND state NOT IN ('succeeded','failed')",
                                      (app_id,)).fetchone()
-                raise Failure('STARTING' if pending else 'STARTUP_FAILED', 'App is not ready.', 503)
-            return {'host': app['target_host'], 'port': app['target_port']}
+                if not pending:
+                    lifecycle.reserve(db, app)
+                    db.execute("UPDATE apps SET runtime_state='queued',runtime_error=NULL WHERE id=?", (app_id,))
+                failure = Failure('STARTING', 'Starting app. This can take up to two minutes after runtime launch.', 503)
+            else:
+                pending = db.execute("SELECT 1 FROM deployments WHERE app_id=? AND state NOT IN ('succeeded','failed')",
+                                     (app_id,)).fetchone()
+                failure = Failure('STARTING' if pending or app['runtime_state'] in ('queued', 'starting', 'stopping', 'cleaning')
+                                  else 'STARTUP_FAILED', 'App is not ready.', 503)
+        # Commit a cold-start reservation before reporting progress to the caller.
+        raise failure
 
     def certificate_allowed(self, hostname):
         suffix = '.' + self.domain

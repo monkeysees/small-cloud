@@ -21,7 +21,7 @@ import urllib.request
 
 from .common import Failure
 from .upload import validate_archive
-from . import allowance, diagnostics
+from . import allowance, diagnostics, lifecycle
 
 
 class State:
@@ -247,6 +247,31 @@ class Infrastructure:
             time.sleep(2)
         raise Failure('STARTUP_FAILED', 'App did not answer HTTP readiness with HTTP 200 within 120 seconds.', 500)
 
+    def wake(self, app, register):
+        if (not re.fullmatch(r'a-[0-9a-f]{24}', app['id'])
+                or not re.fullmatch(r'd-[0-9a-f]{24}', app['active_deployment_id'])):
+            raise Failure('STARTUP_FAILED', 'Invalid retained release requires operator inspection.', 503)
+        environment = '/run/small-cloud-wake-' + app['id']
+        filename = 'tool_' + hashlib.sha256(app['id'].encode()).hexdigest()[:24] + '.json.age'
+        credentials = json.loads(command(['age', '--decrypt', '-i', '/srv/small-cloud/secrets/identity.age',
+                                         '/srv/small-cloud/secrets/' + filename]))
+        register([credentials['database_url'], credentials['password']])
+        try:
+            self.ssh('python3', '-c',
+                'import os,sys; fd=os.open(sys.argv[1],os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600); '
+                'os.write(fd,sys.stdin.buffer.read(65536)); os.close(fd)', environment,
+                data=('DATABASE_URL=' + credentials['database_url'] + '\n').encode())
+            started = json.loads(self.sandbox('resume', app['id'], app['active_deployment_id'], '--env-file', environment))
+            return {'host': self.runtime, 'port': started['private_port'], 'container': started['container']}
+        finally:
+            self.ssh('rm', '-f', '--', environment)
+
+    def stop(self, app):
+        if not re.fullmatch(r'a-[0-9a-f]{24}', app['id']):
+            raise Failure('INTERNAL', 'Invalid app identity requires operator inspection.', 500)
+        self.sandbox('stop', app['id'])
+        self.ssh('rm', '-f', '--', '/run/small-cloud-wake-' + app['id'])
+
     def promote(self, operation, app, target):
         if app['container']:
             self.sandbox('promote', operation['app_id'])
@@ -270,8 +295,9 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class Worker:
-    def __init__(self, state, infrastructure, key=None):
+    def __init__(self, state, infrastructure, key=None, clock=time.time):
         self.state, self.infrastructure = state, infrastructure
+        self.clock = clock
         self.registry = diagnostics.Registry(state, key or state.path.parent / 'redaction.key')
 
     def recover(self):
@@ -310,6 +336,11 @@ class Worker:
                 raise
             self.settle_build(operation)
             with self.state.connect() as db:
+                db.execute('BEGIN IMMEDIATE')
+                try:
+                    lifecycle.reserve(db, app)
+                except Failure as error:
+                    raise Failure(error.code, error.message, 409, **error.details) from None
                 db.execute("UPDATE deployments SET state='starting',source=NULL WHERE id=?", (operation['id'],))
             starting = True
             target = self.infrastructure.start(operation, artifact, app,
@@ -328,6 +359,8 @@ class Worker:
                     raise Failure('APP_DISABLED', 'App authority changed before deployment completed.', 403)
                 db.execute('UPDATE apps SET active_deployment_id=?,target_host=?,target_port=?,container=? WHERE id=?',
                            (operation['id'], target['host'], target['port'], target['container'], app['id']))
+                db.execute("UPDATE apps SET runtime_state='running',runtime_error=NULL,last_http=? WHERE id=?",
+                           (self.clock(), app['id']))
                 db.execute("UPDATE deployments SET state='cleaning',cleanup_pending=1 WHERE id=?", (operation['id'],))
             switched = True
             container = self.infrastructure.promote(operation, app, target)
@@ -403,17 +436,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, required=True)
     parser.add_argument('--once', action='store_true')
+    parser.add_argument('--lifecycle', action='store_true', help='run idle stop/start independently of builds')
     args = parser.parse_args()
     os.umask(0o077)
     info = args.config.lstat()
     if os.geteuid() != 0 or not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or stat.S_IMODE(info.st_mode) != 0o600:
         parser.error('Worker requires root and a root-owned mode-0600 configuration')
     config = json.loads(args.config.read_text())
-    worker = Worker(State(config['database']), Infrastructure(config),
-                    config.get('redaction_key', '/srv/small-cloud/secrets/diagnostics.key'))
-    with open('/run/small-cloud-publishing.lock', 'w') as lock:
+    publisher = Worker(State(config['database']), Infrastructure(config),
+                       config.get('redaction_key', '/srv/small-cloud/secrets/diagnostics.key'))
+    worker = lifecycle.LifecycleWorker(publisher.state, publisher.infrastructure, registry=publisher.registry) if args.lifecycle else publisher
+    with open('/run/small-cloud-' + ('lifecycle' if args.lifecycle else 'publishing') + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        seed_redaction(worker.registry, config)
+        seed_redaction(publisher.registry, config)
         worker.recover()
         while True:
             worked = worker.once()

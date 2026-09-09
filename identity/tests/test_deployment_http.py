@@ -187,6 +187,7 @@ class DeploymentAcceptance(unittest.TestCase):
         import subprocess
         from unittest.mock import patch
         from identity.worker import Infrastructure, State, Worker
+        from identity.lifecycle import LifecycleWorker
 
         self.creator()
         archive = self.home / 'exported-image.tar'
@@ -223,7 +224,7 @@ class DeploymentAcceptance(unittest.TestCase):
                         return subprocess.CompletedProcess(arguments, 1, b'')
                     output = json.dumps([{'Id': imported_id, 'Architecture': 'amd64', 'Os': 'linux'}]).encode()
                 elif args[:2] == ['python3', '/opt/small-cloud/runtime/sandbox.py']:
-                    if args[4] == 'start':
+                    if args[4] in ('start', 'resume'):
                         output = json.dumps({'container': 'fixture-container', 'private_port': 18080}).encode()
                 elif args[:3] == ['docker', 'ps', '-aq']:
                     output = b''
@@ -242,4 +243,20 @@ class DeploymentAcceptance(unittest.TestCase):
             worker.once()
         _, raw = self.http('/api/operations/' + accepted['data']['operation_id'], token=self.token)
         self.assertEqual(json.loads(raw)['data']['state'], 'succeeded', raw)
+        self.assertNotIn('confidential', raw)
+        _, raw = self.http('/api/apps/example', token=self.token)
+        app = json.loads(raw)['data']
+        now = [__import__('time').time() + 1800]
+        self.platform_server.application.publishing.clock = lambda: now[0]
+        lifecycle = LifecycleWorker(worker.state, worker.infrastructure, clock=lambda: now[0], registry=worker.registry)
+        with patch('identity.worker.subprocess.run', side_effect=external_process):
+            lifecycle.once()
+            _, raw = self.http('/api/apps/example', token=self.token)
+            self.assertEqual(json.loads(raw)['data']['availability'], 'stopped')
+            status, raw = self.http('/', token=self.token, headers={'Host': __import__('urllib.parse', fromlist=['urlsplit']).urlsplit(app['url']).netloc})
+            self.assertEqual(status, 503, raw)
+            lifecycle.once()
+        _, raw = self.http('/api/apps/example', token=self.token)
+        self.assertEqual(json.loads(raw)['data']['availability'], 'running', raw)
+        self.assertEqual(json.loads(raw)['data']['active_deployment_id'], app['active_deployment_id'])
         self.assertNotIn('confidential', raw)

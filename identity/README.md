@@ -8,6 +8,8 @@ For preserved releases during failed updates and schema compatibility responsibi
 
 For `small-cloud usage`, deployment capacity and the shared monthly build allowance, see [publishing limits](LIMITS.md).
 
+For HTTP idle stopping, on-demand loading, active capacity and retry behavior, see [app lifecycle](LIFECYCLE.md).
+
 For authorized status, build/runtime log snapshots, redaction and retention, see [diagnostics](DIAGNOSTICS.md).
 
 For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](../docs/acceptance/app-database-2026-09-09.md) and the [starter guide](fixture/README.md).

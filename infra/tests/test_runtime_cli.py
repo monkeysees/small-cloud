@@ -61,7 +61,7 @@ class RuntimeCLI(unittest.TestCase):
                 self.assertEqual(result.stdout, '')
                 self.settings = before
 
-    def invoke_start(self, tool='tool-a', image=IMAGE, entries=(), extra=(), network=None):
+    def invoke_start(self, tool='tool-a', image=IMAGE, entries=(), extra=(), network=None, resume=False):
         calls = []
         def process(argv, **kwargs):
             argv = list(argv)
@@ -85,9 +85,23 @@ class RuntimeCLI(unittest.TestCase):
             if path == '/run/small-cloud-runtime.lock':
                 path = self.root / 'lock'
             return original_open(path, *args, **kwargs)
+        arguments = ['resume', tool, 'd-' + 'a' * 24] if resume else ['start', tool, image]
         with ExitStack() as stack:
             stack.enter_context(patch.object(sys, 'argv', ['sandbox', '--config', str(self.config),
-                'start', tool, image, *extra]))
+                *arguments, *extra]))
+            if resume:
+                environment = self.root / 'environment'
+                environment.write_text('DATABASE_URL=fixture\n')
+                environment.chmod(0o600)
+                original_lstat = Path.lstat
+                def lstat(path, *args, **kwargs):
+                    info = original_lstat(path, *args, **kwargs)
+                    if path == environment:
+                        values = list(info)
+                        values[4] = 0
+                        return __import__('os').stat_result(values)
+                    return info
+                stack.enter_context(patch.object(Path, 'lstat', lstat))
             stack.enter_context(patch.object(runtime.os, 'geteuid', return_value=0))
             stack.enter_context(patch.object(runtime, 'IMAGE_STATE', self.root / 'runtime' / 'images'))
             stack.enter_context(patch.object(runtime, 'RESOLVER_FILE', self.root / 'resolv.conf'))
@@ -96,6 +110,23 @@ class RuntimeCLI(unittest.TestCase):
             stack.enter_context(patch.object(runtime.subprocess, 'run', side_effect=process))
             runtime.main()
         return calls
+
+    def test_resume_uses_retained_image_and_the_same_capacity_boundary(self):
+        state = self.root / 'runtime'
+        state.mkdir(mode=0o700)
+        releases = state / 'releases.json'
+        releases.write_text(json.dumps({'tool-a/d-' + 'a' * 24: IMAGE}))
+        releases.chmod(0o600)
+        network = {'Driver': 'bridge', 'EnableIPv6': False, 'Containers': {},
+                   'Options': {'com.docker.network.bridge.name': 'sc-0'},
+                   'IPAM': {'Config': [{'Subnet': '172.30.0.0/24', 'Gateway': '172.30.0.1', 'IPRange': ''}]}}
+        calls = self.invoke_start(network=network, resume=True, extra=['--env-file', str(self.root / 'environment')])
+        self.assertIn(['docker', 'start', 'sc-tool-a-active'], calls)
+        self.assertIn(['docker', 'image', 'inspect', IMAGE], calls)
+        entries = [{'Name': f'/sc-tool-{i}-active', 'Config': {'Labels': {'small-cloud.tool': f'tool-{i}',
+                    'small-cloud.role': 'active', 'small-cloud.slot': str(i)}}} for i in range(5)]
+        with self.assertRaises(runtime.ActiveCapacity):
+            self.invoke_start(entries=entries, resume=True, extra=['--env-file', str(self.root / 'environment')])
 
     def test_docker29_empty_iprange_network_allows_launch(self):
         network = {'Driver': 'bridge', 'EnableIPv6': False, 'Containers': {},
@@ -223,6 +254,40 @@ if __name__ == '__main__':
 
 class PromotionCLI(unittest.TestCase):
     setUp = RuntimeCLI.setUp
+
+    def test_idle_stop_removes_only_own_allocation_and_keeps_retained_release(self):
+        entry = {'Name': '/sc-app-a-active', 'Config': {'Labels': {'small-cloud.tool': 'app-a'}}}
+        present = [entry]
+        calls = []
+
+        def process(argv, **kwargs):
+            args = list(argv)
+            calls.append(args)
+            output = ''
+            if args[:3] == ['docker', 'ps', '-aq']:
+                output = 'app-a' if present else ''
+            elif args[:2] == ['docker', 'inspect']:
+                output = json.dumps(present)
+            elif args[:3] == ['docker', 'rm', '-f']:
+                self.assertEqual(args[3:], ['sc-app-a-active'])
+                present.clear()
+            else:
+                self.fail('Idle stop attempted unrelated resource mutation: ' + repr(args))
+            return subprocess.CompletedProcess(argv, 0, output)
+
+        original_open = builtins.open
+        def open_boundary(path, *args, **kwargs):
+            return original_open(self.root / 'lock' if path == '/run/small-cloud-runtime.lock' else path, *args, **kwargs)
+
+        with patch.object(sys, 'argv', ['sandbox', '--config', str(self.config), 'stop', 'app-a']), \
+                patch.object(runtime.os, 'geteuid', return_value=0), \
+                patch.object(builtins, 'open', side_effect=open_boundary), \
+                patch.object(runtime.subprocess, 'run', side_effect=process):
+            runtime.main()
+            runtime.main()
+        self.assertEqual(present, [])
+        self.assertEqual(calls.count(['docker', 'rm', '-f', 'sc-app-a-active']), 1)
+
     def test_ready_candidate_is_promoted_without_recreating_its_process(self):
         entries = [
             {'Name': '/sc-app-a-active', 'State': {'Running': True},

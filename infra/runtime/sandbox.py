@@ -293,6 +293,17 @@ def promote(tool):
     print(json.dumps({'container': 'sc-' + tool + '-active'}))
 
 
+def stop(tool):
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,31}', tool):
+        raise ValueError('invalid app identifier')
+    own = [entry for entry in containers() if entry['Config']['Labels']['small-cloud.tool'] == tool]
+    if any(allocation_role(entry) != 'active' for entry in own):
+        raise ValueError('cannot idle-stop an app with a replacement candidate')
+    if own:
+        run('docker', 'rm', '-f', 'sc-' + tool + '-active')
+    print(json.dumps({'stopped': True}))
+
+
 def launch(config, tool, image, candidate=False, env_file=None, deployment=None):
     logging = ['--log-driver', 'none']
     if deployment is not None:
@@ -396,6 +407,12 @@ def main():
     forget.add_argument('release')
     promotion = commands.add_parser('promote', help='promote a candidate after the trusted controller verified readiness')
     promotion.add_argument('tool', metavar='app')
+    stopping = commands.add_parser('stop', help='remove an idle allocation while retaining its release and database')
+    stopping.add_argument('tool', metavar='app')
+    resume = commands.add_parser('resume', help='start the immutable retained release within normal runtime capacity')
+    resume.add_argument('tool', metavar='app')
+    resume.add_argument('release')
+    resume.add_argument('--env-file', type=Path, required=True)
     start = commands.add_parser('start')
     start.add_argument('tool', metavar='app')
     start.add_argument('image')
@@ -420,6 +437,13 @@ def main():
             retain_release(args.tool, args.release, args.image)
         elif args.command == 'promote':
             promote(args.tool)
+        elif args.command == 'stop':
+            stop(args.tool)
+        elif args.command == 'resume':
+            image = release_records().get(args.tool + '/' + args.release)
+            if image is None:
+                raise ValueError('retained release is unavailable; operator reconciliation required')
+            launch(config, args.tool, image, env_file=args.env_file, deployment=args.release)
         elif args.command == 'forget-release':
             retain_release(args.tool, args.release)
         else:

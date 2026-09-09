@@ -80,8 +80,9 @@ class SharingAcceptance(unittest.TestCase):
                 for path, body, headers in (('/', None, {}), ('/assets/app.js', None, {}),
                         ('/data', {'value': 'changed'}, {}), ('/', None, {'Upgrade': 'websocket'})):
                     status, raw = self.http(path, body, token=token, headers={'Host': host, **headers})
-                    # An authorized request reaches readiness; an unauthorized one never does.
-                    self.assertEqual(status, 503 if scope == 'workspace-wide' else 404, raw)
+                    # Authorization precedes both protocol rejection and startup admission.
+                    expected = (400 if headers else 503) if scope == 'workspace-wide' else 404
+                    self.assertEqual(status, expected, raw)
             self.assertEqual(self.directory(owner_token), [entry])
         self.assertEqual(self.http('/api/directory')[0], 401)
         for path, body in (('/', None), ('/assets/app.js', None), ('/data', {'value': 'no'})):

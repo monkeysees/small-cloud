@@ -1,0 +1,27 @@
+[Unit]
+Description=Small Cloud HTTP idle stop and on-demand start worker
+After=network-online.target small-cloud-identity.service
+Wants=network-online.target
+Requires=small-cloud-identity.service
+
+[Service]
+Type=simple
+User=root
+UMask=0077
+ExecStart=/opt/small-cloud-identity/bin/python -m identity.worker --config /etc/small-cloud/publishing.json --lifecycle
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+KillMode=control-group
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/srv/small-cloud /run
+MemoryMax=256M
+TasksMax=64
+LimitCORE=0
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target

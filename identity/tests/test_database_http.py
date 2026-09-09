@@ -129,6 +129,13 @@ class DatabaseAcceptance(unittest.TestCase):
             def promote(self, operation, app, target):
                 return target['container']
 
+            def stop(self, app):
+                process, _ = acceptance.runtimes[app['id']]
+                acceptance.stop(process)
+
+            def wake(self, app, register):
+                return self.start({'id': app['active_deployment_id'], 'app_id': app['id']}, {}, app, register)
+
             def cleanup(self, operation, app, succeeded=False):
                 if build_source:
                     name = app['container'] if succeeded else operation['id']
@@ -361,6 +368,36 @@ class DatabaseAcceptance(unittest.TestCase):
         status, raw = self.app_request(updated, '/data')
         self.assertEqual(status, 200, raw)
         self.assertEqual(json.loads(raw)['entries'], [entry])
+
+    def test_http_idle_threshold_and_on_demand_start_preserve_database(self):
+        from identity.lifecycle import LifecycleWorker
+
+        self.prepare()
+        now = [time.time()]
+        self.worker.clock = lambda: now[0]
+        self.platform_server.application.publishing.clock = lambda: now[0]
+        lifecycle = LifecycleWorker(self.worker.state, self.worker.infrastructure, clock=lambda: now[0])
+        app = self.publish('idle')
+        status, raw = self.app_request(app, '/data', {'value': 'Survives idle stop'})
+        self.assertEqual(status, 201, raw)
+        entry = json.loads(raw)
+        now[0] += 1799
+        lifecycle.once()
+        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['availability'], 'running')
+        now[0] += 1
+        lifecycle.once()
+        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['availability'], 'stopped')
+        self.assertEqual(self.app_request(app, '/data', token=False)[0], 401)
+        status, page = self.app_request(app, '/data', headers={'Accept': 'text/html'})
+        self.assertEqual(status, 503, page)
+        self.assertIn('Starting', page)
+        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['availability'], 'starting')
+        lifecycle.once()
+        status, raw = self.app_request(app, '/data')
+        self.assertEqual(status, 200, raw)
+        self.assertEqual(json.loads(raw)['entries'], [entry])
+        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['active_deployment_id'],
+                         app['active_deployment_id'])
 
     def test_legacy_control_migration_preserves_database_cli_and_redeployment(self):
         self.prepare()

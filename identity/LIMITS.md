@@ -6,6 +6,8 @@ The initial workspace shares five creator grants, 30 deployed app slots, five ac
 
 Deployment capacity counts retained apps, including pending first publications and failed publications that have reserved a name. Updating an existing app does not consume another deployed slot. Disabling an app does not free its deployed slot. Active capacity concerns running or starting containers; a deployed app need not be active. An exhausted active slot pool refuses startup without evicting another app. Runtime limits are 0.5 CPU, 512 MiB memory and 128 tasks per app, with temporary files charged to the memory budget.
 
+The [idle lifecycle worker](LIFECYCLE.md) frees slots after 30 HTTP-idle minutes and starts retained releases on demand. Active usage includes queued starts and unconfirmed runtime cleanup. Wake-ups use no build allowance, and publication startup reserves against the same five-slot boundary.
+
 Each accepted build reserves 600 seconds atomically with its creator lock and any new app slot. There is no wait queue for capacity: a competing build from that creator receives `BUILD_BUSY`, and a second operation on the same app receives `OPERATION_CONFLICT`. Retrying the original request ID with identical input observes its original admission without reserving or charging twice.
 
 Admission requires at least 600 available seconds. `ALLOWANCE_RESERVED` means unfinished reservations could return enough time; inspect operations and retry after they settle. `ALLOWANCE_EXHAUSTED` means fewer than 600 seconds would remain even if outstanding builds returned all unused time; wait for the next UTC month. This conservative rule can leave fewer than ten minutes unusable. Neither refusal stops serving apps.

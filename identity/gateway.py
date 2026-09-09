@@ -1,13 +1,14 @@
 """Authenticated app ingress and host-bound browser sign-in."""
 import base64
 import http.client
+import html
 from http.cookies import SimpleCookie
 import secrets
 import posixpath
 import time
 import urllib.parse
 
-from .common import Failure, digest
+from .common import Failure, digest, envelope
 
 COOKIE = '__Host-small-cloud-app'
 FLOW_COOKIE = '__Host-small-cloud-app-flow'
@@ -56,7 +57,7 @@ class Gateway:
         session = self.store.bind_google(claims)
         with self.store.connect() as db:
             user = self.store.browser_user(db, session)
-            self.publishing.gateway_target(flow['app'], user['id'])
+            self.publishing.check_access(flow['app'], user['id'])
             token, handoff = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
             db.execute('INSERT INTO app_sessions VALUES(?,?,?,?)', (digest(token), flow['app'], user['id'], time.time() + 43200))
             db.execute('DELETE FROM browser_sessions WHERE verifier=?', (digest(session),))
@@ -113,27 +114,59 @@ class Gateway:
                 'Location': self.google.authorization_url(self.origin + '/auth/callback', state, nonce, pkce),
                 'Set-Cookie': handler.set_cookie(FLOW_COOKIE, browser, 600)})
             return
-        target = self.publishing.gateway_target(app_id, user['id'])
+        self.publishing.check_access(app_id, user['id'])
         if handler.command not in ('GET', 'HEAD', 'OPTIONS'):
             origins = handler.headers.get_all('Origin', [])
             expected_origin = 'https://' + app_id + '.' + self.domain
             if origins != [expected_origin]:
                 if origins or not handler.headers.get('Authorization'):
                     raise Failure('FORBIDDEN', 'App mutations require the app origin.', 403)
-        if path.startswith('/_small-cloud/'):
+        retry = path == '/_small-cloud/retry' and handler.command == 'GET'
+        destination = urllib.parse.parse_qs(parsed.query).get('return', ['/'])[0] if retry else handler.path
+        if not destination.startswith('/') or destination.startswith('//') or '\\' in destination or any(ord(c) < 32 for c in destination):
+            destination = '/'
+        if path.startswith('/_small-cloud/') and not retry:
             raise Failure('NOT_FOUND', 'Route not found.', 404)
         if handler.headers.get('Upgrade'):
             # No unauthenticated upgrade path; unsupported upgrades fail closed.
             raise Failure('INVALID_ARGUMENT', 'Protocol upgrades are not supported.', 400)
-        self.proxy(handler, user, target)
+        length = self.request_length(handler)
+        try:
+            with self.publishing.gateway_request(app_id, user['id'], retry=retry) as target:
+                if retry:
+                    handler.respond(303, '', 'text/html', {'Location': destination})
+                else:
+                    self.proxy(handler, user, target, length)
+        except Failure as error:
+            if error.code not in ('STARTING', 'ACTIVE_CAPACITY', 'STARTUP_FAILED'):
+                raise
+            headers = {'Retry-After': '2'} if error.code == 'STARTING' else {}
+            if 'text/html' in handler.headers.get('Accept', ''):
+                title = {'STARTING': 'Starting your app', 'ACTIVE_CAPACITY': 'Workspace at capacity',
+                         'STARTUP_FAILED': 'App could not start'}[error.code]
+                refresh = ('<meta http-equiv="refresh" content="2;url=' + html.escape(destination, quote=True) + '">'
+                           if error.code == 'STARTING' and handler.command == 'GET' else '')
+                page = ('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
+                        '<title>' + title + '</title>' + refresh + '<main><h1>' + title + '</h1><p role="status">'
+                        + html.escape(error.message) + '</p><p>Database data is retained. Temporary files and memory may be lost.</p>'
+                        '<p>If you submitted a change, retry it yourself after the app is ready.</p>'
+                        '<form method="get" action="/_small-cloud/retry"><input type="hidden" name="return" value="'
+                        + html.escape(destination, quote=True) + '"><button type="submit">Retry</button></form></main></html>')
+                handler.respond(503, page, 'text/html', headers)
+            else:
+                handler.respond(503, envelope(failure=error), headers=headers)
 
-    def proxy(self, handler, user, target):
+    @staticmethod
+    def request_length(handler):
         lengths = handler.headers.get_all('Content-Length', [])
         if handler.headers.get('Transfer-Encoding') or len(lengths) > 1:
             raise Failure('INVALID_ARGUMENT', 'Ambiguous request framing.')
         length = int(lengths[0]) if lengths else 0
         if length < 0 or length > 16 * 1024 * 1024:
             raise Failure('INVALID_ARGUMENT', 'App request body exceeds 16 MiB.')
+        return length
+
+    def proxy(self, handler, user, target, length):
         body = handler.rfile.read(length)
         if len(body) != length:
             raise Failure('INVALID_ARGUMENT', 'Incomplete app request body.')
@@ -157,6 +190,7 @@ class Gateway:
                 value = user[key] if key == 'id' else base64.urlsafe_b64encode(user[key].encode()).rstrip(b'=').decode()
                 connection.putheader('X-Small-Cloud-User-' + key.title(), value)
             connection.endheaders(body)
+            target['forwarded'] = True
             response = connection.getresponse()
             payload = response.read(16 * 1024 * 1024 + 1)
             if len(payload) > 16 * 1024 * 1024:

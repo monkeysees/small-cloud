@@ -1,5 +1,6 @@
 """Gateway acceptance at authenticated HTTP, with an echo runtime."""
 import base64
+from contextlib import contextmanager
 import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -63,10 +64,14 @@ class GatewayAcceptance(unittest.TestCase):
         fixture = self
 
         class Publishing:
-            def gateway_target(self, app_id, user_id):
+            def check_access(self, app_id, user_id):
                 if app_id != 'a-example' or user_id != owner or not fixture.allowed:
                     raise Failure('NOT_FOUND', 'App not found.', 404)
-                return {'host': '127.0.0.1', 'port': runtime.server_port}
+
+            @contextmanager
+            def gateway_request(self, app_id, user_id, retry=False):
+                self.check_access(app_id, user_id)
+                yield {'host': '127.0.0.1', 'port': runtime.server_port}
 
         class Provider:
             def authorization_url(self, redirect, state, nonce, pkce):
