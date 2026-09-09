@@ -4,7 +4,7 @@ Small Cloud runs without a Python installation or source checkout. The native ex
 
 ## Install and sign in
 
-Version 0.1.0 is published and verified on all four supported targets; see the [acceptance record](../docs/acceptance/cli-distribution-2026-09-09.md).
+Version 0.2.0 is published and verified on all four supported targets; see the [login release acceptance record](../docs/acceptance/cli-login-2026-09-09.md) and [original distribution acceptance](../docs/acceptance/cli-distribution-2026-09-09.md).
 
 ```sh
 curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
@@ -23,7 +23,7 @@ In Fish, use `fish_add_path "$HOME/.local/bin"`. Login requires human Google bro
 To select an existing release and another absolute install directory:
 
 ```sh
-curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.1.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
+curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.2.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
 ```
 
 Ordinary CLI commands do not update the executable. Rerunning the installer explicitly replaces it; the dedicated update command and completion generators belong to later #29 tickets.

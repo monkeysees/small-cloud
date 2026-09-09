@@ -5,6 +5,7 @@
 ## 0.2.0 — 2026-09-09
 
 - Add #32 headless `auth login start/finish` with protected pending state, resumable browser approval, actionable setup status, and readable authentication outcomes.
+- Publish v0.2.0 on all four native targets with split-login, file/OS credential storage, public installation, and retained hosted-identity verification.
 
 ## 0.1.0 — 2026-09-09
 
