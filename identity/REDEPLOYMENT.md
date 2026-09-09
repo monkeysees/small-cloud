@@ -3,15 +3,15 @@
 Publish to the same app name to update its code:
 
 ```bash
-small-cloud deploy ./my-app --name my-app --wait
-small-cloud status my-app --json
+small-cloud app deploy ./my-app --name my-app --wait
+small-cloud app status my-app --json
 small-cloud operation status --request-id UUID_FROM_DEPLOY --json
-small-cloud logs my-app --source build --json
+small-cloud app logs my-app --source build --json
 ```
 
 The app keeps its URL, creator-only or workspace-wide sharing scope, and database. The old container remains selected during the build and candidate startup. Routing switches only after the candidate answers `GET /_small-cloud/ready` with HTTP 200. Implement readiness after initialization has completed. Successful replacement discards the old container's temporary files and in-memory state.
 
-A failed build or startup leaves the previous release selected. Status reports that release in `active_deployment_id` and the failed attempt in `latest_operation`, with `BUILD_FAILED` or `STARTUP_FAILED` and an explanatory message. Reading a failed operation exits successfully because the read succeeded; `deploy --wait` returns the operation's failure exit code. Correct the source and deploy again with a new request ID. After a timeout or lost connection, inspect the original request ID before retrying. Infrastructure or cleanup failures that report `reconciliation_required` need operator inspection before another update can proceed.
+A failed build or startup leaves the previous release selected. Status reports that release in `active_deployment_id` and the failed attempt in `latest_operation`, with `BUILD_FAILED` or `STARTUP_FAILED` and an explanatory message. Reading a failed operation exits successfully because the read succeeded; `app deploy --wait` returns the operation's failure exit code. Correct the source and deploy again with a new request ID. After a timeout or lost connection, inspect the original request ID before retrying. Infrastructure or cleanup failures that report `reconciliation_required` need operator inspection before another update can proceed.
 
 ## Schema changes are the creator's responsibility
 

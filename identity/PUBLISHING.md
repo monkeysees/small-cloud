@@ -5,12 +5,12 @@ For updates that retain the app URL, sharing and database, failed-update diagnos
 Publishing implements [issue #5](https://github.com/monkeysees/small-cloud/issues/5) using the existing [identity service](README.md), [product contracts](../docs/contracts.md), and the accepted German control/runtime hosts. Sign in and obtain the separately granted creator role before publishing. Ordinary membership and administrator status alone do not permit publication.
 
 ```bash
-small-cloud deploy identity/fixture --name publishing-probe --description 'Disposable HTTP probe' --dry-run --json
-small-cloud deploy identity/fixture --name publishing-probe --description 'Disposable HTTP probe' --wait --json
-small-cloud status publishing-probe --json
-small-cloud logs publishing-probe --source build --json
+small-cloud app deploy identity/fixture --name publishing-probe --description 'Disposable HTTP probe' --dry-run --json
+small-cloud app deploy identity/fixture --name publishing-probe --description 'Disposable HTTP probe' --wait --json
+small-cloud app status publishing-probe --json
+small-cloud app logs publishing-probe --source build --json
 small-cloud operation status --request-id UUID_FROM_DEPLOY --json
-small-cloud usage --json
+small-cloud workspace usage --json
 ```
 
 The CLI needs Python, not local Docker. A root Dockerfile is required. Dry run validates locally and lists included/excluded paths and uncompressed bytes without authentication, upload or capacity admission. Root `.dockerignore` patterns apply before mandatory exclusions: `.git`, `.small-cloud`, `.env`, `.env.*`, and platform configuration/credential locations cannot be included through negation. Keep source outside platform config/state directories and do not select an ancestor containing those directories. Links, special files, changing files, contexts over 100 MiB and contexts over 10,000 files are rejected. The server independently validates the uncompressed archive. Other credentials embedded in source remain the creator's responsibility.
@@ -54,7 +54,7 @@ The runtime firewall accepts app ingress only from the control private address a
 
 After worker interruption, affected operations retain their creator/app lock and expose `reconciliation_required`; the worker does not replay them. The operator must first verify builder deletion, inspect the selected/candidate runtime and release references, and finish or remove the exact interrupted allocation before repairing that operation's state. Do not clear a lock merely because the worker restarted. No automatic reconciliation command is provided in this increment. Unstarted uploads and retained metadata remain on the EU control disk; source BLOBs are securely cleared after processing, and the existing artifact janitor bounds staged source/image retention.
 
-Accounting reservations must also be settled before repairing an interrupted deployment to a terminal state. Preserve its admission-period ledger row; use the trusted `accounting.json` execution duration and confirmed `teardown.json` deletion evidence to charge `min(600, ceil(duration_seconds))` exactly once. A controller-proven preflight failure consumes zero. If timing or termination evidence is missing, retain the reservation and inspect the builder/reconciliation records rather than guessing a duration or resetting the month. Source/result logs are not termination evidence. Administrators can inspect the affected app's operation with `small-cloud status APP --json`; creators see their own operation failures.
+Accounting reservations must also be settled before repairing an interrupted deployment to a terminal state. Preserve its admission-period ledger row; use the trusted `accounting.json` execution duration and confirmed `teardown.json` deletion evidence to charge `min(600, ceil(duration_seconds))` exactly once. A controller-proven preflight failure consumes zero. If timing or termination evidence is missing, retain the reservation and inspect the builder/reconciliation records rather than guessing a duration or resetting the month. Source/result logs are not termination evidence. Administrators can inspect the affected app's operation with `small-cloud app status APP --json`; creators see their own operation failures.
 
 ## Acceptance report
 

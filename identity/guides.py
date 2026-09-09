@@ -1,0 +1,111 @@
+"""Bundled, separately authored task guidance; no repository access required."""
+GUIDES = {
+    'getting-started': ('Discover commands, sign in and inspect apps', '''Small Cloud getting started
+
+Use --json for one versioned result object, including errors. JSON and non-TTY
+commands never prompt for terminal input. Progress is on stderr.
+
+small-cloud --help
+small-cloud catalog app --json
+small-cloud guide publishing
+small-cloud auth login --no-browser --json
+small-cloud auth status --json
+small-cloud app list --json
+small-cloud app status example --json
+
+Replace example with a name returned by app list. Listing is available to members;
+status requires the app creator or workspace administrator. Administrators do not
+receive private app content or saved secret values.
+
+Currently install the Python package in a virtual environment (Python 3.11+),
+then run small-cloud. The operator supplies your HTTPS endpoint: use --endpoint,
+SMALL_CLOUD_ENDPOINT, or endpoint in ~/.config/small-cloud/config.json (respects
+XDG_CONFIG_HOME). Credentials stay in protected per-user storage outside source
+folders, bound to that origin. No repository config or .env is loaded.
+
+Login requires human Google browser approval. --no-browser prints a verification
+URL and code on stderr; compare the code before approving. The same process waits
+and saves the credential; --no-input refuses login. Never paste credentials into
+commands. Split headless login and fixed-service setup are not delivered yet.
+
+The delivered CLI has app, workspace, auth and operation groups. Standalone
+installation, project linking, local app check, default deployment waiting, live
+logs and additional workspace controls are still pending. Use catalog for only
+implemented commands. Bare invocation, help, catalog and guides work offline.
+'''),
+    'publishing': ('Prepare, publish, redeploy and inspect bounded diagnostics', '''Publishing and inspection
+
+Publish a folder containing Dockerfile; no local Docker is required. The app must
+listen on 0.0.0.0 using PORT (8080), serve HTTP, and initialize its own schema.
+Implement GET /_small-cloud/ready: return 200 after repeatable initialization,
+within 120 seconds. The runtime uses UID 65532 and a read-only root filesystem;
+/tmp is temporary and shares the 512 MiB memory limit.
+DATABASE_URL supplies its private PostgreSQL database at runtime; never bake it
+or app secrets into an image. Data is disposable, even when ordinary redeployments
+and idle restarts preserve it. Keep schema changes compatible with the serving
+release: a failed candidate leaves the previous release serving.
+
+small-cloud app deploy . --name example --description demo --dry-run --json
+small-cloud app deploy . --name example --description demo --wait --json
+small-cloud app status example --json
+small-cloud app deploy . --name example --wait --json
+small-cloud app logs example --source build --json
+small-cloud app logs example --source runtime --limit 100 --json
+small-cloud operation status op_FROM_DEPLOY --json
+small-cloud operation status --request-id 12345678-1234-4234-8234-123456789abc --json
+
+Replace operation/request placeholders with the returned IDs. New apps require a
+description (empty allowed); omitted descriptions on updates are preserved.
+Dry run reports included/excluded files and bytes; it does not establish remote
+build feasibility or readiness. .dockerignore applies, but credentials, .env,
+Git metadata and mandatory sensitive paths remain excluded; inspect its result.
+
+Deployment returns acceptance by default. --wait observes completion with a
+positive --timeout in seconds (default 900). Timeout, disconnection or Ctrl-C do
+not cancel work. Preserve the request ID printed on stderr and inspect that
+request or operation before retrying a mutation; retries reuse the same UUID.
+Use status for availability and cleanup, and logs for the failed phase. Logs are
+bounded snapshots, subject to seven-day retention and volume loss; use the
+returned cursor via --cursor for continuation. No --follow is delivered yet.
+'''),
+    'secrets-sharing': ('Configure runtime secrets and sharing authority', '''Secrets and sharing
+
+small-cloud app secrets list example --json
+small-cloud app secrets set example SERVICE_TOKEN --stdin --wait --json
+small-cloud app secrets delete example SERVICE_TOKEN --wait --json
+small-cloud app share example --scope workspace-wide --acknowledge-secret-authority --json
+small-cloud app share example --scope creator-only --json
+
+Replace example with your app. Supply the secret value on stdin for --stdin;
+without it, only an interactive terminal may use the hidden prompt. Never put
+values in arguments. Input preserves trailing newlines. Saved values cannot be
+read back. Names are uppercase identifiers; PORT, DATABASE_URL and SMALL_CLOUD_*
+are reserved. Values are 1–16384 UTF-8 bytes without NUL; at most 50 names per app.
+
+Only the creator may change sharing or secrets. Workspace-wide users can trigger
+actions backed by app secrets: acknowledge that authority explicitly. Changed
+secrets save encrypted configuration and restart the app; --wait observes the
+operation. Failure may leave the new configuration saved and the app unavailable.
+Deleting an absent name is a no-op. Creator-only apps remain private to the creator.
+'''),
+    'workspace': ('Understand delivered membership, creator grants and allowance', '''Initial workspace administration
+
+small-cloud auth status --json
+small-cloud workspace member add colleague@example.com --json
+small-cloud workspace creator grant usr_FROM_AUTH_STATUS --json
+small-cloud workspace usage --json
+
+An administrator admits a Google email. The member signs in and obtains their
+user ID using auth status; substitute that ID to grant publishing separately.
+Owner or administrator status alone does not grant creator privileges. Usage is
+available to creators and administrators. Each build reserves 600 seconds against
+the monthly 60000-second allowance; fewer than ten remaining minutes cannot admit
+a build. Exhaustion does not stop existing serving apps. Capacity is limited to
+five creators, 30 deployed apps and five active apps in this pilot.
+
+Only the migrated initial workspace is currently available. Workspace creation,
+selection, ownership transfer, suspension, removal and allowance configuration
+are pending; they are not commands in the delivered catalog. Platform authority
+is distinct from workspace grants and does not grant private content access.
+'''),
+}

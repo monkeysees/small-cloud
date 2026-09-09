@@ -1,11 +1,11 @@
 # App runtime secrets
 
-Creators can configure their own apps through `small-cloud secret set`, `secret delete` and name-only `secret list`. Administrator diagnostics authority does not grant secret management or secret-name access to another creator's app. There is no saved-value readback route.
+Creators can configure their own apps through `small-cloud app secrets set`, `app secrets delete` and name-only `app secrets list`. Administrator diagnostics authority does not grant secret management or secret-name access to another creator's app. There is no saved-value readback route.
 
 ```bash
-small-cloud secret set example SERVICE_TOKEN --stdin < /secure/disposable-token
-small-cloud secret list example
-small-cloud secret delete example SERVICE_TOKEN --wait
+small-cloud app secrets set example SERVICE_TOKEN --stdin < /secure/disposable-token
+small-cloud app secrets list example
+small-cloud app secrets delete example SERVICE_TOKEN --wait
 ```
 
 Omit `--stdin` for a hidden terminal prompt. JSON mode, `--no-input` and non-terminal input require explicit `--stdin`. Values are never command arguments. Stdin preserves trailing newlines, accepts 1–16,384 UTF-8 bytes without NUL, and is bounded before submission. Names match `[A-Z_][A-Z0-9_]{0,127}`; `PORT`, `DATABASE_URL` and `SMALL_CLOUD_*` are reserved. Each app has at most 50 names.

@@ -10,7 +10,7 @@ While starting, requests receive HTTP 503 `STARTING` and `Retry-After: 2`. HTML 
 
 A failed start returns HTTP 503 `STARTUP_FAILED`. After successful cleanup its slot is released. Use the page's **Retry** button, or send an authenticated GET to `/_small-cloud/retry?return=%2F` to explicitly retry the saved release. An ordinary request continues to report failure until this explicit retry. The `return` parameter selects a path on the same app origin; successful retry redirects there with HTTP 303. The route remains authenticated and subject to the app's sharing scope. A browser can finish Google sign-in while its app is stopped or capacity is full.
 
-`small-cloud status APP` reports `running`, `stopped`, `starting` or `unavailable` alongside the unchanged selected deployment. `runtime_error` contains a safe runtime failure, including `reconciliation_required` when cleanup is uncertain. `small-cloud usage` includes pending starts and uncertain cleanup in the active count. Deployment and lifecycle operations on the same app cannot overlap; retry a conflicting deployment after startup/cleanup finishes.
+`small-cloud app status APP` reports `running`, `stopped`, `starting` or `unavailable` alongside the unchanged selected deployment. `runtime_error` contains a safe runtime failure, including `reconciliation_required` when cleanup is uncertain. `small-cloud workspace usage` includes pending starts and uncertain cleanup in the active count. Deployment and lifecycle operations on the same app cannot overlap; retry a conflicting deployment after startup/cleanup finishes.
 
 ## Operator installation and recovery
 

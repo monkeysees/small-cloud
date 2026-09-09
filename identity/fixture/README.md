@@ -3,7 +3,7 @@
 Deploy this directory through the creator CLI, with no local Docker:
 
 ```bash
-small-cloud deploy identity/fixture --name publishing-probe --description 'Disposable database starter' --wait
+small-cloud app deploy identity/fixture --name publishing-probe --description 'Disposable database starter' --wait
 ```
 
 Open the returned app URL and complete Google sign-in. Browser requests to `/` show a disposable-data notice and a form for saving entries. JSON requests to `/`, and all requests to `/identity`, return the three trusted gateway identity headers; name and email remain their unpadded base64url wire encoding. The internal `/_small-cloud/ready` endpoint succeeds only after database initialization and returns 404 through public authenticated ingress. The fixture relies on the platform to check every route before forwarding. Run it locally only on a trusted development machine.

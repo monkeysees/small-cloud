@@ -19,7 +19,7 @@ class UploadAcceptance(unittest.TestCase):
             (source / '.env').write_text('CONFIDENTIAL=value')
             (source / 'ignored.txt').write_text('not uploaded')
             (source / '.dockerignore').write_text('*.txt\n!main.txt\n!.env\n')
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                 '--name', 'example', '--description', '', '--dry-run', '--json'],
                 env={**os.environ, 'HOME': str(home), 'XDG_CONFIG_HOME': str(home / 'config'),
                      'XDG_STATE_HOME': str(home / 'state')}, capture_output=True, text=True)
@@ -37,7 +37,7 @@ class UploadAcceptance(unittest.TestCase):
             (source / 'Dockerfile').write_text('FROM scratch\n')
             (source / 'nested' / 'keep.txt').write_text('keep')
             (source / '.dockerignore').write_text('*.txt\n')
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                 '--name', 'example', '--description', '', '--dry-run', '--json'],
                 env={**os.environ, 'HOME': str(home), 'XDG_CONFIG_HOME': str(home / 'config'),
                      'XDG_STATE_HOME': str(home / 'state')}, capture_output=True, text=True)
@@ -52,7 +52,7 @@ class UploadAcceptance(unittest.TestCase):
             (source / 'Dockerfile').write_text('FROM scratch\n')
             (source / '.dockerignore').write_text('.config\n')
             (source / '.config' / 'small-cloud' / 'credentials').write_text('secret')
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                 '--name', 'example', '--description', '', '--dry-run', '--json'],
                 env={**os.environ, 'HOME': str(home), 'XDG_CONFIG_HOME': str(home / 'config'),
                      'XDG_STATE_HOME': str(home / 'state')}, capture_output=True, text=True)
@@ -72,7 +72,7 @@ class UploadAcceptance(unittest.TestCase):
                 path.write_text('content')
             (source / '.dockerignore').write_text(
                 '\ufeff# comment\n**/cache\n!cache/keep.txt\n**/*.log\nitem[0-9]\nliteral\\*\n\\#literal\n')
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                 '--name', 'example', '--description', '', '--dry-run', '--json'],
                 env={**os.environ, 'HOME': str(home), 'XDG_CONFIG_HOME': str(home / 'config'),
                      'XDG_STATE_HOME': str(home / 'state')}, capture_output=True, text=True)
@@ -100,7 +100,7 @@ class UploadAcceptance(unittest.TestCase):
                     else:
                         with candidate.open('wb') as stream:
                             stream.truncate(100 * 1024 * 1024 + 1)
-                    result = subprocess.run([sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+                    result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                         '--name', 'example', '--description', '', '--dry-run', '--json'],
                         env={**os.environ, 'HOME': str(home), 'XDG_CONFIG_HOME': str(home / 'config'),
                              'XDG_STATE_HOME': str(home / 'state')}, capture_output=True, text=True,
@@ -117,7 +117,7 @@ class UploadAcceptance(unittest.TestCase):
             for name in ('Dockerfile', 'ab', 'axb'):
                 (source / name).write_text('content')
             (source / '.dockerignore').write_text('a**b\n')
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                 '--name', 'example', '--description', '', '--dry-run', '--json'],
                 env={**os.environ, 'HOME': str(home), 'XDG_CONFIG_HOME': str(home / 'config'),
                      'XDG_STATE_HOME': str(home / 'state')}, capture_output=True, text=True)
@@ -134,7 +134,7 @@ class UploadAcceptance(unittest.TestCase):
             environment = {**os.environ, 'HOME': str(home),
                            'XDG_CONFIG_HOME': str(source / 'configuration'),
                            'XDG_STATE_HOME': str(home / 'state')}
-            command = [sys.executable, '-m', 'identity.cli', 'deploy', str(source),
+            command = [sys.executable, '-m', 'identity.cli', 'app', 'deploy', str(source),
                        '--name', 'example', '--description', '', '--dry-run', '--json']
             overlap = subprocess.run(command, env=environment, capture_output=True, text=True)
             self.assertNotEqual(overlap.returncode, 0)

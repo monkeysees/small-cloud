@@ -3,10 +3,10 @@
 Implements [#7](https://github.com/monkeysees/small-cloud/issues/7) against [the pilot sharing boundary](../docs/adr/0002-pilot-sharing-boundary.md). New apps default to creator-only. Sign in with the operator-supplied endpoint, then use:
 
 ```bash
-small-cloud share check-in --scope workspace-wide
-small-cloud directory
-small-cloud directory --json
-small-cloud share check-in --scope creator-only
+small-cloud app share check-in --scope workspace-wide
+small-cloud app list
+small-cloud app list --json
+small-cloud app share check-in --scope creator-only
 ```
 
 Only an app's admitted creator can change its sharing scope. Workspace-wide admits every explicitly admitted member, including other creators and the administrator. Members can read and modify all data the app exposes; there are no per-record roles or private records within a shared app. App authors should implement this common data model rather than treating the supplied user ID as a record-access boundary. Administrator diagnostic privileges do not grant access to creator-only content or permission to change another creator's sharing.

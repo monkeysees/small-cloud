@@ -26,7 +26,7 @@ class DeploymentAcceptance(unittest.TestCase):
         source = self.home / 'source'
         source.mkdir()
         (source / 'Dockerfile').write_text('FROM scratch\n')
-        result = self.cli('deploy', str(source), '--name', 'progress', '--description', '',
+        result = self.cli('app', 'deploy', str(source), '--name', 'progress', '--description', '',
                           '--wait', '--timeout', '1')
         self.assertEqual(result.returncode, 6, result.stdout + result.stderr)
         self.assertEqual(json.loads(result.stdout)['error']['code'], 'WAIT_TIMEOUT')

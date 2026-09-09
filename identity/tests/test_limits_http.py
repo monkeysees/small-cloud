@@ -88,7 +88,7 @@ class LimitsAcceptance(unittest.TestCase):
     def test_usage_reports_capacity_and_reserves_once_through_cli_and_http(self):
         self.creator()
         self.login()
-        result = self.cli('usage')
+        result = self.cli('workspace', 'usage')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         usage = json.loads(result.stdout)['data']
         self.assertEqual(usage['creators'], {'used': 1, 'limit': 5})
@@ -97,6 +97,13 @@ class LimitsAcceptance(unittest.TestCase):
         self.assertEqual(usage['build']['limit_seconds'], 60000)
         self.assertEqual(usage['build']['charged_seconds'], 0)
         self.assertEqual(usage['build']['available_seconds'], 60000)
+        catalog = json.loads(self.cli('catalog', 'workspace', 'usage').stdout)['data']
+        outputs = catalog['commands'][0]['outputs']
+        self.assertIn('period_start', outputs)
+        self.assertIn('period_end', outputs)
+        self.assertIn('period_start', usage['build'])
+        self.assertIn('period_end', usage['build'])
+        self.assertNotIn('reconciliation_required', outputs)
         request_id = str(uuid.uuid4())
         self.assertEqual(self.deploy(request_id=request_id)[0], 202)
         self.assertEqual(self.deploy(request_id=request_id)[0], 202)

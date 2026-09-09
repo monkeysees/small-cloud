@@ -6,7 +6,7 @@ For source upload, remote builds and protected app URLs, see [publishing](PUBLIS
 
 For preserved releases during failed updates and schema compatibility responsibilities, see [redeployment](REDEPLOYMENT.md).
 
-For `small-cloud usage`, deployment capacity and the shared monthly build allowance, see [publishing limits](LIMITS.md).
+For `small-cloud workspace usage`, deployment capacity and the shared monthly build allowance, see [publishing limits](LIMITS.md).
 
 For HTTP idle stopping, on-demand loading, active capacity and retry behavior, see [app lifecycle](LIFECYCLE.md).
 
@@ -17,6 +17,12 @@ For authorized status, build/runtime log snapshots, redaction and retention, see
 For app-scoped PostgreSQL persistence, author-owned initialization and the disposable-data starter, see [database acceptance](../docs/acceptance/app-database-2026-09-09.md) and the [starter guide](fixture/README.md).
 
 Implements [#4](https://github.com/monkeysees/small-cloud/issues/4) and [#19](https://github.com/monkeysees/small-cloud/issues/19) against the [CLI and identity contracts](../docs/contracts.md). One operator bootstraps the initial workspace owner and platform administrator, explicitly admits Google emails, and grants creator privileges separately. A member can sign in to establish their immutable user ID; membership, ownership and administrator authority alone do not grant publishing privileges. There are at most five creators, including the owner if separately granted that role. See [initial workspace migration](WORKSPACE-MIGRATION.md) before upgrading an existing installation. Additional workspaces remain unavailable.
+
+## Discover the CLI
+
+Start with `small-cloud`, `small-cloud app --help`, or `small-cloud catalog app --json`. Read bundled guidance using `small-cloud guide` and `small-cloud guide getting-started`; these work offline without credentials or this checkout. Groups are `app`, `workspace`, `auth` and `operation`; superseded top-level command paths have been removed. App list/status have readable default results, and every command supports `--json` for the unchanged versioned envelope. Use `small-cloud app list` to discover accessible apps; detailed `app status NAME` requires the creator or a workspace administrator.
+
+Catalog version 1 describes only delivered commands, including permissions, inputs, output contracts and effects. Later #29 slices deliver standalone installation, fixed-service setup, split login, project linking, default completion waits, live logs and additional workspace commands. The instructions below retain the currently delivered setup.
 
 ## Install the CLI
 
@@ -70,9 +76,9 @@ Repeating the same email returns the original administrator; changing it is refu
 Sign in as administrator, then admit each member:
 
 ```bash
-small-cloud admin member add colleague@example.com
+small-cloud workspace member add colleague@example.com
 # The colleague signs in and gives the administrator the user ID from auth status.
-small-cloud admin creator grant usr_RETURNED_USER_ID
+small-cloud workspace creator grant usr_RETURNED_USER_ID
 ```
 
 An admitted email is pending until its first verified Google sign-in atomically binds it to Google's subject and an immutable random user ID. A subsequent email change updates profile information without transferring ownership; a replacement Google subject cannot take over the old email's bound admission. A pending member must sign in before a creator grant. Existing admission/grant is a no-op. The sixth creator receives `CREATOR_CAPACITY` (exit 5), even under competing grants. Creator privileges do not grant administrator commands.

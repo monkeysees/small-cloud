@@ -167,10 +167,10 @@ class DatabaseAcceptance(unittest.TestCase):
         raise RuntimeError('Starter did not become ready')
 
     def publish(self, name):
-        result = self.cli('deploy', str(ROOT / 'identity/fixture'), '--name', name, '--description', 'Disposable test')
+        result = self.cli('app', 'deploy', str(ROOT / 'identity/fixture'), '--name', name, '--description', 'Disposable test')
         self.assertEqual(result.returncode, 0, result.stdout)
         self.worker.once()
-        result = self.cli('status', name)
+        result = self.cli('app', 'status', name)
         self.assertEqual(result.returncode, 0, result.stdout)
         app = json.loads(result.stdout)['data']
         self.assertEqual(app['availability'], 'running', app)
@@ -188,10 +188,10 @@ class DatabaseAcceptance(unittest.TestCase):
         return source
 
     def deploy_source(self, name, source):
-        result = self.cli('deploy', str(source), '--name', name, '--description', 'Redeployment acceptance')
+        result = self.cli('app', 'deploy', str(source), '--name', name, '--description', 'Redeployment acceptance')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.worker.once()
-        result = self.cli('status', name)
+        result = self.cli('app', 'status', name)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return json.loads(result.stdout)['data']
 
@@ -207,7 +207,7 @@ class DatabaseAcceptance(unittest.TestCase):
         member_token = self.http_login('reader@example.test')['credential']
         for scope, version in [('creator-only', 'release-two'), ('workspace-wide', 'release-three')]:
             with self.subTest(scope=scope):
-                self.assertEqual(self.cli('share', 'updates', '--scope', scope).returncode, 0)
+                self.assertEqual(self.cli('app', 'share', 'updates', '--scope', scope).returncode, 0)
                 updated = self.deploy_source('updates', self.source(version))
                 self.assertEqual(updated['latest_operation']['state'], 'succeeded', updated)
                 self.assertNotEqual(updated['active_deployment_id'], app['active_deployment_id'])
@@ -295,7 +295,7 @@ class DatabaseAcceptance(unittest.TestCase):
         member = self.http_login('member@example.test')['credential']
         self.token = member
         self.assertEqual(self.app_request(app, '/data')[0], 404)
-        result = self.cli('share', 'shared', '--scope', 'workspace-wide')
+        result = self.cli('app', 'share', 'shared', '--scope', 'workspace-wide')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         status, raw = self.app_request(app, '/data')
         self.assertEqual(status, 200, raw)
@@ -336,7 +336,7 @@ class DatabaseAcceptance(unittest.TestCase):
         self.token = owner_token
         entries = json.loads(self.app_request(app, '/data')[1])['entries']
         self.assertEqual([entry['value'] for entry in entries], ['Owner entry', 'Member contribution'])
-        result = self.cli('share', 'shared', '--scope', 'creator-only')
+        result = self.cli('app', 'share', 'shared', '--scope', 'creator-only')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(browser_get('/data', app_cookie)[0], 404)
         self.token = member
@@ -383,27 +383,27 @@ class DatabaseAcceptance(unittest.TestCase):
         entry = json.loads(raw)
         now[0] += 1799
         lifecycle.once()
-        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['availability'], 'running')
+        self.assertEqual(json.loads(self.cli('app', 'status', 'idle').stdout)['data']['availability'], 'running')
         now[0] += 1
         lifecycle.once()
-        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['availability'], 'stopped')
+        self.assertEqual(json.loads(self.cli('app', 'status', 'idle').stdout)['data']['availability'], 'stopped')
         self.assertEqual(self.app_request(app, '/data', token=False)[0], 401)
         status, page = self.app_request(app, '/data', headers={'Accept': 'text/html'})
         self.assertEqual(status, 503, page)
         self.assertIn('Starting', page)
-        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['availability'], 'starting')
+        self.assertEqual(json.loads(self.cli('app', 'status', 'idle').stdout)['data']['availability'], 'starting')
         lifecycle.once()
         status, raw = self.app_request(app, '/data')
         self.assertEqual(status, 200, raw)
         self.assertEqual(json.loads(raw)['entries'], [entry])
-        self.assertEqual(json.loads(self.cli('status', 'idle').stdout)['data']['active_deployment_id'],
+        self.assertEqual(json.loads(self.cli('app', 'status', 'idle').stdout)['data']['active_deployment_id'],
                          app['active_deployment_id'])
 
     def test_legacy_control_migration_preserves_database_cli_and_redeployment(self):
         self.prepare()
         app = self.publish('migrated')
         self.assertEqual(self.app_request(app, '/data', {'value': 'Before workspace migration'})[0], 201)
-        self.assertEqual(self.cli('share', 'migrated', '--scope', 'workspace-wide').returncode, 0)
+        self.assertEqual(self.cli('app', 'share', 'migrated', '--scope', 'workspace-wide').returncode, 0)
         self.platform_server.shutdown()
         self.platform_server.server_close()
         # Serialize realistic running state into the frozen pre-workspace schema.
@@ -423,7 +423,7 @@ class DatabaseAcceptance(unittest.TestCase):
         legacy.replace(path)
         self.restart_platform()
         self.worker.recover()
-        logs = self.cli('logs', 'migrated', '--source', 'build')
+        logs = self.cli('app', 'logs', 'migrated', '--source', 'build')
         self.assertEqual(logs.returncode, 0, logs.stdout + logs.stderr)
         self.assertEqual(json.loads(logs.stdout)['data']['entries'][0]['message'], 'Legacy build output')
         result = self.cli('auth', 'status')
@@ -493,13 +493,13 @@ class DatabaseAcceptance(unittest.TestCase):
         lifecycle = LifecycleWorker(self.worker.state, self.worker.infrastructure)
 
         def set_value(name, value):
-            result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'secret', 'set',
+            result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'app', 'secrets', 'set',
                                      'secrets', name, '--stdin'], env=self.env, capture_output=True,
                                     text=True, input=value, timeout=10)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertNotIn(value, result.stdout + result.stderr)
             lifecycle.once()
-            status = json.loads(self.cli('status', 'secrets').stdout)['data']
+            status = json.loads(self.cli('app', 'status', 'secrets').stdout)['data']
             self.assertEqual(status['availability'], 'running', status)
             self.assertEqual(status['active_deployment_id'], app['active_deployment_id'])
 
@@ -512,7 +512,7 @@ class DatabaseAcceptance(unittest.TestCase):
         expected[0] = 'replacement-disposable-token\n\n'
         set_value('SERVICE_TOKEN', expected[0])
         self.assertTrue(json.loads(self.app_request(app, '/secret-probe', {})[1])['external_action'])
-        self.assertEqual(self.cli('secret', 'delete', 'secrets', 'SERVICE_TOKEN').returncode, 0)
+        self.assertEqual(self.cli('app', 'secrets', 'delete', 'secrets', 'SERVICE_TOKEN').returncode, 0)
         lifecycle.once()
         self.assertEqual(json.loads(self.app_request(app, '/secret-probe', {})[1]),
                          {'configured': False, 'external_action': False})

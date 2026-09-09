@@ -3,11 +3,11 @@
 [Issue #11](https://github.com/monkeysees/small-cloud/issues/11) provides diagnostics through the existing authenticated CLI/API. An app's creator and its workspace administrator can inspect status, operation failures, and build/runtime logs. Other creators and ordinary members receive `NOT_FOUND`. Diagnostic authority does not permit opening someone else's creator-only app or reading secret configuration. Platform-administrator status alone adds no workspace permission.
 
 ```bash
-small-cloud status example --json
-small-cloud logs example --source build --limit 100 --json
-small-cloud logs example --source runtime --since 2026-09-09T00:00:00Z --json
-small-cloud logs example --source build --deployment d_DEPLOYMENT --json
-small-cloud logs example --source runtime --cursor CURSOR_FROM_PREVIOUS_RESPONSE --json
+small-cloud app status example --json
+small-cloud app logs example --source build --limit 100 --json
+small-cloud app logs example --source runtime --since 2026-09-09T00:00:00Z --json
+small-cloud app logs example --source build --deployment d_DEPLOYMENT --json
+small-cloud app logs example --source runtime --cursor CURSOR_FROM_PREVIOUS_RESPONSE --json
 ```
 
 Snapshots are chronological, at most 1 MiB including the response envelope, and at most 1,000 entries (`--limit` defaults to 100). A cursor continues the original snapshot, excluding newly ingested records, even if another build becomes the latest. Cursors belong to the requesting identity, app and source, expire after ten minutes, and require authorization on every page. At most 1,000 outstanding cursors are retained; older ones can expire sooner under pressure. `--cursor` and `--since` are mutually exclusive. `--deployment` applies only to build logs; omission selects the latest build. No streaming CLI mode or debug archive is provided. Terminal controls are escaped in both human and JSON output.

@@ -62,18 +62,18 @@ class SecretsAcceptance(unittest.TestCase):
         self.prepare()
         self.publish('secrets')
         self.login()
-        result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'secret', 'set',
+        result = subprocess.run([sys.executable, '-m', 'identity.cli', '--json', 'app', 'secrets', 'set',
                                  'secrets', 'SERVICE_TOKEN', '--stdin'], env=self.env, capture_output=True,
                                 text=True, input='cli-value\n', timeout=10)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertNotIn('cli-value', result.stdout + result.stderr)
         self.lifecycle.once()
-        result = self.cli('secret', 'list', 'secrets')
+        result = self.cli('app', 'secrets', 'list', 'secrets')
         self.assertEqual(json.loads(result.stdout)['data'], {'names': ['SERVICE_TOKEN']})
-        result = self.cli('share', 'secrets', '--scope', 'workspace-wide')
+        result = self.cli('app', 'share', 'secrets', '--scope', 'workspace-wide')
         self.assertEqual(result.returncode, 2, result.stdout)
         self.assertIn('credential-backed', result.stdout)
-        result = self.cli('share', 'secrets', '--scope', 'workspace-wide', '--acknowledge-secret-authority')
+        result = self.cli('app', 'share', 'secrets', '--scope', 'workspace-wide', '--acknowledge-secret-authority')
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertTrue(json.loads(result.stdout)['data']['secret_authority_acknowledged'])
         self.assertEqual(self.change('set', 'other')[1]['error']['code'], 'ACKNOWLEDGEMENT_REQUIRED')

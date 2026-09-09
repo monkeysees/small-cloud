@@ -52,7 +52,7 @@ class DiagnosticsAcceptance(unittest.TestCase):
         self.diagnostic(operation, None, json.dumps({'values': [password, url]}).encode(), action='register')
         content = b'x' * (65536 - 10) + url.encode() + b'\n' + password.encode() + b'\nvisible\x1b[2J\n'
         self.diagnostic(operation, 'runtime', content)
-        result = self.cli('logs', 'example', '--source', 'runtime')
+        result = self.cli('app', 'logs', 'example', '--source', 'runtime')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertNotIn(password, result.stdout + result.stderr)
         self.assertNotIn('postgresql://', result.stdout)

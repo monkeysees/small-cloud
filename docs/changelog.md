@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #30 grouped CLI commands, shared offline help and scoped versioned catalog, bundled task guides, readable app inspection and actionable human errors; remove superseded command paths and verify CLI/HTTPS authorization contracts.
+
 - Deploy #12 and verify exact multiline runtime secrets, hidden input, sharing/authorization boundaries, encrypted storage, retained-value redaction and failed/interrupted restart recovery; remove acceptance resources and retain 41 build seconds.
 
 - Add #12 creator-owned encrypted runtime secrets with hidden/stdin input, saved-configuration restarts, sharing acknowledgement, seven-day retired-value redaction and local CLI/HTTP/external-service regression coverage.

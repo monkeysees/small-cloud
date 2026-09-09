@@ -236,7 +236,7 @@ class IdentityAcceptance(unittest.TestCase):
         self.operator('bootstrap', 'admin@example.test')
         self.start_platform()
         self.login()
-        admitted = self.cli('admin', 'member', 'add', 'member@example.test')
+        admitted = self.cli('workspace', 'member', 'add', 'member@example.test')
         self.assertEqual(admitted.returncode, 0, admitted.stdout)
         member_id = json.loads(admitted.stdout)['data']['user_id']
         member = self.http_login('member@example.test')
@@ -244,22 +244,22 @@ class IdentityAcceptance(unittest.TestCase):
         status, _ = self.http('/api/admin/creator/grant', {'user_id': member_id}, member['credential'],
                              headers={'X-Request-ID': str(uuid.uuid4())})
         self.assertEqual(status, 403)
-        granted = self.cli('admin', 'creator', 'grant', member_id)
+        granted = self.cli('workspace', 'creator', 'grant', member_id)
         self.assertEqual(granted.returncode, 0, granted.stdout)
         _, raw = self.http('/api/auth/status', token=member['credential'])
         self.assertEqual(json.loads(raw)['data']['roles'], ['member', 'creator'])
         for number in range(2, 7):
-            added = self.cli('admin', 'member', 'add', f'creator{number}@example.test')
+            added = self.cli('workspace', 'member', 'add', f'creator{number}@example.test')
             user_id = json.loads(added.stdout)['data']['user_id']
             self.http_login(f'creator{number}@example.test')
-            result = self.cli('admin', 'creator', 'grant', user_id)
+            result = self.cli('workspace', 'creator', 'grant', user_id)
             self.assertEqual(result.returncode, 0 if number <= 5 else 5, result.stdout)
-        self.assertEqual(self.cli('admin', 'creator', 'grant', member_id).returncode, 0)
+        self.assertEqual(self.cli('workspace', 'creator', 'grant', member_id).returncode, 0)
         self.env['XDG_STATE_HOME'] = str(self.home / 'member-state')
         self.identity = {'sub': 'member@example.test', 'email': 'member@example.test',
                          'email_verified': True, 'name': 'Member'}
         self.assertEqual(self.login()['roles'], ['member', 'creator'])
-        self.assertEqual(self.cli('admin', 'member', 'add', 'intruder@example.test').returncode, 4)
+        self.assertEqual(self.cli('workspace', 'member', 'add', 'intruder@example.test').returncode, 4)
 
     def test_unadmitted_unverified_and_invalid_google_tokens_are_denied(self):
         self.operator('bootstrap', 'admin@example.test')

@@ -2,7 +2,7 @@
 
 The initial workspace shares five creator grants, 30 deployed app slots, five active app slots and 1,000 build minutes per UTC calendar month. Ownership and administration do not consume a creator grant unless that person is separately granted publishing authority. Additional workspace quotas are separate work in #26.
 
-`small-cloud usage` shows creator, deployed and active counts and limits, together with the current build period, charged seconds, reserved seconds and available seconds. `--json` returns the same accounting fields for automation. Only admitted creators and workspace administrators can inspect usage.
+`small-cloud workspace usage` shows creator, deployed and active counts and limits, together with the current build period, charged seconds, reserved seconds and available seconds. `--json` returns the same accounting fields for automation. Only admitted creators and workspace administrators can inspect usage.
 
 Deployment capacity counts retained apps, including pending first publications and failed publications that have reserved a name. Updating an existing app does not consume another deployed slot. Disabling an app does not free its deployed slot. Active capacity concerns running or starting containers; a deployed app need not be active. An exhausted active slot pool refuses startup without evicting another app. Runtime limits are 0.5 CPU, 512 MiB memory and 128 tasks per app, with temporary files charged to the memory budget.
 
