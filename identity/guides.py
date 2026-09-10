@@ -45,7 +45,8 @@ Pending secrets stay in owner-only per-user storage, never in the attempt ID.
 auth status reports the fixed service, current identity, workspace and missing
 setup steps. Without a credential it returns AUTH_REQUIRED (exit 3) with setup
 details and a login command. A member can list apps; publishing additionally
-requires a creator grant. Only the initial workspace is currently available.
+requires a creator grant in the selected workspace. Use workspace list and
+workspace select ID; automation should always pass --workspace ID.
 Use auth logout to revoke this credential, or auth revoke --all for all your CLI
 credentials. Network failures retain local credentials so revocation can be retried.
 
@@ -109,7 +110,11 @@ secrets save encrypted configuration and restart the app; --wait observes the
 operation. Failure may leave the new configuration saved and the app unavailable.
 Deleting an absent name is a no-op. Creator-only apps remain private to the creator.
 '''),
-    'workspace': ('Understand delivered membership, creator grants and allowance', '''Initial workspace administration
+    'workspace': ('Create, select and administer workspaces', '''Workspace onboarding and selection
+
+small-cloud workspace create "Design team" --owner owner@example.com --json
+small-cloud workspace list --json
+small-cloud workspace select ws_FROM_LIST --json
 
 small-cloud auth status --json
 small-cloud workspace member add colleague@example.com --json
@@ -124,9 +129,26 @@ the monthly 60000-second allowance; fewer than ten remaining minutes cannot admi
 a build. Exhaustion does not stop existing serving apps. Capacity is limited to
 five creators, 30 deployed apps and five active apps in this pilot.
 
-Only the migrated initial workspace is currently available. Workspace creation,
-selection, ownership transfer, suspension, removal and allowance configuration
-are pending; they are not commands in the delivered catalog. Platform authority
-is distinct from workspace grants and does not grant private content access.
+Only platform administrators create workspaces. The designated owner signs in
+with their exact admitted Google email. Each identity has independent roles in
+each workspace; matching email domains grant nothing. The first admission becomes
+the saved default automatically. Later membership does not change it. Selection
+saves a default across your CLI credentials; --workspace ID overrides it for one
+command. Always pass --workspace ID in automation, including operation polling
+and retries. Inaccessible or ambiguous targets fail without fallback; workspace
+list and workspace select remain available if your old default loses access.
+
+App names are workspace-unique; URLs, app IDs, data and secrets remain separate.
+Creator-only content stays private; workspace-wide sharing reaches that workspace
+only. Visit /directory on the service for browser sign-in and accessible apps.
+Retry with the same request ID AND workspace; changed targets cannot reuse a
+receipt. The CLI pins the resolved workspace through any wait.
+
+The five creator grants, 30 deployed apps, five active apps and 60000 monthly
+build seconds are installation-wide safety limits shared across workspaces;
+creating another workspace does not multiply capacity. Usage counts and build
+charges are scoped to your workspace, so other workspaces can consume capacity.
+Ownership transfer, suspension, removal and allowance configuration remain
+pending. Platform authority grants no private content or saved secret values.
 '''),
 }

@@ -91,6 +91,12 @@ class Handler(BaseHTTPRequestHandler):
             raise Failure('AUTH_REQUIRED', 'CLI credential required.', 401)
         return headers[0][7:]
 
+    def workspace(self):
+        values = [urllib.parse.unquote(value, errors='strict') for value in self.headers.get_all('X-Workspace', [])]
+        if len(values) > 1 or values and (not values[0].strip() or len(values[0]) > 100):
+            raise Failure('INVALID_ARGUMENT', 'Supply one workspace ID or exact name in X-Workspace.')
+        return values[0] if values else None
+
     def do_GET(self):
         self.dispatch()
 
@@ -157,6 +163,10 @@ class Handler(BaseHTTPRequestHandler):
             flow = store.take_oauth(query['state'][0], self.cookie(FLOW_COOKIE))
             claims = self.app.google.exchange(query['code'][0], self.app.origin + '/auth/callback', flow['nonce'], flow['pkce'])
             session = store.bind_google(claims, self.cookie(COOKIE))
+            if flow['code'].startswith('/directory'):
+                self.respond(302, '', 'text/html', {'Location': flow['code'],
+                             'Set-Cookie': self.set_cookie(COOKIE, session, 43200)})
+                return
             self.respond(302, '', 'text/html', {'Location': '/auth/approval?code=' + flow['code'],
                          'Set-Cookie': self.set_cookie(COOKIE, session, 43200)})
         elif self.command == 'GET' and path == '/auth/approval':
@@ -177,10 +187,47 @@ class Handler(BaseHTTPRequestHandler):
             store.approval(body['code'], session, approve=True)
             self.respond(200, '<!doctype html><title>Sign-in approved</title><p>Approved. Return to your terminal.</p>', 'text/html')
         elif self.command == 'GET' and path == '/api/auth/status':
-            self.respond(200, envelope(store.status(self.bearer())))
+            self.respond(200, envelope(store.status(self.bearer(), self.workspace())))
+        elif self.command == 'GET' and path == '/directory':
+            if set(query) - {'workspace'} or any(len(values) != 1 for values in query.values()):
+                raise Failure('INVALID_ARGUMENT', 'Supply one workspace target.')
+            with store.connect() as db:
+                try:
+                    user = store.browser_user(db, self.cookie(COOKIE))
+                except Failure as error:
+                    if error.code != 'AUTH_REQUIRED':
+                        raise
+                    user = None
+                if user is not None:
+                    member = store.select_workspace(db, user, query.get('workspace', [None])[0])
+                    apps = list(self.app.publishing.accessible_apps(db, user['id'], workspace=member['workspace_id']))
+                    workspaces = list(db.execute('SELECT workspace_id,workspace_name FROM workspace_users '
+                                                  'WHERE id=? AND member=1 ORDER BY workspace_name', (user['id'],)))
+            if user is None:
+                browser_secret = secrets.token_urlsafe(32)
+                return_to = '/directory' + ('?' + urllib.parse.urlencode({'workspace': query['workspace'][0]}) if query else '')
+                state, nonce, pkce = store.begin_oauth(return_to, browser_secret, directory=True)
+                url = self.app.google.authorization_url(self.app.origin + '/auth/callback', state, nonce, pkce)
+                self.respond(302, '', 'text/html', {'Location': url,
+                             'Set-Cookie': self.set_cookie(FLOW_COOKIE, browser_secret, 600)})
+                return
+            links = ''.join('<li><a href="/directory?workspace=' + urllib.parse.quote(row['workspace_id']) + '">'
+                            + html.escape(row['workspace_name']) + '</a></li>' for row in workspaces)
+            entries = ''.join('<li><a href="' + html.escape(self.app.publishing.url(app), quote=True) + '">'
+                              + html.escape(app['name']) + '</a> — ' + html.escape(app['description']) + '</li>' for app in apps)
+            self.respond(200, '<!doctype html><html lang="en"><meta charset="utf-8">'
+                         '<meta name="viewport" content="width=device-width, initial-scale=1">'
+                         '<title>Small Cloud apps</title><main><h1>' + html.escape(member['workspace_name']) + '</h1>'
+                         '<nav aria-label="Workspaces"><ul>' + links + '</ul></nav><h2>Accessible apps</h2>'
+                         + ('<ul>' + entries + '</ul>' if apps else '<p>No accessible apps.</p>') + '</main></html>', 'text/html')
+        elif self.command == 'GET' and path == '/api/workspaces':
+            self.respond(200, envelope(store.workspaces(self.bearer(), self.workspace())))
+        elif self.command == 'POST' and path in ('/api/workspaces/create', '/api/workspaces/select'):
+            result = store.mutate(self.bearer(), path.removeprefix('/api/'), self.body(), self.request_id, self.workspace())
+            self.respond(200, envelope(result, request_id=self.request_id))
         elif self.command == 'POST' and path == '/api/deploy':
             token = self.bearer()
-            identity = store.status(token)
+            identity = store.status(token, self.workspace())
             if 'creator' not in identity['roles']:
                 raise Failure('FORBIDDEN', 'Creator privileges required.', 403)
             if (self.headers.get('Transfer-Encoding') or len(self.headers.get_all('Content-Length', [])) != 1
@@ -198,44 +245,52 @@ class Handler(BaseHTTPRequestHandler):
                 if any(len(values) != 1 for values in query.values()) or set(query) - {'name', 'description'}:
                     raise Failure('INVALID_ARGUMENT', 'Invalid deployment metadata.')
                 result = self.app.publishing.deploy(token, {key: values[0] for key, values in query.items()},
-                                                    archive, self.request_id)
+                                                    archive, self.request_id, identity['workspace']['id'])
                 self.respond(202, envelope(result, request_id=self.request_id))
             finally:
                 self.app.upload_slots.release()
         elif self.command == 'GET' and path == '/api/usage':
-            self.respond(200, envelope(self.app.publishing.usage(self.bearer())))
+            self.respond(200, envelope(self.app.publishing.usage(self.bearer(), self.workspace())))
         elif self.command == 'GET' and path == '/api/directory':
-            self.respond(200, envelope(self.app.publishing.directory(self.bearer())))
+            self.respond(200, envelope(self.app.publishing.directory(self.bearer(), self.workspace())))
         elif self.command == 'POST' and path.startswith('/api/apps/') and path.endswith('/share'):
             name = urllib.parse.unquote(path.removeprefix('/api/apps/').removesuffix('/share'))
-            result = self.app.publishing.share(self.bearer(), name, self.body(), self.request_id)
+            result = self.app.publishing.share(self.bearer(), name, self.body(), self.request_id, self.workspace())
             self.respond(200, envelope(result, request_id=self.request_id))
         elif self.command == 'POST' and path.startswith('/api/apps/') and path.endswith(('/secrets/set', '/secrets/delete')):
             target, action = path.removeprefix('/api/apps/').rsplit('/secrets/', 1)
             result = self.app.publishing.secrets.change(self.app.publishing, self.bearer(),
-                urllib.parse.unquote(target), action, self.body(131072), self.request_id)
+                urllib.parse.unquote(target), action, self.body(131072), self.request_id, self.workspace())
             self.respond(202 if result['changed'] else 200, envelope(result, request_id=self.request_id))
         elif self.command == 'GET' and path == '/api/operations':
-            result = self.app.publishing.operation(self.bearer(), request_id=query['request_id'][0])
+            if set(query) != {'request_id'} or len(query['request_id']) != 1:
+                raise Failure('INVALID_ARGUMENT', 'Supply one request ID or use the operation ID route.')
+            query['request_id'][0] = str(uuid.UUID(query['request_id'][0]))
+            result = self.app.publishing.operation(self.bearer(), request_id=query['request_id'][0], workspace=self.workspace())
             self.respond(200, envelope(result))
         elif self.command == 'GET' and path.startswith('/api/operations/'):
-            result = self.app.publishing.operation(self.bearer(), operation_id=path.removeprefix('/api/operations/'))
+            if query:
+                raise Failure('INVALID_ARGUMENT', 'Operation ID and request ID targets are mutually exclusive.')
+            result = self.app.publishing.operation(self.bearer(), operation_id=path.removeprefix('/api/operations/'), workspace=self.workspace())
             self.respond(200, envelope(result))
         elif self.command == 'GET' and path.startswith('/api/apps/'):
             target = urllib.parse.unquote(path.removeprefix('/api/apps/'))
+            allowed = {'source', 'deployment', 'since', 'limit', 'cursor'} if target.endswith('/logs') else set()
+            if set(query) - allowed or any(len(values) != 1 for values in query.values()):
+                raise Failure('INVALID_ARGUMENT', 'Unsupported or duplicate app target inputs.')
             if target.endswith('/secrets'):
-                result = self.app.publishing.secrets.names(self.app.publishing, self.bearer(), target.removesuffix('/secrets'))
+                result = self.app.publishing.secrets.names(self.app.publishing, self.bearer(), target.removesuffix('/secrets'), self.workspace())
             elif target.endswith('/logs'):
                 result = self.app.publishing.logs(self.bearer(), target.removesuffix('/logs'),
                     source=query['source'][0], deployment=query.get('deployment', [None])[0],
                     since=query.get('since', [None])[0], limit=int(query.get('limit', ['100'])[0]),
-                    cursor=query.get('cursor', [None])[0])
+                    cursor=query.get('cursor', [None])[0], workspace=self.workspace())
             else:
-                result = self.app.publishing.status(self.bearer(), target)
+                result = self.app.publishing.status(self.bearer(), target, self.workspace())
             self.respond(200, envelope(result))
         elif self.command == 'POST' and path in ('/api/auth/logout', '/api/auth/revoke', '/api/admin/member/add', '/api/admin/creator/grant'):
             action = path.removeprefix('/api/').removeprefix('auth/')
-            result = store.mutate(self.bearer(), action, self.body(), self.request_id)
+            result = store.mutate(self.bearer(), action, self.body(), self.request_id, self.workspace())
             self.respond(200, envelope(result, request_id=self.request_id))
         else:
             raise Failure('NOT_FOUND', 'Route not found.', 404)

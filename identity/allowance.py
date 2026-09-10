@@ -30,7 +30,7 @@ def usage(db, workspace, now):
     start, end = period(now)
     row = db.execute('SELECT COALESCE(SUM(charged_seconds),0), '
                      'COUNT(*) FILTER (WHERE charged_seconds IS NULL) FROM build_allowance '
-                     'WHERE workspace_id=? AND period_start=?', (workspace, start)).fetchone()
+                     'WHERE (? IS NULL OR workspace_id=?) AND period_start=?', (workspace, workspace, start)).fetchone()
     charged, reserved = row[0], row[1] * BUILD_SECONDS
     return {'period_start': timestamp(start), 'period_end': timestamp(end), 'limit_seconds': MONTH_SECONDS,
             'charged_seconds': charged, 'reserved_seconds': reserved,
@@ -38,7 +38,7 @@ def usage(db, workspace, now):
 
 
 def reserve(db, deployment, workspace, now):
-    current = usage(db, workspace, now)
+    current = usage(db, None, now)
     if current['available_seconds'] < BUILD_SECONDS:
         code = 'ALLOWANCE_RESERVED' if MONTH_SECONDS - current['charged_seconds'] >= BUILD_SECONDS else 'ALLOWANCE_EXHAUSTED'
         message = ('Build allowance is reserved by unfinished builds; inspect operations and retry after settlement.'

@@ -68,10 +68,17 @@ class Gateway:
         # An explicit credential takes precedence over ambient browser cookies.
         if handler.headers.get('Authorization'):
             with self.store.connect() as db:
-                return dict(self.store.credential(db, handler.bearer())[1])
+                user = self.store.authenticate(db, handler.bearer())[1]
+                if handler.workspace() is not None:
+                    member = self.store.select_workspace(db, user, handler.workspace())
+                    if not db.execute('SELECT 1 FROM apps WHERE id=? AND workspace_id=?',
+                                      (app_id, member['workspace_id'])).fetchone():
+                        raise Failure('NOT_FOUND', 'App not found in the target workspace.', 404)
+                return dict(user)
         with self.store.connect() as db:
-            user = db.execute('SELECT u.* FROM app_sessions s JOIN workspace_users u ON u.id=s.user_id '
-                              'WHERE s.verifier=? AND s.app=? AND s.expires>? AND u.member=1',
+            user = db.execute('SELECT u.* FROM app_sessions s JOIN users u ON u.id=s.user_id '
+                              'WHERE s.verifier=? AND s.app=? AND s.expires>? AND EXISTS '
+                              '(SELECT 1 FROM memberships m WHERE m.user_id=u.id AND m.member=1)',
                               (digest(handler.cookie(COOKIE)), app_id, time.time())).fetchone()
             if user:
                 return dict(user)

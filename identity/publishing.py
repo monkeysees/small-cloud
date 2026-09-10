@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 
 from .common import Failure, digest, timestamp
 from .upload import validate_archive
+from .workspaces import mutation_meaning
 from . import allowance, diagnostics, lifecycle, app_secrets
 
 
@@ -23,12 +24,12 @@ class Publishing:
         with store.connect() as db:
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS apps (
-                    id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, owner TEXT NOT NULL,
-                    workspace_id TEXT NOT NULL DEFAULT 'ws-initial' CHECK(workspace_id='ws-initial'),
+                    id TEXT PRIMARY KEY, name TEXT NOT NULL, owner TEXT NOT NULL,
+                    workspace_id TEXT NOT NULL DEFAULT 'ws-initial',
                     description TEXT NOT NULL, sharing_scope TEXT NOT NULL DEFAULT 'creator-only',
                     disabled INTEGER NOT NULL DEFAULT 0, active_deployment_id TEXT,
                     target_host TEXT, target_port INTEGER, container TEXT,
-                    created REAL NOT NULL);
+                    created REAL NOT NULL, UNIQUE(workspace_id,name));
                 CREATE TABLE IF NOT EXISTS deployments (
                     id TEXT PRIMARY KEY, app_id TEXT NOT NULL, actor TEXT NOT NULL,
                     request_id TEXT NOT NULL, state TEXT NOT NULL, source BLOB,
@@ -43,7 +44,7 @@ class Publishing:
             lifecycle.initialize(db, self.clock())
         self.secrets = app_secrets.Vault(store)
 
-    def deploy(self, token, metadata, archive, request_id):
+    def deploy(self, token, metadata, archive, request_id, workspace=None):
         name = metadata.get('name')
         if not isinstance(name, str) or not re.fullmatch(r'[a-z][a-z0-9-]{0,62}', name):
             raise Failure('INVALID_ARGUMENT', 'App name must be a lowercase ASCII slug of at most 63 characters.')
@@ -52,13 +53,14 @@ class Publishing:
         if set(metadata) - {'name', 'description'}:
             raise Failure('INVALID_ARGUMENT', 'Unknown deployment input.')
         validate_archive(archive)
-        fingerprint = digest(json.dumps(['deploy', metadata, hashlib.sha256(archive).hexdigest()], sort_keys=True))
         with self.store.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            _, user = self.store.credential(db, token)
+            _, user = self.store.credential(db, token, workspace=workspace)
+            meaning = mutation_meaning(['deploy', metadata, hashlib.sha256(archive).hexdigest()], user['workspace_id'])
+            fingerprint = digest(json.dumps(meaning, sort_keys=True))
             if not user['creator']:
                 raise Failure('FORBIDDEN', 'Publishing requires creator authority.', 403)
-            app = db.execute('SELECT * FROM apps WHERE name=?', (name,)).fetchone()
+            app = db.execute('SELECT * FROM apps WHERE name=? AND workspace_id=?', (name, user['workspace_id'])).fetchone()
             if app and (app['workspace_id'] != user['workspace_id'] or app['owner'] != user['id']):
                 raise Failure('NOT_FOUND', 'App not found.', 404)
             if app and app['disabled']:
@@ -100,10 +102,10 @@ class Publishing:
                        (user['id'], request_id, fingerprint, json.dumps(result), time.time() + 604800))
             return result
 
-    def usage(self, token):
+    def usage(self, token, workspace=None):
         with self.store.connect() as db:
             db.execute('BEGIN')
-            _, user = self.store.credential(db, token)
+            _, user = self.store.credential(db, token, workspace=workspace)
             if not (user['creator'] or user['administrator']):
                 raise Failure('FORBIDDEN', 'Usage requires creator or administrator authority.', 403)
             workspace = user['workspace_id']
@@ -111,23 +113,29 @@ class Publishing:
                                   (workspace,)).fetchone()[0]
             apps = db.execute('SELECT COUNT(*), COUNT(*) FILTER (WHERE ' + lifecycle.RESERVED + ') '
                               'FROM apps a WHERE workspace_id=?', (workspace,)).fetchone()
+            now = self.clock()
+            build = allowance.usage(db, workspace, now)
+            build['available_seconds'] = allowance.usage(db, None, now)['available_seconds']
             return {'creators': {'used': creators, 'limit': 5}, 'deployed_apps': {'used': apps[0], 'limit': 30},
                     'active_apps': {'used': apps[1], 'limit': 5},
-                    'build': allowance.usage(db, workspace, self.clock())}
+                    'build': build,
+                    'limit_scope': 'installation'}
 
     def url(self, app):
         return 'https://' + app['id'] + '.' + self.domain
 
-    def share(self, token, name, body, request_id):
+    def share(self, token, name, body, request_id, workspace=None):
         if ('scope' not in body or set(body) - {'scope', 'acknowledge_secret_authority'}
                 or ('acknowledge_secret_authority' in body and not isinstance(body['acknowledge_secret_authority'], bool))
                 or body['scope'] not in ('creator-only', 'workspace-wide')):
             raise Failure('INVALID_ARGUMENT', 'Supply scope creator-only or workspace-wide.')
-        fingerprint = digest(json.dumps(['share', name, body], sort_keys=True))
         with self.store.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            _, user = self.store.credential(db, token)
-            app = db.execute('SELECT * FROM apps WHERE name=? AND owner=?', (name, user['id'])).fetchone()
+            _, user = self.store.credential(db, token, workspace=workspace)
+            meaning = mutation_meaning(['share', name, body], user['workspace_id'])
+            fingerprint = digest(json.dumps(meaning, sort_keys=True))
+            app = db.execute('SELECT * FROM apps WHERE name=? AND owner=? AND workspace_id=?',
+                             (name, user['id'], user['workspace_id'])).fetchone()
             if not app or app['workspace_id'] != user['workspace_id']:
                 raise Failure('NOT_FOUND', 'App not found.', 404)
             if not user['creator']:
@@ -151,9 +159,9 @@ class Publishing:
                        (user['id'], request_id, fingerprint, json.dumps(result), time.time() + 604800))
             return result
 
-    def authorized_app(self, db, token, name):
-        _, user = self.store.credential(db, token)
-        app = db.execute('SELECT * FROM apps WHERE name=?', (name,)).fetchone()
+    def authorized_app(self, db, token, name, workspace=None):
+        _, user = self.store.credential(db, token, workspace=workspace)
+        app = db.execute('SELECT * FROM apps WHERE name=? AND workspace_id=?', (name, user['workspace_id'])).fetchone()
         if (not app or app['workspace_id'] != user['workspace_id']
                 or (app['owner'] != user['id'] and not user['administrator'])):
             raise Failure('NOT_FOUND', 'App not found.', 404)
@@ -169,9 +177,9 @@ class Publishing:
                 'error': json.loads(row['error']) if row['error'] else None,
                 'cleanup_pending': bool(row['cleanup_pending'])}
 
-    def status(self, token, name):
+    def status(self, token, name, workspace=None):
         with self.store.connect() as db:
-            app = self.authorized_app(db, token, name)
+            app = self.authorized_app(db, token, name, workspace)
             latest = db.execute('SELECT * FROM deployments WHERE app_id=? ORDER BY created DESC,rowid DESC LIMIT 1',
                                 (app['id'],)).fetchone()
             return {'app': app['name'], 'app_id': app['id'], 'description': app['description'],
@@ -184,9 +192,9 @@ class Publishing:
                     'latest_operation': self.operation_result(latest, app['name']) if latest else None,
                     'cleanup': None}
 
-    def operation(self, token, operation_id=None, request_id=None):
+    def operation(self, token, operation_id=None, request_id=None, workspace=None):
         with self.store.connect() as db:
-            _, user = self.store.credential(db, token)
+            _, user = self.store.credential(db, token, workspace=workspace)
             if request_id:
                 row = db.execute('SELECT * FROM deployments WHERE actor=? AND request_id=? ORDER BY created DESC,rowid DESC LIMIT 1',
                                  (user['id'], request_id)).fetchone()
@@ -200,29 +208,30 @@ class Publishing:
                 raise Failure('NOT_FOUND', 'Operation not found.', 404)
             return self.operation_result(row, app['name'])
 
-    def logs(self, token, name, source, deployment=None, since=None, limit=100, cursor=None):
+    def logs(self, token, name, source, deployment=None, since=None, limit=100, cursor=None, workspace=None):
         with self.store.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            app = self.authorized_app(db, token, name)
-            _, user = self.store.credential(db, token)
+            app = self.authorized_app(db, token, name, workspace)
+            _, user = self.store.credential(db, token, workspace=workspace)
             return diagnostics.snapshot(db, user['id'], app, source, deployment, since, limit, cursor, self.clock())
 
     @staticmethod
-    def accessible_apps(db, user_id, app_id=None):
+    def accessible_apps(db, user_id, app_id=None, workspace=None):
         return db.execute('SELECT a.*, owner.name AS creator_name FROM apps a '
                           'JOIN users owner ON owner.id=a.owner '
                           'JOIN memberships author ON author.user_id=a.owner AND author.workspace_id=a.workspace_id '
                           'JOIN memberships viewer ON viewer.user_id=? AND viewer.workspace_id=a.workspace_id '
                           'WHERE author.member=1 AND viewer.member=1 AND a.disabled=0 '
                           "AND (a.owner=viewer.user_id OR a.sharing_scope='workspace-wide') "
-                          'AND (? IS NULL OR a.id=?) ORDER BY a.name', (user_id, app_id, app_id))
+                          'AND (? IS NULL OR a.id=?) AND (? IS NULL OR a.workspace_id=?) ORDER BY a.name',
+                          (user_id, app_id, app_id, workspace, workspace))
 
-    def directory(self, token):
+    def directory(self, token, workspace=None):
         with self.store.connect() as db:
-            _, user = self.store.credential(db, token)
+            _, user = self.store.credential(db, token, workspace=workspace)
             return {'apps': [{'name': app['name'], 'description': app['description'],
                               'creator': {'id': app['owner'], 'name': app['creator_name']},
-                              'url': self.url(app)} for app in self.accessible_apps(db, user['id'])]}
+                              'url': self.url(app)} for app in self.accessible_apps(db, user['id'], workspace=user['workspace_id'])]}
 
     def check_access(self, app_id, user_id):
         with self.store.connect() as db:

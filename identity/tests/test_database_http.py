@@ -176,6 +176,61 @@ class DatabaseAcceptance(unittest.TestCase):
         self.assertEqual(app['availability'], 'running', app)
         return app
 
+    def test_two_workspaces_publish_duplicate_names_with_isolated_data_and_routing(self):
+        self.prepare()
+        initial = json.loads(self.cli('auth', 'status').stdout)['data']
+        created = self.cli('workspace', 'create', 'Second', '--owner', 'admin@example.test')
+        self.assertEqual(created.returncode, 0, created.stdout)
+        workspace = json.loads(created.stdout)['data']['workspace']['id']
+        self.assertEqual(self.cli('workspace', 'creator', 'grant', initial['user']['id'],
+                                  '--workspace', workspace).returncode, 0)
+        first = self.publish('same-name')
+        self.assertEqual(self.cli('workspace', 'select', workspace).returncode, 0)
+        second = self.publish('same-name')
+        self.assertNotEqual(first['app_id'], second['app_id'])
+        self.assertNotEqual(first['url'], second['url'])
+        self.assertEqual(self.http('/data', token=self.token, headers={
+            'Host': urllib.parse.urlsplit(second['url']).netloc, 'X-Workspace': 'ws-initial'})[0], 404)
+        self.assertEqual(self.app_request(first, '/data', {'value': 'First workspace only'})[0], 201)
+        self.assertEqual(self.app_request(second, '/data', {'value': 'Second workspace only'})[0], 201)
+        for app, expected in ((first, 'First workspace only'), (second, 'Second workspace only')):
+            status, raw = self.app_request(app, '/data')
+            self.assertEqual(status, 200, raw)
+            self.assertEqual([entry['value'] for entry in json.loads(raw)['entries']], [expected])
+        foreign = self.cli('operation', 'status', first['latest_operation']['id'])
+        self.assertEqual(json.loads(foreign.stdout)['error']['code'], 'NOT_FOUND')
+        first_again = self.cli('app', 'status', 'same-name', '--workspace', 'ws-initial')
+        self.assertEqual(json.loads(first_again.stdout)['data']['app_id'], first['app_id'])
+        request_id = str(uuid.uuid4())
+        args = ('app', 'share', 'same-name', '--scope', 'workspace-wide', '--request-id', request_id)
+        self.assertEqual(self.cli(*args, '--workspace', 'ws-initial').returncode, 0)
+        conflict = self.cli(*args, '--workspace', workspace)
+        self.assertEqual(json.loads(conflict.stdout)['error']['code'], 'REQUEST_CONFLICT')
+        self.assertEqual(json.loads(self.cli('app', 'status', 'same-name').stdout)['data']['sharing_scope'], 'creator-only')
+        member = self.cli('workspace', 'member', 'add', 'member@example.test', '--workspace', 'ws-initial')
+        self.assertEqual(member.returncode, 0, member.stdout)
+        login = self.http_login('member@example.test')
+        for app, expected_status in ((first, 200), (second, 404)):
+            status, raw = self.http('/data', token=login['credential'],
+                                   headers={'Host': urllib.parse.urlsplit(app['url']).netloc})
+            self.assertEqual(status, expected_status, raw)
+        status, page = self.http('/directory', browser=self.browser)
+        self.assertEqual(status, 200, page)
+        self.assertIn(first['url'], page)
+        self.assertNotIn(second['url'], page)
+        self.assertEqual(self.cli('workspace', 'member', 'add', 'member@example.test').returncode, 0)
+        self.assertEqual(self.http('/data', token=login['credential'],
+                                  headers={'Host': urllib.parse.urlsplit(second['url']).netloc})[0], 404)
+        status, page = self.http('/directory?workspace=' + workspace, browser=self.browser)
+        self.assertEqual(status, 200, page)
+        self.assertNotIn(second['url'], page)
+        self.assertEqual(self.cli('app', 'share', 'same-name', '--scope', 'workspace-wide').returncode, 0)
+        self.assertEqual(self.http('/data', token=login['credential'],
+                                  headers={'Host': urllib.parse.urlsplit(second['url']).netloc})[0], 200)
+        self.restart_platform()
+        for app, expected in ((first, 'First workspace only'), (second, 'Second workspace only')):
+            self.assertEqual(json.loads(self.app_request(app, '/data')[1])['entries'][0]['value'], expected)
+
     def app_request(self, app, path='/', body=None, token=True, headers=None):
         return self.http(path, body, token=self.token if token else None,
                          headers={'Host': urllib.parse.urlsplit(app['url']).netloc, **(headers or {})})

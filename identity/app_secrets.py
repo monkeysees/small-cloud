@@ -10,6 +10,7 @@ import uuid
 
 from cryptography.fernet import Fernet
 from .common import Failure
+from .workspaces import mutation_meaning
 from . import lifecycle
 
 NOTICE = ('Authorized app users can trigger credential-backed actions exposed by app code. '
@@ -71,8 +72,8 @@ class Vault:
         return [self.cipher.decrypt(row['value']) for row in rows]
 
     @staticmethod
-    def owner(publishing, db, token, name):
-        _, user = publishing.store.credential(db, token)
+    def owner(publishing, db, token, name, workspace=None):
+        _, user = publishing.store.credential(db, token, workspace=workspace)
         app = db.execute('SELECT * FROM apps WHERE name=? AND owner=? AND workspace_id=?',
                          (name, user['id'], user['workspace_id'])).fetchone()
         if not app:
@@ -81,23 +82,24 @@ class Vault:
             raise Failure('FORBIDDEN', 'Secret management requires creator authority.', 403)
         return app, user
 
-    def names(self, publishing, token, name):
+    def names(self, publishing, token, name, workspace=None):
         with self.state.connect() as db:
-            app, _ = self.owner(publishing, db, token, name)
+            app, _ = self.owner(publishing, db, token, name, workspace)
             return {'names': [row[0] for row in db.execute(
                 'SELECT name FROM app_secrets WHERE app_id=? ORDER BY name', (app['id'],))]}
 
-    def change(self, publishing, token, name, action, body, request_id):
+    def change(self, publishing, token, name, action, body, request_id, workspace=None):
         allowed = {'name', 'value', 'acknowledge_secret_authority'} if action == 'set' else {'name'}
         if set(body) - allowed or 'name' not in body or (action == 'set' and not isinstance(body.get('value'), str)):
             raise Failure('INVALID_ARGUMENT', 'Supply a secret name and a value for set.')
         if 'acknowledge_secret_authority' in body and not isinstance(body['acknowledge_secret_authority'], bool):
             raise Failure('INVALID_ARGUMENT', 'Acknowledgement must be boolean.')
         validate(body['name'], body.get('value'))
-        fingerprint = hmac.new(self.key, json.dumps(['secret', action, name, body], sort_keys=True).encode(), hashlib.sha256).hexdigest()
         with self.state.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            app, user = self.owner(publishing, db, token, name)
+            app, user = self.owner(publishing, db, token, name, workspace)
+            meaning = mutation_meaning(['secret', action, name, body], user['workspace_id'])
+            fingerprint = hmac.new(self.key, json.dumps(meaning, sort_keys=True).encode(), hashlib.sha256).hexdigest()
             if app['disabled']:
                 raise Failure('APP_DISABLED', 'App is disabled.', 403)
             cached = db.execute('SELECT * FROM requests WHERE actor=? AND id=? AND expires>?',

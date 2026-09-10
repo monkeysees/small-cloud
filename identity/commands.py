@@ -17,6 +17,7 @@ GLOBALS = [argument('--json', 'Emit one schema_version: 1 JSON envelope; never p
     argument('--no-input', 'Prohibit terminal prompts.', action='store_true'),
     argument('--no-color', 'Use output without color (also the default).', action='store_true'),
     argument('--request-id', 'Mutation retry UUID; operation status accepts this instead of an ID.'),
+    argument('--workspace', 'Target workspace ID or exact unambiguous name; overrides the saved default.'),
     argument('--version', 'Print installed CLI version.', action='version', version='small-cloud 0.2.0')]
 
 
@@ -27,6 +28,19 @@ def command(path, description, example, permission, outputs, effects='Read only.
 
 
 COMMANDS = [
+    command('workspace create', 'Create a workspace with one designated owner.',
+            'workspace create "Design team" --owner owner@example.com --json', 'Platform administrator.',
+            'workspace: id, name, owner_id.', 'Creates a workspace and admits its owner without creator privileges.',
+            [argument('name', 'Workspace display name.'), argument('--owner', 'Exact Google email of the owner.', required=True)],
+            guide='workspace', command='workspace', action='create'),
+    command('workspace list', 'List your accessible workspaces and saved default.',
+            'workspace list --json', 'Authenticated identity.', 'workspaces with roles, default_workspace.',
+            guide='workspace', command='workspace', action='list'),
+    command('workspace select', 'Save the default workspace for your identity on this service.',
+            'workspace select ws_FROM_LIST --json', 'Member of the target workspace.',
+            'workspace, default_workspace.', 'Changes the saved default across CLI credentials.',
+            [argument('target', 'Workspace ID or exact unambiguous name.')],
+            guide='workspace', command='workspace', action='select'),
     command('app list', 'List accessible apps with descriptions, creators and URLs.', 'app list --json',
             'Workspace member; only accessible apps are returned.',
             'apps: array of {name, description, creator, url}.', command='directory', action='directory'),
@@ -76,7 +90,7 @@ COMMANDS = [
             'workspace usage --json', 'Creator or workspace administrator.',
             'creators, deployed_apps, active_apps (used/limit), build (period_start, period_end, limit_seconds, charged_seconds, reserved_seconds, available_seconds).',
             guide='workspace', command='usage', action='usage'),
-    command('workspace member add', 'Admit a Google-verified email to the initial workspace.',
+    command('workspace member add', 'Admit a Google-verified email to the selected workspace.',
             'workspace member add colleague@example.com --json', 'Workspace administrator.',
             'user_id, email, member, creator, administrator.', 'Creates pending admission; existing membership is a no-op.',
             [argument('email', 'Google-verified email to admit.')], guide='workspace', command='admin', resource='member', action='add'),
@@ -130,7 +144,7 @@ GROUPS = {
     '': ('Publish and inspect small software. Start with auth login, then app list.', 'getting-started', 'app list --json'),
     'app': ('Publish, inspect and configure apps.', 'publishing', 'app list --json'),
     'app secrets': ('Manage confidential runtime values without saved-value readback.', 'secrets-sharing', 'app secrets list example --json'),
-    'workspace': ('Inspect allowance and administer the initial workspace.', 'workspace', 'workspace usage --json'),
+    'workspace': ('Create, select and administer workspaces; inspect usage.', 'workspace', 'workspace list --json'),
     'workspace member': ('Admit workspace members.', 'workspace', 'workspace member add colleague@example.com --json'),
     'workspace creator': ('Grant publishing privileges separately from membership.', 'workspace', 'workspace creator grant usr_FROM_AUTH_STATUS --json'),
     'auth': ('Sign in with browser approval and manage credentials.', 'getting-started', 'auth status --json'),

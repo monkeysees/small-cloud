@@ -124,9 +124,8 @@ class WorkspaceMigrationAcceptance(unittest.TestCase):
                               'Cookie': '__Host-small-cloud-app=creator-session'})[0], 401)
         self.assertEqual(self.http('/api/admin/member/add', {'email': 'intruder@example.test'},
                                   token=self.token, headers={'X-Request-ID': str(uuid.uuid4())})[0], 403)
-        for route in ('/api/workspaces', '/api/workspaces/create'):
-            self.assertEqual(self.http(route, {'name': 'Second'}, token='admin-token',
-                                      headers={'X-Request-ID': str(uuid.uuid4())})[0], 404)
+        self.assertEqual(self.http('/api/workspaces/create', {'name': 'Second', 'owner_email': 'new@example.test'},
+                                  token='admin-token', headers={'X-Request-ID': str(uuid.uuid4())})[0], 200)
 
     def test_pending_admissions_and_browser_cli_login_use_the_first_workspace_without_prompting(self):
         self.legacy()

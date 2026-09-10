@@ -6,7 +6,7 @@ handle @upload {
     }
     reverse_proxy 127.0.0.1:8765
 }
-@identity path /auth/* /api/auth/* /api/admin/member/add /api/admin/creator/grant /api/apps/* /api/operations /api/operations/* /api/directory /api/usage
+@identity path /auth/* /directory /api/auth/* /api/workspaces /api/workspaces/* /api/admin/member/add /api/admin/creator/grant /api/apps/* /api/operations /api/operations/* /api/directory /api/usage
 handle @identity {
     request_body {
         max_size 16KB

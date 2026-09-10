@@ -31,12 +31,12 @@ def global_first(argv):
         arg = argv[index]
         if arg in ('--json', '--no-input', '--no-color', '--version'):
             flags.append(arg)
-        elif arg == '--request-id':
+        elif arg in ('--request-id', '--workspace'):
             if index + 1 >= len(argv):
                 raise Failure('INVALID_ARGUMENT', 'Missing global flag value.')
             flags.extend(argv[index:index + 2])
             index += 1
-        elif arg.startswith('--request-id='):
+        elif arg.startswith(('--request-id=', '--workspace=')):
             flags.append(arg)
         else:
             rest.append(arg)
@@ -45,17 +45,24 @@ def global_first(argv):
 
 
 class Client:
-    def __init__(self, endpoint):
+    def __init__(self, endpoint, workspace=None):
         self.endpoint = endpoint
+        self.workspace = workspace
         context = ssl.create_default_context()
         # Frozen Python's build-time CA paths may not exist on the user's machine.
         context.load_verify_locations(certifi.where())
         self.opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPSHandler(context=context))
 
+    def select_workspace(self, token):
+        identity = self.request('/api/auth/status', token=token)
+        self.workspace = identity['workspace']['id']
+
     def request(self, path, body=None, token=None, request_id=None, timeout=30):
         headers = {'Content-Type': 'application/x-tar' if isinstance(body, bytes) else 'application/json'}
         if token:
             headers['Authorization'] = 'Bearer ' + token
+            if self.workspace is not None:
+                headers['X-Workspace'] = urllib.parse.quote(self.workspace, safe='')
         if request_id:
             headers['X-Request-ID'] = request_id
         request = urllib.request.Request(self.endpoint + path,
@@ -94,10 +101,11 @@ def execute(args, request_id, service_origin):
         summary, archive = package(args.folder)
         if args.dry_run:
             return summary
-        client = Client(service_origin)
+        client = Client(service_origin, args.workspace)
         credentials = Credentials(client.endpoint)
         with credentials.locked():
             token = credentials.read()
+            client.select_workspace(token)
             metadata = {'name': args.name}
             if args.description is not None:
                 metadata['description'] = args.description
@@ -130,7 +138,7 @@ def execute(args, request_id, service_origin):
                     raise Failure(code, error['message'], 409 if code == 'ACTIVE_CAPACITY' else 500,
                                   operation_id=result['operation_id'])
                 time.sleep(min(2, max(0, deadline - time.monotonic())))
-    client = Client(service_origin)
+    client = Client(service_origin, args.workspace)
     credentials = Credentials(client.endpoint)
     with credentials.locked():
         return authenticated_command(args, request_id, client, credentials)
@@ -175,6 +183,14 @@ def authenticated_command(args, request_id, client, credentials):
                                  ('AUTH_REQUIRED', 'CREDENTIAL_REVOKED') else ['Resolve the reported error and retry small-cloud auth status --json.'])
             raise
     token = credentials.read()
+    if args.command == 'workspace':
+        if args.action == 'list':
+            return client.request('/api/workspaces', token=token)
+        body = ({'name': args.name, 'owner_email': args.owner} if args.action == 'create'
+                else {'workspace': args.target})
+        return client.request('/api/workspaces/' + args.action, body, token, request_id)
+    if args.command != 'auth':
+        client.select_workspace(token)
     if args.command == 'usage':
         return client.request('/api/usage', token=token)
     if args.command == 'directory':
@@ -263,11 +279,11 @@ def authenticated_command(args, request_id, client, credentials):
 def setup_status(identity, endpoint):
     missing = []
     if not identity.get('workspace'):
-        missing.append('Ask the platform administrator for workspace access.')
+        missing.append('Select an accessible workspace using workspace list and workspace select ID.')
     elif 'creator' not in identity['roles']:
         missing.append('To publish, ask a workspace administrator for creator privileges using your user ID.')
     return {**identity, 'service_endpoint': endpoint, 'missing_steps': missing,
-            'next_steps': ['small-cloud app list --json'] if identity.get('workspace') else []}
+            'next_steps': ['small-cloud app list --json'] if identity.get('workspace') else ['small-cloud workspace list --json']}
 
 
 def main(argv=None, *, service_origin=SERVICE_ORIGIN):

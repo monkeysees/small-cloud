@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #20 platform-admin workspace creation, exact-email onboarding, saved and explicit CLI targets, isolated duplicate app names/data, browser directory, workspace-bound retries and shared installation safety limits.
+
 - Add #46 public Small Cloud landing page with testing-stage and manual-admission notices, persistent app databases, backup/recovery limits, and CLI installation guidance.
 
 - Fix simultaneous open CLI approval forms by retaining valid same-account browser sessions without extending expiry or weakening origin/CSRF checks.

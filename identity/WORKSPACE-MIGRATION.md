@@ -1,6 +1,6 @@
 # Initial workspace migration
 
-Issue [#19](https://github.com/monkeysees/small-cloud/issues/19) moves the installation into one explicit workspace, `ws-initial` (display name `Initial workspace`). Additional workspace creation, selection, delegated administration, ownership transfer and recovery remain subsequent work under specification #18. No second-workspace CLI or API is available.
+Issue [#19](https://github.com/monkeysees/small-cloud/issues/19) moves the installation into one explicit workspace, `ws-initial` (display name `Initial workspace`). Creation and selection now land in #20; see [workspace onboarding and upgrade](WORKSPACES.md). Delegated administration, ownership transfer and recovery remain subsequent work under specification #18.
 
 The existing operator becomes the workspace owner and a platform administrator. Ownership includes workspace-administrator authority; it does not grant creator privileges. Existing creator grants are preserved separately. Platform-administrator status alone grants neither workspace admission management nor private app content. App access requires admitted membership in the app's workspace and permission under its current sharing scope. The owner can inspect the existing diagnostics as a workspace administrator, but cannot change another creator's sharing or publish without a creator grant.
 
@@ -19,7 +19,7 @@ small-cloud --json auth status
 small-cloud --json directory
 ```
 
-Do not run the older package after migration: identity-level membership/creator/administrator columns and the sole-administrator index are removed. The new schema stores membership grants separately, an owner on the workspace, a platform role on the identity, and a fixed workspace on every app. The initial-workspace schema constraint prevents creating a second workspace before its complete workflow is implemented.
+Do not run the older package after migration: identity-level membership/creator/administrator columns and the sole-administrator index are removed. The new schema stores membership grants separately, an owner on the workspace, a platform role on the identity, and a fixed workspace on every app. The #20 upgrade removes the initial-workspace constraint and replaces global app-name uniqueness with workspace-scoped uniqueness while retaining app IDs and state.
 
 Migration uses one SQLite write transaction for workspace state, role conversion and existing app assignments. Inconsistent operator ownership, invalid role values, partial workspace schemas, orphan app ownership or inconsistent workspace references fail startup visibly with `MIGRATION_REQUIRED`. The transaction rolls back; repair the reported control-state inconsistency before retrying. Do not reset the database to hide a migration failure. Fresh installations use the same bootstrap command and do not grant creator privileges automatically.
 
@@ -36,4 +36,4 @@ python3 -m unittest identity.tests.test_workspace_migration -v
 python3 -m unittest identity.tests.test_database_http.DatabaseAcceptance.test_legacy_control_migration_preserves_database_cli_and_redeployment -v
 ```
 
-The frozen legacy schema comes from commit `27c98a8`. Checks exercise retained credentials, pending Google admission, login, actual service restart, publication, both sharing scopes, directory and gateway denials, role separation, invalid-state rollback/retry and unavailable second-workspace creation. The Docker/PostgreSQL test writes an app row, loads realistic running control state into that legacy schema, migrates/restarts the service at the same endpoint, uses the retained CLI credential and redeploys while checking the row, URL and sharing scope. These commands provide local acceptance; hosted deployment and migration outcomes are recorded separately in the acceptance report.
+The frozen legacy schema comes from commit `27c98a8`. Checks exercise retained credentials, pending Google admission, login, actual service restart, publication, both sharing scopes, directory and gateway denials, role separation, invalid-state rollback/retry and authenticated second-workspace creation after upgrading to #20. The Docker/PostgreSQL test writes an app row, loads realistic running control state into that legacy schema, migrates/restarts the service at the same endpoint, uses the retained CLI credential and redeploys while checking the row, URL and sharing scope. These commands provide local acceptance; hosted deployment and migration outcomes are recorded separately in the acceptance report.
