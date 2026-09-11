@@ -27,11 +27,24 @@ class DeploymentAcceptance(unittest.TestCase):
         source.mkdir()
         (source / 'Dockerfile').write_text('FROM scratch\n')
         result = self.cli('app', 'deploy', str(source), '--name', 'progress', '--description', '',
-                          '--wait', '--timeout', '1')
+                          '--timeout', '1')
         self.assertEqual(result.returncode, 6, result.stdout + result.stderr)
         self.assertEqual(json.loads(result.stdout)['error']['code'], 'WAIT_TIMEOUT')
         self.assertIn('Uploading validated source', result.stderr)
         self.assertIn('Deployment: accepted', result.stderr)
+        result = json.loads(result.stdout)
+        details = result['error']['details']
+        self.assertTrue(details['work_continues'])
+        self.assertEqual(details['state'], 'accepted')
+        self.assertEqual(details['request_id'], result['request_id'])
+        self.assertEqual(details['workspace_id'], 'ws-initial')
+        import shlex
+        inspected = self.cli(*shlex.split(details['next_command'])[1:])
+        self.assertEqual(inspected.returncode, 0, inspected.stdout)
+        operation = json.loads(inspected.stdout)['data']
+        self.assertEqual(operation['operation_id'], details['operation_id'])
+        self.assertEqual(operation['request_id'], result['request_id'])
+        self.assertEqual(operation['state'], 'accepted')
 
     def creator(self):
         self.operator('bootstrap', 'admin@example.test')

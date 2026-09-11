@@ -167,12 +167,7 @@ class DatabaseAcceptance(unittest.TestCase):
         raise RuntimeError('Starter did not become ready')
 
     def publish(self, name):
-        result = self.cli('app', 'deploy', str(ROOT / 'identity/fixture'), '--name', name, '--description', 'Disposable test')
-        self.assertEqual(result.returncode, 0, result.stdout)
-        self.worker.once()
-        result = self.cli('app', 'status', name)
-        self.assertEqual(result.returncode, 0, result.stdout)
-        app = json.loads(result.stdout)['data']
+        app = self.deploy_source(name, ROOT / 'identity/fixture')
         self.assertEqual(app['availability'], 'running', app)
         return app
 
@@ -242,10 +237,27 @@ class DatabaseAcceptance(unittest.TestCase):
         path.write_text(path.read_text().replace("'small-cloud-publishing'", repr(version)))
         return source
 
-    def deploy_source(self, name, source):
-        result = self.cli('app', 'deploy', str(source), '--name', name, '--description', 'Redeployment acceptance')
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.worker.once()
+    def deploy_source(self, name, source, expected_error=None):
+        with subprocess.Popen([*identity_fixture.cli_command(), '--json', 'app', 'deploy', str(source),
+                '--name', name, '--description', 'Redeployment acceptance'],
+                cwd=ROOT, env=self.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+            deadline = time.monotonic() + 240
+            try:
+                while process.poll() is None and time.monotonic() < deadline:
+                    self.worker.once()
+                    time.sleep(.05)
+                stdout, stderr = process.communicate(timeout=5)
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.communicate()
+        self.assertEqual(process.returncode, 1 if expected_error else 0, stdout + stderr)
+        result = json.loads(stdout)
+        if expected_error:
+            self.assertEqual(result['error']['code'], expected_error)
+        else:
+            self.assertTrue(result['data']['ready'])
+            self.assertEqual(result['data']['state'], 'succeeded')
         result = self.cli('app', 'status', name)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return json.loads(result.stdout)['data']
@@ -291,7 +303,7 @@ class DatabaseAcceptance(unittest.TestCase):
                     path = source / 'app.py'
                     path.write_text(path.read_text().replace('        initialize()',
                         "        raise SystemExit('Deliberate startup failure')"))
-                failed = self.deploy_source('failures', source)
+                failed = self.deploy_source('failures', source, expected_error=failure)
                 self.assertEqual(failed['latest_operation']['state'], 'failed', failed)
                 self.assertEqual(failed['latest_operation']['error']['code'], failure)
                 self.assertTrue(failed['latest_operation']['error']['message'])
@@ -320,7 +332,7 @@ class DatabaseAcceptance(unittest.TestCase):
             "        with connect() as database:\n"
             "            database.execute('ALTER TABLE entries RENAME COLUMN value TO incompatible_value')\n"
             "        raise SystemExit('Failed after committing incompatible migration')"))
-        failed = self.deploy_source('schema', source)
+        failed = self.deploy_source('schema', source, expected_error='STARTUP_FAILED')
         self.assertEqual(failed['latest_operation']['state'], 'failed', failed)
         self.assertEqual(failed['latest_operation']['error']['code'], 'STARTUP_FAILED')
         self.assertEqual(failed['active_deployment_id'], app['active_deployment_id'])

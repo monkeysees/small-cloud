@@ -49,6 +49,11 @@ def human(data, command):
         if data.get('runtime_error'):
             result.append('Runtime error: ' + fields(data['runtime_error']))
         return '\n'.join(result)
+    if command == 'app deploy' and 'operation_id' in data:
+        heading = 'Ready' if data['ready'] else 'Accepted; readiness not confirmed'
+        return (f"{heading}: {safe(data['app'])}\nURL: {safe(data['url'])}\n"
+                f"Workspace: {safe(data['workspace_id'])}\nOperation: {safe(data['operation_id'])}\n"
+                f"Inspect: {safe(data['next_command'])}")
     if command == 'guide' and 'content' in data:
         return data['content']
     return fields(data)

@@ -146,9 +146,10 @@ release: a failed candidate leaves the previous release serving.
 
 small-cloud app check . --json
 small-cloud app deploy . --name example --description demo --dry-run --json
-small-cloud app deploy . --name example --description demo --wait --json
+small-cloud app deploy . --name example --description demo --json
 small-cloud app status example --json
-small-cloud app deploy . --name example --wait --json
+small-cloud app deploy . --name example --json
+small-cloud app deploy . --name example --no-wait --json
 small-cloud app logs example --source build --json
 small-cloud app logs example --source runtime --limit 100 --json
 small-cloud operation status op_FROM_DEPLOY --json
@@ -160,10 +161,35 @@ Dry run reports included/excluded files and bytes; it does not establish remote
 build feasibility or readiness. .dockerignore applies, but credentials, .env,
 Git metadata and mandatory sensitive paths remain excluded; inspect its result.
 
-Deployment returns acceptance by default. --wait observes completion with a
-positive --timeout in seconds (default 900). Timeout, disconnection or Ctrl-C do
-not cancel work. Preserve the request ID printed on stderr and inspect that
-request or operation before retrying a mutation; retries reuse the same UUID.
+Deployment waits for readiness by default and prints Ready with the final URL.
+JSON emits one final envelope: state: succeeded and ready: true mean the candidate
+passed readiness and was selected. Progress goes to stderr. --no-wait returns
+state: accepted and ready: false, with an operation ID and inspection command;
+acceptance alone never establishes readiness, even when authentication works.
+--timeout is a positive observation bound in seconds (default 900); it starts
+after acceptance, excluding local validation and upload. Timeout exits 6 and
+Ctrl-C exits 130; accepted work continues. A temporary service outage retries
+only observation within the same deadline. If a worker is unavailable, the
+operation remains pending and the wait stays bounded.
+
+Timeout/interruption error details include request_id, operation_id, workspace_id,
+last observed state, work_continues and next_command. Run that exact command to
+inspect the original workspace even if your saved default changes. If submission
+loses its response, outcome_unknown is true and next_command inspects by request
+ID. Inspect before retrying; use the original request ID AND workspace with
+identical source/metadata to recover the same operation. Changed inputs conflict.
+
+Redeploy to the same name in the same workspace. The URL, database, sharing and
+omitted description remain; temporary container files and memory do not. Failed
+builds/startups return a failure exit and leave the previous release selected.
+Reading a failed operation still exits 0 because inspection itself succeeded.
+Both releases use the same database: there is no database rollback. A candidate
+can commit incompatible schema changes and then fail, breaking the old release's
+queries. Use repeatable, compatible migrations and creator-owned schema repair.
+Runtime availability alone does not prove every database query still works.
+Errors with reconciliation_required need operator inspection before another
+deployment. Data has no backup or recovery guarantee.
+
 Use status for availability and cleanup, and logs for the failed phase. Logs are
 bounded snapshots, subject to seven-day retention and volume loss; use the
 returned cursor via --cursor for continuation. No --follow is delivered yet.

@@ -5,7 +5,7 @@ Deploy this directory through the creator CLI, with no local Docker:
 ```bash
 small-cloud guide runtime
 small-cloud app check identity/fixture --json
-small-cloud app deploy identity/fixture --name publishing-probe --description 'Disposable database starter' --wait
+small-cloud app deploy identity/fixture --name publishing-probe --description 'Disposable database starter'
 ```
 
 The bundled runtime guide works without this checkout. Checking verifies source packaging locally and reports exclusions and limits; a remote build and runtime are still required to verify this app's dependencies, HTTP readiness and database initialization. It generates no starter files and consumes no build allowance.

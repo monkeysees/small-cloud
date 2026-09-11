@@ -77,7 +77,7 @@ class WorkspacesAcceptance(unittest.TestCase):
         source.mkdir()
         (source / 'Dockerfile').write_text('FROM scratch\n')
         request_id = str(uuid.uuid4())
-        deploy = ('app', 'deploy', str(source), '--name', 'example', '--description', '', '--request-id', request_id)
+        deploy = ('app', 'deploy', str(source), '--name', 'example', '--description', '', '--no-wait', '--request-id', request_id)
         accepted = self.result(*deploy, '--workspace', 'ws-initial')
         conflict = self.cli(*deploy, '--workspace', second)
         self.assertEqual(json.loads(conflict.stdout)['error']['code'], 'REQUEST_CONFLICT')
@@ -100,7 +100,7 @@ class WorkspacesAcceptance(unittest.TestCase):
         source = self.home / 'source'
         source.mkdir()
         (source / 'Dockerfile').write_text('FROM scratch\n')
-        self.result('app', 'deploy', str(source), '--name', 'owner-app', '--description', '')
+        self.result('app', 'deploy', str(source), '--name', 'owner-app', '--description', '', '--no-wait')
         self.assertEqual([app['name'] for app in self.result('app', 'list')['apps']], ['owner-app'])
 
     def test_owner_grants_enforce_capacity_atomically_and_allow_receipt_replay(self):

@@ -112,35 +112,29 @@ def execute(args, request_id, service_origin):
             metadata = {'name': args.name}
             if args.description is not None:
                 metadata['description'] = args.description
+            from .completion import inspection, wait_for_completion
+            recovery = inspection(request_id, client.workspace)
             print('Uploading validated source...', file=sys.stderr, flush=True)
-            result = client.request('/api/deploy?' + urllib.parse.urlencode(metadata), archive, token, request_id)
-            if not args.wait:
-                return result
-            started = time.monotonic()
-            deadline = started + args.timeout
-            last_state, last_report = 'accepted', started
-            print('Deployment: accepted (0s elapsed).', file=sys.stderr, flush=True)
-            while True:
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
-                    raise Failure('WAIT_TIMEOUT', 'Deployment continues; inspect its operation status.', 503,
-                                  operation_id=result['operation_id'])
-                operation = client.request('/api/operations/' + urllib.parse.quote(result['operation_id'], safe=''),
-                                           token=token, timeout=min(30, remaining))
-                now = time.monotonic()
-                state = operation['state']
-                if state != last_state or now - last_report >= 15:
-                    label = state if state in ('accepted', 'building', 'starting', 'cleaning', 'succeeded', 'failed') else 'waiting'
-                    print(f'Deployment: {label} ({int(now - started)}s elapsed).', file=sys.stderr, flush=True)
-                    last_state, last_report = state, now
-                if operation['state'] == 'succeeded':
-                    return {**result, 'state': 'succeeded', 'active_deployment_id': operation['deployment_id']}
-                if operation['state'] == 'failed':
-                    error = operation['error']
-                    code = error['code']
-                    raise Failure(code, error['message'], 409 if code == 'ACTIVE_CAPACITY' else 500,
-                                  operation_id=result['operation_id'])
-                time.sleep(min(2, max(0, deadline - time.monotonic())))
+            result = None
+            try:
+                result = client.request('/api/deploy?' + urllib.parse.urlencode(metadata), archive, token, request_id)
+                result = {**result, **inspection(request_id, client.workspace, result['operation_id']), 'ready': False}
+                if args.no_wait:
+                    return result
+                operation = wait_for_completion(client, token, result, request_id, args.timeout, 'Deployment')
+                return {**result, 'state': 'succeeded', 'ready': True, 'active_deployment_id': operation['deployment_id']}
+            except KeyboardInterrupt:
+                if result is not None:
+                    raise Failure('INTERRUPTED', 'Observation interrupted; accepted work continues. Inspect before retrying.', 500,
+                                  **inspection(request_id, client.workspace, result['operation_id']),
+                                  state=result['state'], work_continues=True) from None
+                raise Failure('INTERRUPTED', 'Submission interrupted; deployment may continue. Inspect before retrying.', 500,
+                              **recovery, outcome_unknown=True) from None
+            except Failure as error:
+                if error.code == 'NETWORK_ERROR' and result is None:
+                    error.message = 'Submission outcome is unknown; deployment may continue. Inspect before retrying.'
+                    error.details.update(recovery, outcome_unknown=True)
+                raise
     client = Client(service_origin, args.workspace)
     credentials = Credentials(client.endpoint)
     with credentials.locked():
