@@ -1,5 +1,7 @@
 # Hetzner operator infrastructure
 
+Use the [server deployment and service recovery procedure](../identity/SERVICES.md) to upgrade the installed identity package and required workers, verify full readiness, and enter or resume intentional maintenance.
+
 The permanent CPX32 control and CPX42 runtime foundation for [#17](https://github.com/monkeysees/small-cloud/issues/17) is deployed in Nuremberg. The [infrastructure acceptance report](../docs/acceptance/hosting-foundation-2026-09-08.md) records live isolation, capacity, persistence, renewal, retention and alert checks. Creator admission remains closed pending the separate authentication, routing and product lifecycle tickets and final integrated verification #15.
 
 ## Prerequisites and scope

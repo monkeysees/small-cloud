@@ -1,0 +1,287 @@
+{
+  "date": "2026-09-11",
+  "baseline": "2a79287defcdd38bb5982feee0370f94bb05c506",
+  "deployment": {
+    "ready": true,
+    "wheel_sha256": "360af5c3e2fd553050f4cb2385d861fd22ece7bfa64792b15a1e2aceff84bb2d"
+  },
+  "restart": {
+    "all_workers_replaced_and_ready": true,
+    "before": {
+      "small-cloud-identity": {
+        "MainPID": "58116",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-diagnostics": {
+        "MainPID": "58120",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-lifecycle": {
+        "MainPID": "58160",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-publishing": {
+        "MainPID": "58161",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    },
+    "after": {
+      "small-cloud-identity": {
+        "MainPID": "58371",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-diagnostics": {
+        "MainPID": "58377",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-lifecycle": {
+        "MainPID": "58418",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-publishing": {
+        "MainPID": "58419",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    }
+  },
+  "retained_identity": "usr_800a3dde642a45d5902244808a2e2f5c",
+  "request_id": "bb5980a0-7927-483f-91e7-167d41e6268b",
+  "publication": {
+    "operation_id": "d-a9e5207a3962426bb0b156ef",
+    "state": "accepted",
+    "app": "service-recovery-47",
+    "url": "https://a-ea3079fc67e44d4da999f434.small-cloud.monkeysees.one",
+    "active_deployment_id": null
+  },
+  "operation": {
+    "id": "d-a9e5207a3962426bb0b156ef",
+    "kind": "deploy",
+    "app": "service-recovery-47",
+    "operation_id": "d-a9e5207a3962426bb0b156ef",
+    "deployment_id": "d-a9e5207a3962426bb0b156ef",
+    "state": "succeeded",
+    "request_id": "bb5980a0-7927-483f-91e7-167d41e6268b",
+    "created_at": "2026-09-11T09:28:56.766824Z",
+    "updated_at": "2026-09-11T09:30:25.204019Z",
+    "completed_at": "2026-09-11T09:30:25.204019Z",
+    "error": null,
+    "cleanup_pending": false
+  },
+  "app": {
+    "app": "service-recovery-47",
+    "app_id": "a-ea3079fc67e44d4da999f434",
+    "description": "Temporary worker recovery acceptance",
+    "url": "https://a-ea3079fc67e44d4da999f434.small-cloud.monkeysees.one",
+    "sharing_scope": "creator-only",
+    "availability": "running",
+    "runtime_error": null,
+    "active_deployment_id": "d-a9e5207a3962426bb0b156ef",
+    "latest_operation": {
+      "id": "d-a9e5207a3962426bb0b156ef",
+      "kind": "deploy",
+      "app": "service-recovery-47",
+      "operation_id": "d-a9e5207a3962426bb0b156ef",
+      "deployment_id": "d-a9e5207a3962426bb0b156ef",
+      "state": "succeeded",
+      "request_id": "bb5980a0-7927-483f-91e7-167d41e6268b",
+      "created_at": "2026-09-11T09:28:56.766824Z",
+      "updated_at": "2026-09-11T09:30:25.204019Z",
+      "completed_at": "2026-09-11T09:30:25.204019Z",
+      "error": null,
+      "cleanup_pending": false
+    },
+    "cleanup": null
+  },
+  "inflight_restart": {
+    "state_before_restart": "building",
+    "state_after_restart": "succeeded",
+    "operation_error": null,
+    "restart_wait_seconds": 54.3
+  },
+  "idle_wake": {
+    "idle_clock": "advanced only the designated acceptance app by 1801 seconds",
+    "observed_stopped": true,
+    "authenticated_http_statuses": [
+      503,
+      503,
+      503,
+      503,
+      503,
+      503,
+      503,
+      200
+    ],
+    "database_row_preserved": true
+  },
+  "runtime_diagnostics": {
+    "startup_marker_collected": true,
+    "entry_count": 3,
+    "collection_interrupted": true
+  },
+  "recovery": {
+    "maintenance_survived_explicit_start": true,
+    "maintenance_check_failed": true,
+    "explicit_resume_ready": true,
+    "tunnel_recovered_without_collector_restart": true,
+    "all_worker_failures_recovered": true,
+    "duplicate_processes": {
+      "publishing": "refused by process lock",
+      "lifecycle": "refused by process lock",
+      "diagnostics": "refused by process lock"
+    },
+    "stable_for_seconds": 12,
+    "services": {
+      "small-cloud-identity": {
+        "MainPID": "59723",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "small-cloud-diagnostics": {
+        "MainPID": "59979",
+        "NRestarts": "1",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "small-cloud-lifecycle": {
+        "MainPID": "60067",
+        "NRestarts": "1",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "small-cloud-publishing": {
+        "MainPID": "59916",
+        "NRestarts": "1",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    }
+  },
+  "reviewed_deployment": {
+    "ready": true,
+    "wheel_sha256": "c3327465669111860d375d0bb05dea33a4684e09aa9bd18d94dae2c3a21fc668"
+  },
+  "cleanup": {
+    "acceptance_app_removed": "a-ea3079fc67e44d4da999f434",
+    "acceptance_database_and_secrets_removed": true,
+    "artifact_references_retired": true,
+    "source_staging_removed": true,
+    "builder": {
+      "id": 165493132,
+      "location": "nbg1",
+      "type": "cx23",
+      "deleted": true
+    },
+    "charged_seconds_preserved": 10,
+    "original_table_fingerprints_preserved": [
+      "apps",
+      "users",
+      "workspaces",
+      "memberships",
+      "credentials"
+    ],
+    "original_app_databases_preserved": 2,
+    "configurations_preserved": true,
+    "all_services_ready": true
+  },
+  "final": {
+    "services": {
+      "small-cloud-identity": {
+        "MainPID": "60872",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-diagnostics": {
+        "MainPID": "60876",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-lifecycle": {
+        "MainPID": "60916",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      },
+      "small-cloud-publishing": {
+        "MainPID": "60917",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running",
+        "UnitFileState": "enabled"
+      }
+    },
+    "stable_seconds": 12,
+    "pending_operations": 0,
+    "remaining_apps": 2,
+    "module_sha256": {
+      "collector.py": "f8f2a6c09a42843125eadd67c751778332aee9c3cd35234e2daf63e39dc40156",
+      "worker.py": "475d27415d408506045c9338760382ea09b6bd567dc5a0bf685d868fea78c9b1",
+      "services.py": "739369736cbd09e21136367f2843ea05393410af81386684de62835bcd216501"
+    },
+    "unit_sha256": {
+      "small-cloud-identity": "4183ae684e562be33eab3a44df40893899a0a80cb17d08ff95b085889846f875",
+      "small-cloud-diagnostics": "e2160811eb2e25bca46798c8f43b51ce94960b8f1e05384b028d6739469a5341",
+      "small-cloud-lifecycle": "9471dce8802e7c7cca50490a1b9eceb453aca4c5e391007b88459b5d37b0a5ca",
+      "small-cloud-publishing": "45d0c920ce5130556fb4ccb8f556cf25624e4e90f25494e25f1fa9ffe5a43f43"
+    },
+    "maintenance": false,
+    "provider_servers": [
+      {
+        "id": 165120313,
+        "role": "control",
+        "status": "running"
+      },
+      {
+        "id": 165120370,
+        "role": "runtime",
+        "status": "running"
+      }
+    ],
+    "orphan_builders": 0,
+    "saved_credential_and_default_preserved": true
+  },
+  "local_verification": {
+    "full_suite": {
+      "identity": 116,
+      "infrastructure": 89,
+      "hosting_fixture": 4,
+      "total": 209,
+      "passed": true
+    },
+    "post_review_service_tests": 14,
+    "post_review_diagnostics_tests": 7,
+    "pyright_errors": 0,
+    "standards_findings": 0,
+    "spec_findings": 0,
+    "boot_ordering": "real isolated user-systemd graph with available dependency fixtures; no hosted reboot performed"
+  }
+}
