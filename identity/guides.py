@@ -1,5 +1,39 @@
 """Bundled, separately authored task guidance; no repository access required."""
 GUIDES = {
+    'updating': ('Explicitly update an installed standalone executable', '''Update Small Cloud
+
+small-cloud update
+small-cloud update --json --no-input
+small-cloud --version
+
+Update downloads the native executable and SHA-256 checksum from the official
+HTTPS /cli/releases/latest/ distribution. It checks the checksum and replacement
+startup before atomically replacing the executable you invoked, including a
+custom install location. Symlinks retain their link and update the resolved file.
+The installation directory must be writable. No authentication or terminal input
+is needed; credentials and shell startup files stay unchanged. Ordinary commands
+never check for or install updates.
+
+Human results and JSON data report installed_version, resulting_version,
+executable and outcome: updated or already_current. A matching checksum returns
+already_current without rewriting the executable. Different bytes with the same
+version are reinstalled; an older published version is refused.
+
+On UPDATE_FAILED (exit 1), the previous executable remains usable. Check network
+access and install-directory permissions, then retry update. Checksum/startup
+failures may require the operator to repair the release. Interrupted updates
+return exit 130; inspect small-cloud --version before retrying.
+
+Source/Python installations return UPDATE_UNSUPPORTED (exit 2); this command never
+replaces Python or package-manager scripts. Install the standalone executable:
+curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
+
+Older releases without update can use the same installer. To deliberately install
+an older published version, run the installer with SMALL_CLOUD_VERSION=vX.Y.Z.
+Set SMALL_CLOUD_INSTALL_DIR to an absolute directory for a custom installation.
+The installer does not sign in or edit shell files; add its directory to PATH
+yourself when needed. Downloads support Linux/macOS on ARM64 and x86-64.
+'''),
     'getting-started': ('Discover commands, sign in and inspect apps', '''Small Cloud getting started
 
 Use --json for one versioned result object, including errors. JSON and non-TTY
@@ -9,6 +43,7 @@ small-cloud --help
 small-cloud catalog app --json
 small-cloud guide runtime
 small-cloud guide publishing
+small-cloud guide updating
 small-cloud auth login --no-browser --json
 small-cloud auth status --json
 small-cloud app list --json
@@ -25,6 +60,9 @@ https://small-cloud.monkeysees.one; no endpoint setup is needed or supported.
 Credentials stay in protected per-user storage outside source folders, bound
 to that exact origin. Old endpoint environment variables and configuration are
 ignored. No repository config or .env is loaded.
+
+Run small-cloud update when you choose to update the standalone executable.
+Ordinary commands never update. Use small-cloud guide updating for recovery.
 
 Login requires human Google browser approval. --no-browser prints a verification
 URL and code on stderr; compare the code before approving. The same process waits

@@ -87,7 +87,10 @@ class Client:
             raise Failure('NETWORK_ERROR', 'Platform request failed; retry with the same request ID.', 503) from None
 
 
-def execute(args, request_id, service_origin):
+def execute(args, request_id, service_origin, update_executable=None):
+    if args.command == 'update':
+        from .update import update
+        return update(service_origin, update_executable)
     if args.command == 'catalog':
         return catalog(args.query)
     if args.command == 'guide':
@@ -300,7 +303,7 @@ def setup_status(identity, endpoint):
             'next_steps': ['small-cloud app list --json'] if identity.get('workspace') else ['small-cloud workspace list --json']}
 
 
-def main(argv=None, *, service_origin=SERVICE_ORIGIN):
+def main(argv=None, *, service_origin=SERVICE_ORIGIN, update_executable=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     json_mode, request_id = '--json' in argv, None
     try:
@@ -310,7 +313,7 @@ def main(argv=None, *, service_origin=SERVICE_ORIGIN):
             help_parser(argv, parsers, children).print_help()
             return 0
         args = root.parse_args(global_first(argv))
-        if args.command in ('catalog', 'guide', 'check') or getattr(args, 'dry_run', False):
+        if args.command in ('catalog', 'guide', 'check', 'update') or getattr(args, 'dry_run', False):
             request_id = None
         elif args.request_id:
             request_id = str(uuid.UUID(args.request_id))
@@ -318,7 +321,7 @@ def main(argv=None, *, service_origin=SERVICE_ORIGIN):
             request_id = str(uuid.uuid4())
         if request_id:
             print('Request ID: ' + request_id, file=sys.stderr, flush=True)
-        result = envelope(execute(args, request_id, origin(service_origin)), request_id=request_id)
+        result = envelope(execute(args, request_id, origin(service_origin), update_executable), request_id=request_id)
         print(json.dumps(result) if json_mode else human(result['data'], args.command_path))
         return 0
     except Failure as exc:

@@ -4,6 +4,7 @@ from typing import Any
 
 from .common import Failure
 
+VERSION = '0.6.0'
 
 def argument(name, description, **options):
     return {'name': name, 'description': description, **options}
@@ -18,7 +19,7 @@ GLOBALS = [argument('--json', 'Emit one schema_version: 1 JSON envelope; never p
     argument('--no-color', 'Use output without color (also the default).', action='store_true'),
     argument('--request-id', 'Mutation retry UUID; operation status accepts this instead of an ID.'),
     argument('--workspace', 'Target workspace ID or exact unambiguous name; overrides the saved default.'),
-    argument('--version', 'Print installed CLI version.', action='version', version='small-cloud 0.6.0')]
+    argument('--version', 'Print installed CLI version.', action='version', version='small-cloud ' + VERSION)]
 
 
 def command(path, description, example, permission, outputs, effects='Read only.', inputs=(), guide='getting-started', **dispatch) -> dict[str, Any]:
@@ -28,6 +29,11 @@ def command(path, description, example, permission, outputs, effects='Read only.
 
 
 COMMANDS = [
+    command('update', 'Explicitly update this standalone executable from the official latest release.',
+            'update --json --no-input', 'None; no login required. Install directory must be writable.',
+            'outcome (updated or already_current), installed_version, resulting_version, executable, next_command.',
+            'Downloads and verifies the native artifact, then atomically replaces this executable. Never prompts, signs in or changes shell startup files.',
+            guide='updating', command='update', action='update'),
     command('workspace create', 'Create a workspace with one designated owner.',
             'workspace create "Design team" --owner owner@example.com --json', 'Platform administrator.',
             'workspace: id, name, owner_id.', 'Creates a workspace and admits its owner as administrator and creator.',

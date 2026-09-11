@@ -9,6 +9,10 @@ def safe(value):
 
 
 def human(data, command):
+    if command == 'update':
+        outcome = 'Updated' if data['outcome'] == 'updated' else 'Already current'
+        return (f"{outcome}: {safe(data['installed_version'])} → {safe(data['resulting_version'])}\n"
+                f"Executable: {safe(data['executable'])}\nNext: {safe(data['next_command'])}")
     if command == 'auth login start':
         return (f"Open {safe(data['verification_url'])} and verify code {safe(data['user_code'])}\n"
                 f"Expires: {safe(data['expires_at'])}\n"
@@ -87,6 +91,9 @@ def human_error(error, request_id=None):
         'NETWORK_ERROR': 'Check the connection and endpoint. Inspect accepted work before retrying a mutation.',
     }
     result = safe(error.code) + ': ' + safe(error.message)
+    if error.code in ('UPDATE_FAILED', 'UPDATE_UNSUPPORTED', 'INTERRUPTED') and 'installed_version' in error.details:
+        result += '\nInstalled version: ' + safe(error.details['installed_version'])
+        result += '\nResulting version: ' + safe(error.details.get('resulting_version') or 'unknown; inspect --version')
     if error.details.get('failed_phase'):
         result += '\nFailed phase: ' + safe(error.details['failed_phase'])
     if error.details.get('diagnostics'):

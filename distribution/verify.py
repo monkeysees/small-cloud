@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT))
 from identity.tests.test_identity_cli import IdentityAcceptance
 from identity.tests.test_app_check_cli import AppCheckAcceptance
 from identity.tests.test_completion_cli import CompletionAcceptance
+from identity.tests.test_update_cli import UpdateAcceptance
 
 
 class FrozenIdentity(IdentityAcceptance):
@@ -157,6 +158,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         assert refused.returncode != 0 and 'Checksum mismatch' in refused.stderr
         assert executable.read_bytes() == binary.read_bytes()
     os.environ['SMALL_CLOUD_TEST_BINARY'] = str(fixture)
+    os.environ['SMALL_CLOUD_TEST_PRODUCTION_BINARY'] = str(binary)
     suite = unittest.TestSuite(FrozenIdentity(name) for name in (
         'test_packaged_credential_roundtrip',
         'test_split_login_saves_credential_only_after_browser_approval',
@@ -165,6 +167,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         'test_split_login_server_expiry_removes_pending_state'))
     suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(AppCheckAcceptance))
     suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(CompletionAcceptance))
+    suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(UpdateAcceptance))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful():
         raise SystemExit(1)
@@ -176,6 +179,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
                       'frozen_https_login_status_logout': 'passed',
                       'frozen_offline_app_preparation': 'passed',
                       'frozen_https_deployment_completion': 'passed',
+                      'installed_explicit_updates_and_failure_preservation': 'passed',
                       'frozen_https_split_login_pending_expiry_protection': 'passed'}))
 
 

@@ -1,0 +1,43 @@
+{
+  "issue": 43,
+  "date": "2026-09-11",
+  "baseline": "55066d900c3777af301551b1171ec7b29202cd4f",
+  "publication": "not published; public artifacts unchanged",
+  "local_platform": "Linux x86-64, glibc 2.36",
+  "build_version": "0.6.0 (unpublished development build; must receive a new version before release)",
+  "production_sha256": "eb35773e4fc71da45b012a34eb9d4f702ed9e36c0eee93de7749028d9b5ab12a",
+  "fixture_sha256": "decede9514d62f2c119ca8594af2d544aef3f5de11a52c226aa4a16ae6af6c35",
+  "native_update_checks": {
+    "installed_fixture_to_real_production_artifact": "passed",
+    "no_python_on_path_after_replacement": "passed",
+    "already_current_without_rewrite": "passed",
+    "human_json_versions_and_recovery": "passed",
+    "corrupt_unusable_failing_older_candidates_preserve_executable": "passed",
+    "unavailable_redirected_truncated_downloads": "passed",
+    "slow_headers_real_120_second_deadline": "passed (120.973 seconds including fixture setup and cleanup)",
+    "interruption": "passed",
+    "custom_path_symlink": "passed",
+    "unwritable_install_directory": "passed",
+    "source_python_installation_refused": "passed",
+    "ordinary_discovery_does_not_download": "passed",
+    "shell_files_and_credential_state_unchanged": "passed"
+  },
+  "regressions": {
+    "identity_full_suite": "155 run in 855.416 seconds: 154 passed, 1 native-only case skipped and covered by installed artifact acceptance",
+    "additional_source_regressions_after_review": "3 passed: deadline, source-install refusal, unwritable directory",
+    "native_update_cases": "11 passed across installed suite and focused real-deadline/directory-permission checks",
+    "infrastructure": "89 passed",
+    "hosting_probes": "4 passed",
+    "discovery_after_review": "5 passed",
+    "pyright": "0 errors, 0 warnings"
+  },
+  "review": {
+    "standards": "0 remaining findings after deadline fix",
+    "spec": "0 remaining implementation findings after human error version fix; native acceptance gap retained"
+  },
+  "pending": [
+    "Native CI on Ubuntu 22.04 x86-64, Ubuntu 24.04 ARM64, macOS Intel and macOS ARM64",
+    "New version and verified artifact publication",
+    "Public HTTPS update and no-update acceptance on all four targets"
+  ]
+}

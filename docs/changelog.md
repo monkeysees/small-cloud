@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #43 explicit `small-cloud update` with checked atomic executable replacement, human/JSON version outcomes, failure recovery and offline discovery; extend native artifact acceptance for all four supported targets.
+
 ## 0.6.0 — 2026-09-11
 
 - Deploy and publish #35 on all four native targets; verify hosted failure diagnosis, redaction and safe operator reconciliation, preserve existing apps/data/credentials, and clean up acceptance resources while retaining 38 build seconds.
