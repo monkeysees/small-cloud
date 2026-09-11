@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.6.0 — 2026-09-11
+
 - Add #35 deployment failure phases, bounded authorized diagnostic excerpts and `app logs --tail`, human/JSON recovery commands and operator escalation for uncertain work or unavailable diagnostics, verified through actual CLI failure and reconciliation fixtures.
 
 ## 0.5.0 — 2026-09-11
