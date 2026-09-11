@@ -4,7 +4,7 @@ Small Cloud runs without a Python installation or source checkout. The native ex
 
 ## Install and sign in
 
-Version 0.3.1 is published on all four supported targets, including workspace creation and selection; see the [workspace release acceptance record](../docs/acceptance/cli-workspaces-2026-09-11.md). The server grants new owners administrator and creator privileges automatically.
+Version 0.4.0 is published on all four supported targets, including offline `app check` and bundled runtime guidance; see the [app-preparation acceptance record](../docs/acceptance/app-preparation-2026-09-11.md). Workspace creation and selection remain available, and the server grants new owners administrator and creator privileges automatically.
 
 ```sh
 curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
@@ -23,7 +23,7 @@ In Fish, use `fish_add_path "$HOME/.local/bin"`. Login requires human Google bro
 To select an existing release and another absolute install directory:
 
 ```sh
-curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.3.1 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
+curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.4.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
 ```
 
 Ordinary CLI commands do not update the executable. Rerunning the installer explicitly replaces it; the dedicated update command and completion generators belong to later #29 tickets.
@@ -34,7 +34,7 @@ Download the executable and matching `.sha256` file from `https://small-cloud.mo
 
 | System | Architecture | Executable | Minimum supported OS |
 | --- | --- | --- | --- |
-| Linux | x86-64 | `small-cloud-linux-x86_64` | Ubuntu 24.04 / glibc 2.39 |
+| Linux | x86-64 | `small-cloud-linux-x86_64` | Ubuntu 22.04 / glibc 2.35 |
 | Linux | ARM64 | `small-cloud-linux-arm64` | Ubuntu 24.04 / glibc 2.39 |
 | macOS | Intel x86-64 | `small-cloud-macos-x86_64` | macOS 15 |
 | macOS | Apple Silicon ARM64 | `small-cloud-macos-arm64` | macOS 15 |

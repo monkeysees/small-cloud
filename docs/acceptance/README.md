@@ -4,6 +4,7 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 
 | Report | Scope |
 | --- | --- |
+| [App preparation — 2026-09-11](app-preparation-2026-09-11.md) | #33 offline runtime guidance and local source checks; v0.4.0 native release and actual public installation on all four targets. |
 | [Required service recovery — 2026-09-11](service-recovery-2026-09-11.md) | #47 automatic worker restoration, acknowledged readiness, graceful in-flight restart, fault recovery, maintenance and scoped hosted cleanup. |
 | [Workspace CLI release — 2026-09-11](cli-workspaces-2026-09-11.md) | v0.3.1 native downloads, public installation, glibc compatibility and hosted owner-role defaults. |
 | [Hosted workspaces — 2026-09-11](workspaces-hosted-2026-09-11.md) | #20 live upgrade, two cloud builds, workspace/app/database isolation, restart, scoped cleanup and final user acceptance. |

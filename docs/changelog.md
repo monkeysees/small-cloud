@@ -4,6 +4,8 @@
 
 ## 0.4.0 — 2026-09-11
 
+- Verify and publish #33 on all four native targets and through the public installer, preserving credentials and testing human/JSON source checks without local Docker.
+
 - Add #33 offline `app check` with safe source manifests, limits, actionable errors and explicit local/remote verification boundaries, plus bundled runtime guidance without a local Docker prerequisite.
 
 - Add #47 coordinated server deployment, automatic worker restoration, acknowledged diagnostics readiness, bounded recovery and persistent maintenance stop/resume while preserving operation locks and accounting.
