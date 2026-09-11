@@ -19,6 +19,8 @@ from .common import Failure, read_private
 
 SOCKET = '/run/small-cloud-diagnostics.sock'
 MAINTENANCE = Path('/etc/small-cloud/maintenance')
+SERVICE_LOCK = Path('/run/small-cloud-services.lock')
+UNIT_DIRECTORY = Path('/etc/systemd/system')
 UNITS = tuple('small-cloud-' + name + '.service' for name in
               ('identity', 'diagnostics', 'lifecycle', 'publishing'))
 
@@ -145,7 +147,7 @@ def main():
             if os.geteuid() != 0:
                 raise OSError('requires control-host root')
             if args.command in ('maintenance-stop', 'resume', 'deploy'):
-                lock = open('/run/small-cloud-services.lock', 'w')
+                lock = SERVICE_LOCK.open('w')
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             config = read_private(args.config)
             if args.command == 'dependencies':
@@ -164,7 +166,7 @@ def main():
                     subprocess.run([sys.executable, '-m', 'pip', 'install', '--no-deps', '--force-reinstall',
                                     str(args.wheel.resolve())], check=True, timeout=120)
                     for unit in UNITS:
-                        shutil.copyfile(args.units_directory / unit, Path('/etc/systemd/system') / unit)
+                        shutil.copyfile(args.units_directory / unit, UNIT_DIRECTORY / unit)
                     systemctl('daemon-reload')
                     systemctl('enable', *UNITS)
                 resume(config, args.timeout)

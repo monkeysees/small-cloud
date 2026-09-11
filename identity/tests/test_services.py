@@ -10,7 +10,7 @@ import unittest
 import uuid
 
 
-class ServiceLifecycle(unittest.TestCase):
+class SystemdFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if not os.environ.get('XDG_RUNTIME_DIR') or not shutil.which('systemctl'):
@@ -103,6 +103,7 @@ if role == 'diagnostics':
 
     def cleanup(self):
         self.ctl('stop', *(self.unit(name) for name in self.units), check=False)
+        self.ctl('disable', *(self.unit(name) for name in self.units), check=False)
         for name in self.units:
             (self.directory / self.unit(name)).unlink(missing_ok=True)
         self.ctl('daemon-reload')
@@ -117,6 +118,8 @@ if role == 'diagnostics':
             time.sleep(0.05)
         self.fail('required services did not become active')
 
+
+class ServiceLifecycle(SystemdFixture):
     def test_identity_restart_restores_required_workers(self):
         self.ctl('start', *(self.unit(name) for name in self.units))
         self.ctl('stop', self.unit('identity'))

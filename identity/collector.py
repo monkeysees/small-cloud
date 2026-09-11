@@ -29,6 +29,8 @@ class Connection:
         self.buffer += data
         while b'\n' in self.buffer:
             line, self.buffer = self.buffer.split(b'\n', 1)
+            if self.writer is None and re.fullmatch(rb'PING [0-9a-f]{32}', line):
+                return b'PONG ' + line[5:] + b'\n'
             match = HEADER.fullmatch(line)
             if match is None or len(line) > 65536:
                 raise ValueError('Malformed runtime diagnostic frame')
@@ -77,15 +79,10 @@ class Collector:
                     data = key.fileobj.recv(65536)
                     if not data:
                         raise EOFError()
-                    if key.data.writer is None and (key.data.buffer + data).startswith(b'PING '):
-                        key.data.buffer += data
-                        if re.fullmatch(rb'PING [0-9a-f]{32}\n', key.data.buffer):
-                            key.fileobj.sendall(b'PONG ' + key.data.buffer[5:])
-                            raise EOFError()
-                        if len(key.data.buffer) >= 38:
-                            raise ValueError('Malformed readiness probe')
-                        continue
-                    key.data.feed(data)
+                    response = key.data.feed(data)
+                    if response is not None:
+                        key.fileobj.sendall(response)
+                        raise EOFError()
                 except (EOFError, OSError, ValueError):
                     self.selector.unregister(key.fileobj)
                     key.fileobj.close()
