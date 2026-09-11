@@ -6,7 +6,7 @@ Initial onboarding is operator-assisted and open to unrelated users: platform ad
 
 Each app belongs to one fixed workspace, with a workspace-unique name. Workspace-wide sharing reaches only that workspace's members; cross-workspace sharing and app moves are deferred to keep authorization boundaries explicit.
 
-Platform administrators set per-workspace resource limits, with installation-wide limits preventing infrastructure overcommitment. Workspace administrators can view usage but cannot increase their allowances. Configurable defaults are five creators, 30 deployed apps, five active apps, and 1,000 build minutes per month. Owners and administrators count toward creator limits only when separately granted creator privileges. Creating a workspace does not reserve or guarantee runtime capacity.
+Platform administrators set per-workspace resource limits, with installation-wide limits preventing infrastructure overcommitment. Workspace administrators can view usage but cannot increase their allowances. Configurable defaults are five creators, 30 deployed apps, five active apps, and 1,000 build minutes per month. Owners receive administrator and creator privileges automatically and count toward creator limits. Other administrators count only when separately granted creator privileges. Creating a workspace does not reserve or guarantee runtime capacity.
 
 Each workspace has exactly one owner with all workspace-administrator powers, initially designated by the platform administrator. Workspace administrators can appoint and remove administrators and remove members, but cannot remove or demote the owner. They can disable apps and inspect diagnostics; their role does not grant access to creator-only content or secret values.
 
@@ -28,6 +28,6 @@ Expose workspace creation, membership, roles, ownership transfer, suspension, an
 
 Migrate existing users and apps into one initial workspace, preserving app URLs, data, sharing scopes, and creator grants. The current operator becomes both its initial owner and a platform administrator.
 
-The user confirmed this design on 2026-09-09, including the ownership-recovery trust boundary. The implementation and pilot specification still describe the existing single-workspace service; implementation is a separate task.
+The user confirmed this design on 2026-09-09, including the ownership-recovery trust boundary, and changed owner defaults to include creator privileges on 2026-09-11. The implementation and pilot specification still describe the existing single-workspace service; implementation is a separate task.
 
 Track delivery through [specification #18](https://github.com/monkeysees/small-cloud/issues/18) and implementation tickets #19–#28 in the [GitHub Project](https://github.com/users/monkeysees/projects/1).

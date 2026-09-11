@@ -1,5 +1,6 @@
 """Publishing limits through authenticated HTTP/CLI and worker execution."""
 import json
+import sqlite3
 import subprocess
 import unittest
 import uuid
@@ -230,11 +231,14 @@ class LimitsAcceptance(unittest.TestCase):
         self.start_platform()
         administrator = self.http_login('admin@example.test')
         self.token = administrator['credential']
-        self.assertEqual(self.usage()['creators']['used'], 0)
+        self.assertEqual(self.usage()['creators']['used'], 1)
         self.http('/api/admin/member/add', {'email': 'member@example.test'}, token=self.token,
                   headers={'X-Request-ID': str(uuid.uuid4())})
         member = self.http_login('member@example.test')
         self.assertEqual(self.http('/api/usage', token=member['credential'])[0], 403)
+        with sqlite3.connect(self.home / 'server' / 'identity.sqlite3') as db:
+            db.execute('UPDATE memberships SET administrator=1 WHERE user_id=?', (member['user']['id'],))
+        self.assertEqual(self.http('/api/usage', token=member['credential'])[0], 200)
         self.assertEqual(self.http('/api/usage')[0], 401)
 
     def test_competing_requests_cannot_exceed_deployed_capacity_and_updates_still_work(self):

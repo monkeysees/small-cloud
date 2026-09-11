@@ -77,7 +77,7 @@ class Store:
                        "VALUES(?,?,?,1,'ws-initial')",
                        (user_id, email, email))
             db.execute('INSERT INTO workspaces VALUES(?,?,?)', (INITIAL_WORKSPACE, 'Initial workspace', user_id))
-            db.execute('INSERT INTO memberships VALUES(?,?,1,0,1)', (INITIAL_WORKSPACE, user_id))
+            db.execute('INSERT INTO memberships VALUES(?,?,1,1,1)', (INITIAL_WORKSPACE, user_id))
             return self.membership(db.execute('SELECT * FROM workspace_users WHERE id=?', (user_id,)).fetchone())
 
     @staticmethod
@@ -311,8 +311,10 @@ class Store:
                     raise Failure('INVALID_ARGUMENT', 'Supply a workspace name (1–100 characters) and owner_email.')
                 workspace_id = 'ws-' + uuid.uuid4().hex
                 owner = self.admit(db, workspace_id, body['owner_email'])
+                if db.execute('SELECT COUNT(*) FROM memberships WHERE creator=1').fetchone()[0] >= 5:
+                    raise Failure('CREATOR_CAPACITY', 'All five creator grants are occupied.', 409, limit=5)
                 db.execute('INSERT INTO workspaces VALUES(?,?,?)', (workspace_id, body['name'], owner['id']))
-                db.execute('UPDATE memberships SET administrator=1 WHERE workspace_id=? AND user_id=?',
+                db.execute('UPDATE memberships SET administrator=1,creator=1 WHERE workspace_id=? AND user_id=?',
                            (workspace_id, owner['id']))
                 result = {'workspace': {'id': workspace_id, 'name': body['name'], 'owner_id': owner['id']}}
             elif action == 'workspaces/select':

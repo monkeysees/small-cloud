@@ -33,7 +33,7 @@ A workspace member who admits members, grants creator privileges, and can disabl
 The operator who creates workspaces and appoints their initial workspace administrators.
 
 **Workspace owner**:
-The single designated member with all workspace-administrator powers who cannot be removed or demoted by other workspace administrators. The platform administrator designates the initial owner.
+The single designated member granted creator privileges and all workspace-administrator powers who cannot be removed or demoted by other workspace administrators. The platform administrator designates the initial owner.
 
 **Workspace member**:
 A person explicitly admitted to a workspace who can use its workspace-wide apps. One person can belong to multiple workspaces with independent roles; membership alone does not grant creator privileges.

@@ -219,7 +219,7 @@ class IdentityAcceptance(unittest.TestCase):
         status, _ = self.http('/api/auth/status')
         self.assertEqual(status, 401)
         logged_in = self.login()
-        self.assertEqual(logged_in['roles'], ['member', 'administrator'])
+        self.assertEqual(logged_in['roles'], ['member', 'creator', 'administrator'])
         retained = self.cli('auth', 'status')
         self.assertEqual(json.loads(retained.stdout)['data'], logged_in)
         logged_out = self.cli('auth', 'logout')
@@ -270,7 +270,7 @@ class IdentityAcceptance(unittest.TestCase):
         self.assertEqual(status['service_endpoint'], self.endpoint)
         self.assertEqual(status['workspace']['id'], 'ws-initial')
         self.assertEqual(status['user']['email'], 'admin@example.test')
-        self.assertIn('creator', status['missing_steps'][0].lower())
+        self.assertEqual(status['missing_steps'], [])
 
     def test_split_login_protects_pending_material_and_origin(self):
         self.operator('bootstrap', 'admin@example.test')
@@ -456,7 +456,7 @@ with patch('os.replace', side_effect=failure), patch('urllib.request.OpenerDirec
             user_id = json.loads(added.stdout)['data']['user_id']
             self.http_login(f'creator{number}@example.test')
             result = self.cli('workspace', 'creator', 'grant', user_id)
-            self.assertEqual(result.returncode, 0 if number <= 5 else 5, result.stdout)
+            self.assertEqual(result.returncode, 0 if number <= 4 else 5, result.stdout)
         self.assertEqual(self.cli('workspace', 'creator', 'grant', member_id).returncode, 0)
         self.env['XDG_STATE_HOME'] = str(self.home / 'member-state')
         self.identity = {'sub': 'member@example.test', 'email': 'member@example.test',
@@ -673,12 +673,12 @@ with patch('os.replace', side_effect=failure), patch('urllib.request.OpenerDirec
                              headers={'X-Request-ID': str(uuid.uuid4())})[0]
 
         candidates = []
-        for number in range(6):
+        for number in range(5):
             email = f'candidate{number}@example.test'
             self.http('/api/admin/member/add', {'email': email}, admin['credential'],
                       headers={'X-Request-ID': str(uuid.uuid4())})
             member = self.http_login(email)
-            if number < 4:
+            if number < 3:
                 self.assertEqual(grant(member['user']['id']), 200)
             else:
                 candidates.append(member['user']['id'])

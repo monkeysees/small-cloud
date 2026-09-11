@@ -6,9 +6,9 @@ Issue [#20](https://github.com/monkeysees/small-cloud/issues/20) implements work
 small-cloud workspace create "Design team" --owner owner@example.com --request-id UUID --json
 ```
 
-Substitute a fresh UUID, retain it, and reuse the same command and UUID after an uncertain result. Matching retries return the original workspace, including after service restart; changed inputs fail with `REQUEST_CONFLICT`. Workspace IDs are immutable. Display names need not be unique. Creation neither makes the platform administrator a member nor reserves runtime capacity. It does not accept `--workspace`.
+Substitute a fresh UUID, retain it, and reuse the same command and UUID after an uncertain result. Matching retries return the original workspace, including after service restart; changed inputs fail with `REQUEST_CONFLICT`. Workspace IDs are immutable. Display names need not be unique. Creation admits the designated owner, consumes one creator grant, and fails with `CREATOR_CAPACITY` if all five grants are occupied. It does not admit the platform administrator unless they are the owner, or reserve runtime capacity. It does not accept `--workspace`.
 
-The owner signs in with their explicitly designated Google email using `small-cloud auth login` or visits `/directory` in a browser. Verified Google sign-in binds a pending admission to one immutable identity. Email-domain matching grants nothing. One identity can belong to multiple workspaces with separate roles. Ownership supplies workspace administration, while creator privileges require a separate grant:
+The owner signs in with their explicitly designated Google email using `small-cloud auth login` or visits `/directory` in a browser. Verified Google sign-in binds a pending admission to one immutable identity. Email-domain matching grants nothing. One identity can belong to multiple workspaces with separate roles. Owners automatically receive administrator and creator privileges. After Google sign-in they can publish using their first workspace as the default, without a creator grant or `--workspace`. Other members require a separate creator grant:
 
 ```bash
 small-cloud workspace list --json

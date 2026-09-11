@@ -1,6 +1,6 @@
 # Publishing limits and build allowance
 
-All workspaces share installation safety limits of five creator grants, 30 deployed app slots, five active app slots and 1,000 build minutes per UTC calendar month. Ownership and administration do not consume a creator grant unless that person is separately granted publishing authority. Each workspace grant counts separately, even for the same identity. Creating a workspace does not multiply capacity. Configurable workspace quotas remain #26.
+All workspaces share installation safety limits of five creator grants, 30 deployed app slots, five active app slots and 1,000 build minutes per UTC calendar month. Owners automatically receive publishing authority and consume a creator grant. Other administrators consume a grant only when separately granted publishing authority. Each workspace grant counts separately, even for the same identity. Creating a workspace does not multiply capacity. Configurable workspace quotas remain #26.
 
 `workspace usage --workspace ID` reports that workspace's counts and build charges/reservations, installation limits (`limit_scope: installation`), and installation-wide remaining build seconds in `available_seconds`. Other workspaces can consume capacity; the displayed workspace counts alone do not promise admission. See [workspace onboarding and selection](WORKSPACES.md).
 

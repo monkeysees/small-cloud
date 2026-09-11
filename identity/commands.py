@@ -30,7 +30,7 @@ def command(path, description, example, permission, outputs, effects='Read only.
 COMMANDS = [
     command('workspace create', 'Create a workspace with one designated owner.',
             'workspace create "Design team" --owner owner@example.com --json', 'Platform administrator.',
-            'workspace: id, name, owner_id.', 'Creates a workspace and admits its owner without creator privileges.',
+            'workspace: id, name, owner_id.', 'Creates a workspace and admits its owner as administrator and creator.',
             [argument('name', 'Workspace display name.'), argument('--owner', 'Exact Google email of the owner.', required=True)],
             guide='workspace', command='workspace', action='create'),
     command('workspace list', 'List your accessible workspaces and saved default.',

@@ -31,7 +31,7 @@ Implemented workspace migration (#19): existing identities and apps belong to `w
 | `app secrets list <app>` | Sorted secret names only. |
 | Pending: `reset <app> --confirm <app>` | Erase database and initialize the current release again. |
 | Pending: `delete <app> --confirm <app>` | Immediately disable access and schedule permanent cleanup. |
-| `workspace create NAME --owner EMAIL` | Platform administrator creates one workspace and admits its designated owner without creator privileges; retry-safe with `--request-id`. |
+| `workspace create NAME --owner EMAIL` | Platform administrator creates one workspace and admits its designated owner as administrator and creator, subject to creator capacity; retry-safe with `--request-id`. |
 | `workspace list` | Accessible workspace IDs, names, owner IDs, independent roles and the service-saved default. |
 | `workspace select ID_OR_NAME` | Save an accessible workspace as default across CLI credentials; ambiguous names fail. |
 | `workspace usage` | Workspace creator/deployed/active counts, limits and monthly build accounting. Admitted creators and administrator only. |

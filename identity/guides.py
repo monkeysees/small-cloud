@@ -123,7 +123,8 @@ small-cloud workspace usage --json
 
 An administrator admits a Google email. The member signs in and obtains their
 user ID using auth status; substitute that ID to grant publishing separately.
-Owner or administrator status alone does not grant creator privileges. Usage is
+New owners receive administrator and creator privileges automatically. Other
+administrators need a separate creator grant. Usage is
 available to creators and administrators. Each build reserves 600 seconds against
 the monthly 60000-second allowance; fewer than ten remaining minutes cannot admit
 a build. Exhaustion does not stop existing serving apps. Capacity is limited to

@@ -2,7 +2,7 @@
 
 For updates that retain the app URL, sharing and database, failed-update diagnostics, and creator-owned schema recovery, see [redeployment](REDEPLOYMENT.md).
 
-Publishing implements [issue #5](https://github.com/monkeysees/small-cloud/issues/5) using the existing [identity service](README.md), [product contracts](../docs/contracts.md), and the accepted German control/runtime hosts. Sign in and obtain the separately granted creator role before publishing. Ordinary membership and administrator status alone do not permit publication.
+Publishing implements [issue #5](https://github.com/monkeysees/small-cloud/issues/5) using the existing [identity service](README.md), [product contracts](../docs/contracts.md), and the accepted German control/runtime hosts. Sign in before publishing. Workspace owners receive the creator role automatically; other members need a separate grant. Ordinary membership and administrator status alone do not permit publication.
 
 ```bash
 small-cloud app deploy identity/fixture --name publishing-probe --description 'Disposable HTTP probe' --dry-run --json

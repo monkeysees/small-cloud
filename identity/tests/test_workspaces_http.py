@@ -38,7 +38,7 @@ class WorkspacesAcceptance(unittest.TestCase):
         owner = self.http_login('owner@example.test')
         self.assertEqual(owner['workspace'], created['workspace'])
         self.assertEqual(owner['default_workspace'], created['workspace']['id'])
-        self.assertEqual(owner['roles'], ['member', 'administrator'])
+        self.assertEqual(owner['roles'], ['member', 'creator', 'administrator'])
         self.assertFalse(owner['platform_administrator'])
         status, raw = self.http('/api/workspaces/create', {'name': 'Third', 'owner_email': 'third@example.test'},
                                token=owner['credential'], headers={'X-Request-ID': str(uuid.uuid4())})
@@ -56,7 +56,7 @@ class WorkspacesAcceptance(unittest.TestCase):
         second = self.result('workspace', 'create', 'Second', '--owner', 'admin@example.test')['workspace']['id']
         self.assertEqual(len(self.result('workspace', 'list')['workspaces']), 2)
         self.assertEqual(self.result('auth', 'status')['default_workspace'], 'ws-initial')
-        self.assertEqual(self.result('auth', 'status', '--workspace', second)['roles'], ['member', 'administrator'])
+        self.assertEqual(self.result('auth', 'status', '--workspace', second)['roles'], ['member', 'creator', 'administrator'])
         self.result('workspace', 'select', second)
         self.assertEqual(self.result('auth', 'status')['workspace']['id'], second)
         self.assertIn('creator', self.result('auth', 'status', '--workspace', 'ws-initial')['roles'])
@@ -87,6 +87,37 @@ class WorkspacesAcceptance(unittest.TestCase):
         self.assertEqual(status, 400, raw)
         self.assertEqual(self.http('/api/apps/example?app_id=foreign', token=self.token,
                                   headers={'X-Workspace': 'ws-initial'})[0], 400)
+
+    def test_owner_can_publish_using_first_default_without_grant_or_override(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        self.login()
+        created = self.result('workspace', 'create', 'Owner team', '--owner', 'owner@example.test')
+        self.http_login('owner@example.test')
+        self.login()
+        owner = self.result('auth', 'status')
+        self.assertEqual(owner['default_workspace'], created['workspace']['id'])
+        source = self.home / 'source'
+        source.mkdir()
+        (source / 'Dockerfile').write_text('FROM scratch\n')
+        self.result('app', 'deploy', str(source), '--name', 'owner-app', '--description', '')
+        self.assertEqual([app['name'] for app in self.result('app', 'list')['apps']], ['owner-app'])
+
+    def test_owner_grants_enforce_capacity_atomically_and_allow_receipt_replay(self):
+        self.operator('bootstrap', 'admin@example.test')
+        self.start_platform()
+        self.login()
+        args = ('workspace', 'create', 'Last team', '--owner', 'last@example.test',
+                '--request-id', str(uuid.uuid4()))
+        for number in range(3):
+            self.result('workspace', 'create', str(number), '--owner', f'owner{number}@example.test')
+        created = self.result(*args)
+        self.assertEqual(self.result(*args), created)
+        failed = self.cli('workspace', 'create', 'Overflow', '--owner', 'overflow@example.test')
+        self.assertEqual(json.loads(failed.stdout)['error']['code'], 'CREATOR_CAPACITY')
+        with sqlite3.connect(self.home / 'server' / 'identity.sqlite3') as db:
+            self.assertEqual(db.execute('SELECT COUNT(*) FROM workspaces').fetchone()[0], 5)
+            self.assertIsNone(db.execute("SELECT id FROM users WHERE admission_email='overflow@example.test'").fetchone())
 
     def test_lost_default_and_ambiguous_names_require_explicit_selection(self):
         self.creator()

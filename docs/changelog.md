@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Grant new workspace owners administrator and creator privileges automatically, count them toward creator capacity, and verify publishing without an override uses the first associated workspace.
+
 - Verify #20 hosted upgrade, two cloud builds, workspace/database isolation, retries and restart; clean up acceptance resources and document remaining Google/browser checks.
 
 - Add #20 platform-admin workspace creation, exact-email onboarding, saved and explicit CLI targets, isolated duplicate app names/data, browser directory, workspace-bound retries and shared installation safety limits.
