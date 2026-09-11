@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #33 offline `app check` with safe source manifests, limits, actionable errors and explicit local/remote verification boundaries, plus bundled runtime guidance without a local Docker prerequisite.
+
 - Add #47 coordinated server deployment, automatic worker restoration, acknowledged diagnostics readiness, bounded recovery and persistent maintenance stop/resume while preserving operation locks and accounting.
 
 - Verify #47 hosted deployment, in-flight restart, publication, idle wake, runtime logs and fault recovery; preserve both original apps and remove acceptance resources while retaining 10 build seconds.

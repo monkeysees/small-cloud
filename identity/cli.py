@@ -92,6 +92,9 @@ def execute(args, request_id, service_origin):
         return catalog(args.query)
     if args.command == 'guide':
         return guide(args.topic)
+    if args.command == 'check':
+        from .upload import check
+        return check(args.folder)
     if args.command == 'deploy':
         from .upload import package
         if (not re.fullmatch(r'[a-z][a-z0-9-]{0,62}', args.name)
@@ -296,7 +299,7 @@ def main(argv=None, *, service_origin=SERVICE_ORIGIN):
             help_parser(argv, parsers, children).print_help()
             return 0
         args = root.parse_args(global_first(argv))
-        if args.command in ('catalog', 'guide') or getattr(args, 'dry_run', False):
+        if args.command in ('catalog', 'guide', 'check') or getattr(args, 'dry_run', False):
             request_id = None
         elif args.request_id:
             request_id = str(uuid.UUID(args.request_id))

@@ -48,7 +48,7 @@ class DiscoveryAcceptance(unittest.TestCase):
         self.assertEqual(catalog['catalog_version'], 1)
         paths = {item['path'] for item in catalog['commands']}
         self.assertIn('app list', paths)
-        self.assertNotIn('app check', paths)
+        self.assertIn('app check', paths)
         self.assertNotIn('app delete', paths)
         leaf = self.run_cli('catalog', 'app status', '--json')
         commands = json.loads(leaf.stdout)['data']['commands']
@@ -60,7 +60,7 @@ class DiscoveryAcceptance(unittest.TestCase):
         guide = self.run_cli('guide', 'getting-started', '--json')
         self.assertEqual(guide.returncode, 0, guide.stdout)
         self.assertIn('small-cloud app list --json', json.loads(guide.stdout)['data']['content'])
-        unknown = self.run_cli('catalog', 'app', 'check', '--json')
+        unknown = self.run_cli('catalog', 'app', 'invented', '--json')
         self.assertEqual(unknown.returncode, 2)
         self.assertEqual(json.loads(unknown.stdout)['error']['code'], 'INVALID_ARGUMENT')
         for old in ('directory', 'deploy', 'status', 'logs', 'secret', 'share', 'usage', 'admin'):

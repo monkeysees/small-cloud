@@ -7,6 +7,7 @@ commands never prompt for terminal input. Progress is on stderr.
 
 small-cloud --help
 small-cloud catalog app --json
+small-cloud guide runtime
 small-cloud guide publishing
 small-cloud auth login --no-browser --json
 small-cloud auth status --json
@@ -51,12 +52,88 @@ Use auth logout to revoke this credential, or auth revoke --all for all your CLI
 credentials. Network failures retain local credentials so revocation can be retried.
 
 The delivered CLI has app, workspace, auth and operation groups. Project
-linking, local app check, default deployment waiting, live
+linking, default deployment waiting, live
 logs and additional workspace controls are still pending. Use catalog for only
 implemented commands. Bare invocation, help, catalog and guides work offline.
 '''),
+    'runtime': ('Author a compatible app and check source before upload', '''Runtime requirements and local preparation
+
+Choose your own language and framework. Small Cloud builds a root Dockerfile
+remotely from the selected folder; no local Docker is required. The CLI does not
+generate starter files. Supply one Linux x86-64 HTTP container with a foreground
+server command. Dependencies must be available without private build credentials;
+there are no extra build contexts, multi-container apps, scheduled jobs or
+background worker services. Runtime secrets and database credentials are never
+available during the build. Do not bake confidential values into source or images.
+
+Listen on 0.0.0.0 using the platform-owned PORT environment variable (currently
+8080), not loopback. Implement GET /_small-cloud/ready and return HTTP 200 only
+after repeatable initialization. Readiness must succeed within 120 seconds of
+startup. The platform reserves that route; it is not available through the public
+app URL. A Dockerfile EXPOSE instruction alone does not start a listening server.
+The runtime uses gVisor, UID/GID 65532, a read-only root, 0.5 CPU, 512 MiB memory
+and 128 tasks. /tmp is temporary and shares the memory budget. Make application
+files readable by that user and avoid startup writes outside /tmp.
+
+DATABASE_URL is supplied at runtime for the app's isolated PostgreSQL 16 database.
+Use a compatible driver and retain TLS certificate verification: the supplied URL
+uses sslmode=verify-full and sslrootcert=/etc/small-cloud/database-ca.crt. Never
+print the URL. Initialize and migrate your schema repeatably before reporting
+readiness; coordinate overlapping startups. Keep migrations compatible with the
+old serving release. A failed update leaves the old release selected but cannot
+undo committed schema changes.
+
+Use runtime secrets for external credentials, configured with app secrets set;
+read them from environment variables at runtime, never as build arguments.
+PORT, DATABASE_URL and SMALL_CLOUD_* names are reserved. Do not log confidential
+values. Changing secrets restarts the app; workspace-wide users can trigger
+credential-backed actions exposed by its code. See small-cloud guide secrets-sharing.
+
+Data is disposable: use only data users can afford to lose and tell users there
+is no backup or recovery guarantee. The database survives ordinary restarts and
+redeployments; container filesystems, /tmp and memory are temporary.
+
+Run these commands from your source folder, or replace . with its path:
+small-cloud app check .
+small-cloud app check . --json
+small-cloud catalog app check --json
+
+Checking works offline without login, workspace selection or Docker. It reads and
+packages source in memory without writing files, uploading or consuming build
+allowance. Human and JSON results report included/excluded relative paths, total
+uncompressed file bytes, limits, verified_locally and requires_remote. Excluded
+directory entries cover their descendants. File contents are never displayed.
+
+The local checks verify a root Dockerfile, safe source reads and archive paths,
+types, mandatory exclusions, and limits of 100 MiB (104857600 bytes) and 10,000
+included files. Root .dockerignore patterns apply, including negation; Dockerfile
+and .dockerignore themselves remain included. Every .git, .small-cloud, .env and
+.env.* path is excluded even if negated. These are not a general secret scanner:
+inspect included paths and keep other embedded credentials out yourself.
+
+Source roots inside or containing platform config/credential storage are rejected,
+as are embedded platform storage paths. Keep source separate from the per-user
+XDG_CONFIG_HOME/small-cloud and XDG_STATE_HOME/small-cloud locations (defaulting
+to ~/.config/small-cloud and ~/.local/state/small-cloud). Do not select your whole
+home directory as source. Symlinks, hardlinked files and special files are refused,
+even when ignored; use ordinary files and keep source stable during checking.
+
+On UPLOAD_REJECTED (exit 2), fix the reported cause and rerun: add the root
+Dockerfile, repair invalid .dockerignore syntax, remove links/special files, move
+source outside credential storage, stop concurrent edits, or exclude unnecessary
+files to fit the size/count limits. No partial file manifest is returned on failure.
+
+Success establishes neither remote build feasibility nor runtime readiness.
+Dockerfile syntax, COPY inputs, dependency resolution, image compatibility,
+listening/readiness behavior, database initialization, runtime secrets and resource
+use require a remote build/runtime. Permissions, available capacity and build
+allowance require server admission. Checking does not reserve capacity; deploy
+revalidates the source. Read small-cloud guide publishing for deployment and
+diagnostics. No local check promises that deployment will succeed.
+'''),
     'publishing': ('Prepare, publish, redeploy and inspect bounded diagnostics', '''Publishing and inspection
 
+Read small-cloud guide runtime for the full runtime contract and source remedies.
 Publish a folder containing Dockerfile; no local Docker is required. The app must
 listen on 0.0.0.0 using PORT (8080), serve HTTP, and initialize its own schema.
 Implement GET /_small-cloud/ready: return 200 after repeatable initialization,
@@ -67,6 +144,7 @@ or app secrets into an image. Data is disposable, even when ordinary redeploymen
 and idle restarts preserve it. Keep schema changes compatible with the serving
 release: a failed candidate leaves the previous release serving.
 
+small-cloud app check . --json
 small-cloud app deploy . --name example --description demo --dry-run --json
 small-cloud app deploy . --name example --description demo --wait --json
 small-cloud app status example --json

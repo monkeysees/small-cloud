@@ -11,6 +11,36 @@ from typing import NoReturn
 from .common import Failure
 
 LIMIT = 100 * 1024 * 1024
+FILE_LIMIT = 10000
+
+
+def check(folder):
+    limits = {'max_bytes': LIMIT, 'max_files': FILE_LIMIT}
+    try:
+        summary, _archive = package(folder)
+    except Failure as error:
+        raise Failure(error.code, error.message, error.status, limits=limits,
+                      next_command='small-cloud guide runtime',
+                      next_steps=['Correct the reported source problem, then rerun small-cloud app check on the folder. '
+                                  'No source was uploaded and no build allowance was consumed.']) from None
+    return {**summary,
+            'summary': 'Local source check passed; remote build feasibility and readiness are not verified.',
+            'limits': limits,
+            'source_rules': [
+                'Root .dockerignore applies; Dockerfile and .dockerignore remain included.',
+                '.git, .small-cloud, .env and .env.* are always excluded, even with negation.',
+                'Platform config/credential paths and source roots overlapping their storage are rejected.',
+                'Only paths and byte counts are reported, never file contents. Review other embedded credentials yourself.'],
+            'verified_locally': [
+                'Root Dockerfile is present; its syntax and commands are not evaluated.',
+                'Included files were safely read and packaged without symlinks, hardlinks, special files or detected changes.',
+                'Source archive passes path, type, exclusion, byte and file-count limits.'],
+            'requires_remote': [
+                'Dockerfile build, public dependency access and Linux x86-64 image compatibility.',
+                'HTTP on 0.0.0.0:$PORT; readiness must return 200 at GET /_small-cloud/ready after initialization, within 120 seconds of startup.',
+                'DATABASE_URL connectivity, repeatable schema initialization and runtime secret use.',
+                'Unprivileged, read-only runtime compatibility and resource limits.',
+                'Workspace permissions, capacity and build allowance admission.']}
 
 
 def unchanged(info):
@@ -84,7 +114,7 @@ def validate_archive(data: bytes):
             for count, member in enumerate(archive, 1):
                 name = member.name
                 parts = tuple(name.split('/'))
-                if (count > 10000 or not name or name.startswith('/')
+                if (count > FILE_LIMIT or not name or name.startswith('/')
                         or any(part in ('', '.', '..') for part in parts)
                         or name in seen or not (member.isfile() or member.isdir())
                         or member.size < 0 or (member.isdir() and member.size)
@@ -214,7 +244,7 @@ def _package(folder):
                         excluded.append(relative)
                         continue
                     total += info.st_size
-                    if total > LIMIT or len(included) >= 10000:
+                    if total > LIMIT or len(included) >= FILE_LIMIT:
                         reject('Source exceeds 100 MiB or 10,000 files.')
                     fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent_fd)
                     with os.fdopen(fd, 'rb') as source:
