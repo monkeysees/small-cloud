@@ -1,0 +1,1136 @@
+{
+  "issue": 35,
+  "parent_specification": 29,
+  "date": "2026-09-11",
+  "acceptance_complete": true,
+  "version": "v0.6.0",
+  "implementation_commit": "597277b",
+  "release_commit": "2a319660f0ce6226301d5581f748aa8b72986cb0",
+  "local_verification": {
+    "identity_tests": 147,
+    "infrastructure_tests": 89,
+    "hosting_fixture_tests": 4,
+    "total_tests": 240,
+    "pyright": "0 errors, 0 warnings",
+    "standards_review_findings": 0,
+    "spec_review_findings": 0
+  },
+  "deployment": {
+    "bundle_sha256": "87f2802c5ea0c16559c9612371ddcd5f8651eadd92a5b31a914e9ebb1da98ecb",
+    "deployed_version": "0.6.0",
+    "services": {
+      "ready": true,
+      "maintenance": false
+    },
+    "rollback_directory": "/root/small-cloud-35/rollback",
+    "harness_correction": "Deployment succeeded; inspect the final JSON line after pip output rather than parsing the whole stdout stream."
+  },
+  "hosted": {
+    "issue": 35,
+    "version": "0.6.0",
+    "commit": "2a319660f0ce6226301d5581f748aa8b72986cb0",
+    "endpoint": "https://small-cloud.monkeysees.one",
+    "workspace_id": "ws-initial",
+    "app_name": "recovery-acceptance-35",
+    "deployments": [
+      {
+        "case": "ready",
+        "expected_code": null,
+        "phase": null,
+        "marker": null,
+        "request_id": "0eaa8488-cd11-4406-ab23-bf30f8879aa4",
+        "submitted": true,
+        "exit_code": 6,
+        "result": {
+          "schema_version": 1,
+          "ok": false,
+          "request_id": "0eaa8488-cd11-4406-ab23-bf30f8879aa4",
+          "data": null,
+          "error": {
+            "code": "WAIT_TIMEOUT",
+            "message": "Observation timed out; accepted work continues. Inspect before retrying.",
+            "retryable": false,
+            "details": {
+              "request_id": "0eaa8488-cd11-4406-ab23-bf30f8879aa4",
+              "workspace_id": "ws-initial",
+              "operation_id": "d-2ec349dd117b481489478658",
+              "next_command": "small-cloud operation status d-2ec349dd117b481489478658 --workspace ws-initial --json",
+              "reconciliation_required": true,
+              "guidance": "Inspect the original request or operation. Do not submit another deployment while its outcome is unresolved.",
+              "operator_escalation": "If work remains pending or inspection stays unavailable, contact the platform operator with the request, operation and workspace IDs. A publishing worker may be unavailable even when sign-in works.",
+              "state": "accepted",
+              "work_continues": true
+            }
+          }
+        },
+        "progress": [
+          "Request ID: 0eaa8488-cd11-4406-ab23-bf30f8879aa4",
+          "Uploading validated source...",
+          "Deployment: accepted (0s elapsed)."
+        ],
+        "operation_id": "d-2ec349dd117b481489478658",
+        "operation": {
+          "id": "d-2ec349dd117b481489478658",
+          "kind": "deploy",
+          "app": "recovery-acceptance-35",
+          "operation_id": "d-2ec349dd117b481489478658",
+          "deployment_id": "d-2ec349dd117b481489478658",
+          "state": "succeeded",
+          "request_id": "0eaa8488-cd11-4406-ab23-bf30f8879aa4",
+          "created_at": "2026-09-11T13:41:34.920962Z",
+          "updated_at": "2026-09-11T13:43:13.335450Z",
+          "completed_at": "2026-09-11T13:43:13.335450Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "same_operation_reconciled": true,
+        "verified": true
+      },
+      {
+        "case": "build-failure",
+        "expected_code": "BUILD_FAILED",
+        "phase": "building",
+        "marker": "issue35-compiler-failure",
+        "request_id": "4266f458-025b-495a-b077-26000aa75bfa",
+        "submitted": true,
+        "exit_code": 1,
+        "result": {
+          "schema_version": 1,
+          "ok": false,
+          "request_id": "4266f458-025b-495a-b077-26000aa75bfa",
+          "data": null,
+          "error": {
+            "code": "BUILD_FAILED",
+            "message": "Dockerfile build failed; inspect build logs.",
+            "retryable": false,
+            "details": {
+              "failed_phase": "building",
+              "request_id": "4266f458-025b-495a-b077-26000aa75bfa",
+              "workspace_id": "ws-initial",
+              "operation_id": "d-0ccea2217ab5461ea2c9115c",
+              "next_command": "small-cloud operation status d-0ccea2217ab5461ea2c9115c --workspace ws-initial --json",
+              "next_steps": [
+                "small-cloud app status recovery-acceptance-35 --workspace ws-initial --json",
+                "small-cloud app logs recovery-acceptance-35 --source build --tail --deployment d-0ccea2217ab5461ea2c9115c --limit 100 --workspace ws-initial --json"
+              ],
+              "diagnostics": {
+                "source": "build",
+                "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                "entries": [
+                  {
+                    "timestamp": "2026-09-11T13:44:40.267073Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "#8 DONE 2.5s"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.507686Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": ""
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.513201Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "#9 [5/6] COPY app.py targets.json index.html ./"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.518376Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "#9 DONE 0.1s"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.522305Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": ""
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.526887Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "#10 [6/6] RUN echo issue35-compiler-failure >&2; exit 1"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.604495Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "#10 0.248 issue35-compiler-failure"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.748338Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "#10 ERROR: process \"/bin/sh -c echo issue35-compiler-failure >&2; exit 1\" did not complete successfully: exit code: 1"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.753620Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "------"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.757988Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": " > [6/6] RUN echo issue35-compiler-failure >&2; exit 1:"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.763393Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "0.248 issue35-compiler-failure"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.768185Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "------"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.775337Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "Dockerfile:10"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.780032Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "--------------------"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.784852Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "   8 |     CMD [\"python3\", \"/app/app.py\"]"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.789706Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "   9 |     "
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.793978Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "  10 | >>> RUN echo issue35-compiler-failure >&2; exit 1"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.798789Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "  11 |     "
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.803455Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "--------------------"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:44:40.809015Z",
+                    "source": "build",
+                    "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                    "message": "ERROR: failed to build: failed to solve: process \"/bin/sh -c echo issue35-compiler-failure >&2; exit 1\" did not complete successfully: exit code: 1"
+                  }
+                ],
+                "status": "partial",
+                "truncated": true,
+                "collection_interrupted": false,
+                "dropped_bytes": 0,
+                "oldest_available_at": "2026-09-11T13:44:32.740744Z",
+                "next_cursor": null
+              },
+              "guidance": "Inspect the original operation and diagnostics before deciding on a new deployment. No source or data repair was performed.",
+              "operator_escalation": null,
+              "state": "failed",
+              "work_continues": false
+            }
+          }
+        },
+        "progress": [
+          "Request ID: 4266f458-025b-495a-b077-26000aa75bfa",
+          "Uploading validated source...",
+          "Deployment: accepted (0s elapsed).",
+          "Deployment: building (2s elapsed).",
+          "Deployment: building (18s elapsed).",
+          "Deployment: building (34s elapsed).",
+          "Deployment: building (50s elapsed).",
+          "Deployment: building (66s elapsed).",
+          "Deployment: building (82s elapsed).",
+          "Deployment: failed (88s elapsed)."
+        ],
+        "operation_id": "d-0ccea2217ab5461ea2c9115c",
+        "operation": {
+          "id": "d-0ccea2217ab5461ea2c9115c",
+          "kind": "deploy",
+          "app": "recovery-acceptance-35",
+          "operation_id": "d-0ccea2217ab5461ea2c9115c",
+          "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+          "state": "failed",
+          "request_id": "4266f458-025b-495a-b077-26000aa75bfa",
+          "created_at": "2026-09-11T13:43:27.088452Z",
+          "updated_at": "2026-09-11T13:44:55.409377Z",
+          "completed_at": "2026-09-11T13:44:55.409377Z",
+          "error": {
+            "code": "BUILD_FAILED",
+            "message": "Dockerfile build failed; inspect build logs.",
+            "retryable": false,
+            "details": {
+              "failed_phase": "building"
+            }
+          },
+          "cleanup_pending": false,
+          "recovery": {
+            "request_id": "4266f458-025b-495a-b077-26000aa75bfa",
+            "workspace_id": "ws-initial",
+            "operation_id": "d-0ccea2217ab5461ea2c9115c",
+            "next_command": "small-cloud operation status d-0ccea2217ab5461ea2c9115c --workspace ws-initial --json",
+            "failed_phase": "building",
+            "next_steps": [
+              "small-cloud app status recovery-acceptance-35 --workspace ws-initial --json",
+              "small-cloud app logs recovery-acceptance-35 --source build --tail --deployment d-0ccea2217ab5461ea2c9115c --limit 100 --workspace ws-initial --json"
+            ],
+            "diagnostics": {
+              "source": "build",
+              "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+              "entries": [
+                {
+                  "timestamp": "2026-09-11T13:44:40.267073Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "#8 DONE 2.5s"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.507686Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": ""
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.513201Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "#9 [5/6] COPY app.py targets.json index.html ./"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.518376Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "#9 DONE 0.1s"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.522305Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": ""
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.526887Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "#10 [6/6] RUN echo issue35-compiler-failure >&2; exit 1"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.604495Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "#10 0.248 issue35-compiler-failure"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.748338Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "#10 ERROR: process \"/bin/sh -c echo issue35-compiler-failure >&2; exit 1\" did not complete successfully: exit code: 1"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.753620Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "------"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.757988Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": " > [6/6] RUN echo issue35-compiler-failure >&2; exit 1:"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.763393Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "0.248 issue35-compiler-failure"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.768185Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "------"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.775337Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "Dockerfile:10"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.780032Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "--------------------"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.784852Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "   8 |     CMD [\"python3\", \"/app/app.py\"]"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.789706Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "   9 |     "
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.793978Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "  10 | >>> RUN echo issue35-compiler-failure >&2; exit 1"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.798789Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "  11 |     "
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.803455Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "--------------------"
+                },
+                {
+                  "timestamp": "2026-09-11T13:44:40.809015Z",
+                  "source": "build",
+                  "deployment_id": "d-0ccea2217ab5461ea2c9115c",
+                  "message": "ERROR: failed to build: failed to solve: process \"/bin/sh -c echo issue35-compiler-failure >&2; exit 1\" did not complete successfully: exit code: 1"
+                }
+              ],
+              "status": "partial",
+              "truncated": true,
+              "collection_interrupted": false,
+              "dropped_bytes": 0,
+              "oldest_available_at": "2026-09-11T13:44:32.740744Z",
+              "next_cursor": null
+            },
+            "guidance": "Inspect the original operation and diagnostics before deciding on a new deployment. No source or data repair was performed.",
+            "operator_escalation": null
+          }
+        },
+        "human_inspection": "Id: d-0ccea2217ab5461ea2c9115c\nKind: deploy\nApp: recovery-acceptance-35\nOperation id: d-0ccea2217ab5461ea2c9115c\nDeployment id: d-0ccea2217ab5461ea2c9115c\nState: failed\nRequest id: 4266f458-025b-495a-b077-26000aa75bfa\nCreated at: 2026-09-11T13:43:27.088452Z\nUpdated at: 2026-09-11T13:44:55.409377Z\nCompleted at: 2026-09-11T13:44:55.409377Z\nError: \n  Code: BUILD_FAILED\n  Message: Dockerfile build failed; inspect build logs.\n  Retryable: no\n  Details: \n    Failed phase: building\nCleanup pending: no\nRecovery: \n  Request id: 4266f458-025b-495a-b077-26000aa75bfa\n  Workspace id: ws-initial\n  Operation id: d-0ccea2217ab5461ea2c9115c\n  Next command: small-cloud operation status d-0ccea2217ab5461ea2c9115c --workspace ws-initial --json\n  Failed phase: building\n  Next steps: \n    - small-cloud app status recovery-acceptance-35 --workspace ws-initial --json\n    - small-cloud app logs recovery-acceptance-35 --source build --tail --deployment d-0ccea2217ab5461ea2c9115c --limit 100 --workspace ws-initial --json\n  Diagnostics: \n    Source: build\n    Deployment id: d-0ccea2217ab5461ea2c9115c\n    Entries: \n      -         Timestamp: 2026-09-11T13:44:40.267073Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: #8 DONE 2.5s\n      -         Timestamp: 2026-09-11T13:44:40.507686Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: \n      -         Timestamp: 2026-09-11T13:44:40.513201Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: #9 [5/6] COPY app.py targets.json index.html ./\n      -         Timestamp: 2026-09-11T13:44:40.518376Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: #9 DONE 0.1s\n      -         Timestamp: 2026-09-11T13:44:40.522305Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: \n      -         Timestamp: 2026-09-11T13:44:40.526887Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: #10 [6/6] RUN echo issue35-compiler-failure >&2; exit 1\n      -         Timestamp: 2026-09-11T13:44:40.604495Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: #10 0.248 issue35-compiler-failure\n      -         Timestamp: 2026-09-11T13:44:40.748338Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: #10 ERROR: process \"/bin/sh -c echo issue35-compiler-failure >&2; exit 1\" did not complete successfully: exit code: 1\n      -         Timestamp: 2026-09-11T13:44:40.753620Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: ------\n      -         Timestamp: 2026-09-11T13:44:40.757988Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message:  > [6/6] RUN echo issue35-compiler-failure >&2; exit 1:\n      -         Timestamp: 2026-09-11T13:44:40.763393Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: 0.248 issue35-compiler-failure\n      -         Timestamp: 2026-09-11T13:44:40.768185Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: ------\n      -         Timestamp: 2026-09-11T13:44:40.775337Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: Dockerfile:10\n      -         Timestamp: 2026-09-11T13:44:40.780032Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: --------------------\n      -         Timestamp: 2026-09-11T13:44:40.784852Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message:    8 |     CMD [\"python3\", \"/app/app.py\"]\n      -         Timestamp: 2026-09-11T13:44:40.789706Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message:    9 |     \n      -         Timestamp: 2026-09-11T13:44:40.793978Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message:   10 | >>> RUN echo issue35-compiler-failure >&2; exit 1\n      -         Timestamp: 2026-09-11T13:44:40.798789Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message:   11 |     \n      -         Timestamp: 2026-09-11T13:44:40.803455Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: --------------------\n      -         Timestamp: 2026-09-11T13:44:40.809015Z\n        Source: build\n        Deployment id: d-0ccea2217ab5461ea2c9115c\n        Message: ERROR: failed to build: failed to solve: process \"/bin/sh -c echo issue35-compiler-failure >&2; exit 1\" did not complete successfully: exit code: 1\n    Status: partial\n    Truncated: yes\n    Collection interrupted: no\n    Dropped bytes: 0\n    Oldest available at: 2026-09-11T13:44:32.740744Z\n    Next cursor: none\n  Guidance: Inspect the original operation and diagnostics before deciding on a new deployment. No source or data repair was performed.\n  Operator escalation: none\n",
+        "previous_release_and_data_preserved": true,
+        "verified": true
+      },
+      {
+        "case": "builder-reconciliation",
+        "expected_code": "INTERNAL",
+        "phase": "building",
+        "marker": null,
+        "request_id": "eeef75d5-c037-48af-ae1f-4f4ab6489c8d",
+        "submitted": true,
+        "exit_code": 1,
+        "result": {
+          "schema_version": 1,
+          "ok": false,
+          "request_id": "eeef75d5-c037-48af-ae1f-4f4ab6489c8d",
+          "data": null,
+          "error": {
+            "code": "INTERNAL",
+            "message": "Build termination or execution timing requires operator reconciliation.",
+            "retryable": false,
+            "details": {
+              "reconciliation_required": true,
+              "failed_phase": "building",
+              "request_id": "eeef75d5-c037-48af-ae1f-4f4ab6489c8d",
+              "workspace_id": "ws-initial",
+              "operation_id": "d-8920d096b9d84d3cb2c1a5af",
+              "next_command": "small-cloud operation status d-8920d096b9d84d3cb2c1a5af --workspace ws-initial --json",
+              "next_steps": [
+                "small-cloud app status recovery-acceptance-35 --workspace ws-initial --json",
+                "small-cloud app logs recovery-acceptance-35 --source build --tail --deployment d-8920d096b9d84d3cb2c1a5af --limit 100 --workspace ws-initial --json"
+              ],
+              "diagnostics": {
+                "source": "build",
+                "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                "entries": [
+                  {
+                    "timestamp": "2026-09-11T13:46:02.115637Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 1.791    \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 5.2/5.2 MB 42.9 MB/s eta 0:00:00"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.121954Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 1.798 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.127043Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 1.835 Installing collected packages: typing-extensions, psycopg-binary, psycopg"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.225369Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 2.094 Successfully installed psycopg-3.3.5 psycopg-binary-3.3.5 typing-extensions-4.16.0"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.330562Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 2.095 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning."
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.333690Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 2.199 "
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.336544Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 2.199 [notice] A new release of pip is available: 25.0.1 -> 26.2.1"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.339375Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 2.199 [notice] To update, run: pip install --upgrade pip"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.467112Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#8 DONE 2.3s"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.691077Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": ""
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.694081Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#9 [5/5] COPY app.py targets.json index.html ./"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.696960Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#9 DONE 0.1s"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.699553Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": ""
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.702314Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#10 exporting to image"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.704965Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#10 exporting layers"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.714234Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#10 exporting layers 0.2s done"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.810284Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#10 writing image sha256:eae970716894a330bb28098d33b3aab14228566fe67bbb8d13f0bfe534dad64a done"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.815192Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#10 naming to docker.io/library/sc-artifact:build done"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:02.818847Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "#10 DONE 0.2s"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:46:04.078019Z",
+                    "source": "build",
+                    "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+                    "message": "Build succeeded: retrieve output/image.tar and output/result.json over SSH, then delete this VM."
+                  }
+                ],
+                "status": "partial",
+                "truncated": true,
+                "collection_interrupted": false,
+                "dropped_bytes": 0,
+                "oldest_available_at": "2026-09-11T13:45:55.840512Z",
+                "next_cursor": null
+              },
+              "guidance": "Inspect the original request or operation. Do not submit another deployment while its outcome is unresolved.",
+              "operator_escalation": "Contact the platform operator with these request, operation and workspace IDs. The service requires reconciliation before another deployment.",
+              "state": "building",
+              "work_continues": true
+            }
+          }
+        },
+        "progress": [
+          "Request ID: eeef75d5-c037-48af-ae1f-4f4ab6489c8d",
+          "Uploading validated source...",
+          "Deployment: accepted (0s elapsed).",
+          "Deployment: building (2s elapsed).",
+          "Deployment: building (18s elapsed).",
+          "Deployment: building (34s elapsed).",
+          "Deployment: building (50s elapsed).",
+          "Deployment: building (66s elapsed)."
+        ],
+        "operation_id": "d-8920d096b9d84d3cb2c1a5af",
+        "operator_reconciliation": {
+          "operation_id": "d-8920d096b9d84d3cb2c1a5af",
+          "original_error": {
+            "code": "INTERNAL",
+            "message": "Build termination or execution timing requires operator reconciliation.",
+            "retryable": false,
+            "details": {
+              "reconciliation_required": true,
+              "failed_phase": "building"
+            }
+          },
+          "terminal_state": "failed",
+          "teardown": {
+            "id": 165521921,
+            "deleted": true,
+            "addresses_removed": true,
+            "operator_reconciled": true,
+            "evidence": "Durable builder-cost journal plus provider GET 404 for server and every recorded primary IP."
+          },
+          "duration_seconds": 8.818658242999994,
+          "charged_seconds": 9,
+          "candidate_absent": true,
+          "previous_release_preserved": true,
+          "no_operation_replayed": true
+        },
+        "verified": true
+      },
+      {
+        "case": "startup-failure",
+        "expected_code": "STARTUP_FAILED",
+        "phase": "starting",
+        "marker": "issue35-startup-failure",
+        "request_id": "bd843e83-9d6b-4d15-87c5-c6e29a141534",
+        "submitted": true,
+        "exit_code": 1,
+        "result": {
+          "schema_version": 1,
+          "ok": false,
+          "request_id": "bd843e83-9d6b-4d15-87c5-c6e29a141534",
+          "data": null,
+          "error": {
+            "code": "STARTUP_FAILED",
+            "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+            "retryable": false,
+            "details": {
+              "failed_phase": "starting",
+              "request_id": "bd843e83-9d6b-4d15-87c5-c6e29a141534",
+              "workspace_id": "ws-initial",
+              "operation_id": "d-d1d27082692347e69e379d40",
+              "next_command": "small-cloud operation status d-d1d27082692347e69e379d40 --workspace ws-initial --json",
+              "next_steps": [
+                "small-cloud app status recovery-acceptance-35 --workspace ws-initial --json",
+                "small-cloud app logs recovery-acceptance-35 --source runtime --tail --since 2026-09-11T13:50:02.840057Z --limit 100 --workspace ws-initial --json"
+              ],
+              "diagnostics": {
+                "source": "runtime",
+                "deployment_id": "d-d1d27082692347e69e379d40",
+                "entries": [
+                  {
+                    "timestamp": "2026-09-11T13:51:31.406055Z",
+                    "source": "runtime",
+                    "deployment_id": "d-d1d27082692347e69e379d40",
+                    "message": "issue35-startup-failure [REDACTED]"
+                  },
+                  {
+                    "timestamp": "2026-09-11T13:51:31.556192Z",
+                    "source": "runtime",
+                    "deployment_id": "d-d1d27082692347e69e379d40",
+                    "message": "[collection interrupted or container stopped; output may be missing]"
+                  }
+                ],
+                "status": "partial",
+                "truncated": true,
+                "collection_interrupted": true,
+                "dropped_bytes": 0,
+                "oldest_available_at": "2026-09-11T13:51:31.406055Z",
+                "next_cursor": null
+              },
+              "guidance": "Inspect the original operation and diagnostics before deciding on a new deployment. No source or data repair was performed.",
+              "operator_escalation": "If diagnostics remain unavailable or collection is interrupted, contact the platform operator with these request, operation and workspace IDs. Missing logs do not establish success.",
+              "state": "failed",
+              "work_continues": false
+            }
+          }
+        },
+        "progress": [
+          "Request ID: bd843e83-9d6b-4d15-87c5-c6e29a141534",
+          "Uploading validated source...",
+          "Deployment: accepted (0s elapsed).",
+          "Deployment: building (2s elapsed).",
+          "Deployment: building (18s elapsed).",
+          "Deployment: building (34s elapsed).",
+          "Deployment: building (50s elapsed).",
+          "Deployment: building (66s elapsed).",
+          "Deployment: starting (80s elapsed).",
+          "Deployment: starting (96s elapsed).",
+          "Deployment: starting (112s elapsed).",
+          "Deployment: starting (128s elapsed).",
+          "Deployment: starting (145s elapsed).",
+          "Deployment: starting (161s elapsed).",
+          "Deployment: starting (177s elapsed).",
+          "Deployment: starting (193s elapsed).",
+          "Deployment: failed (209s elapsed)."
+        ],
+        "operation_id": "d-d1d27082692347e69e379d40",
+        "operation": {
+          "id": "d-d1d27082692347e69e379d40",
+          "kind": "deploy",
+          "app": "recovery-acceptance-35",
+          "operation_id": "d-d1d27082692347e69e379d40",
+          "deployment_id": "d-d1d27082692347e69e379d40",
+          "state": "failed",
+          "request_id": "bd843e83-9d6b-4d15-87c5-c6e29a141534",
+          "created_at": "2026-09-11T13:50:02.840057Z",
+          "updated_at": "2026-09-11T13:53:31.816522Z",
+          "completed_at": "2026-09-11T13:53:31.816522Z",
+          "error": {
+            "code": "STARTUP_FAILED",
+            "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+            "retryable": false,
+            "details": {
+              "failed_phase": "starting"
+            }
+          },
+          "cleanup_pending": false,
+          "recovery": {
+            "request_id": "bd843e83-9d6b-4d15-87c5-c6e29a141534",
+            "workspace_id": "ws-initial",
+            "operation_id": "d-d1d27082692347e69e379d40",
+            "next_command": "small-cloud operation status d-d1d27082692347e69e379d40 --workspace ws-initial --json",
+            "failed_phase": "starting",
+            "next_steps": [
+              "small-cloud app status recovery-acceptance-35 --workspace ws-initial --json",
+              "small-cloud app logs recovery-acceptance-35 --source runtime --tail --since 2026-09-11T13:50:02.840057Z --limit 100 --workspace ws-initial --json"
+            ],
+            "diagnostics": {
+              "source": "runtime",
+              "deployment_id": "d-d1d27082692347e69e379d40",
+              "entries": [
+                {
+                  "timestamp": "2026-09-11T13:51:31.406055Z",
+                  "source": "runtime",
+                  "deployment_id": "d-d1d27082692347e69e379d40",
+                  "message": "issue35-startup-failure [REDACTED]"
+                },
+                {
+                  "timestamp": "2026-09-11T13:51:31.556192Z",
+                  "source": "runtime",
+                  "deployment_id": "d-d1d27082692347e69e379d40",
+                  "message": "[collection interrupted or container stopped; output may be missing]"
+                }
+              ],
+              "status": "partial",
+              "truncated": true,
+              "collection_interrupted": true,
+              "dropped_bytes": 0,
+              "oldest_available_at": "2026-09-11T13:51:31.406055Z",
+              "next_cursor": null
+            },
+            "guidance": "Inspect the original operation and diagnostics before deciding on a new deployment. No source or data repair was performed.",
+            "operator_escalation": "If diagnostics remain unavailable or collection is interrupted, contact the platform operator with these request, operation and workspace IDs. Missing logs do not establish success."
+          }
+        },
+        "human_inspection": "Id: d-d1d27082692347e69e379d40\nKind: deploy\nApp: recovery-acceptance-35\nOperation id: d-d1d27082692347e69e379d40\nDeployment id: d-d1d27082692347e69e379d40\nState: failed\nRequest id: bd843e83-9d6b-4d15-87c5-c6e29a141534\nCreated at: 2026-09-11T13:50:02.840057Z\nUpdated at: 2026-09-11T13:53:31.816522Z\nCompleted at: 2026-09-11T13:53:31.816522Z\nError: \n  Code: STARTUP_FAILED\n  Message: App did not answer HTTP readiness with HTTP 200 within 120 seconds.\n  Retryable: no\n  Details: \n    Failed phase: starting\nCleanup pending: no\nRecovery: \n  Request id: bd843e83-9d6b-4d15-87c5-c6e29a141534\n  Workspace id: ws-initial\n  Operation id: d-d1d27082692347e69e379d40\n  Next command: small-cloud operation status d-d1d27082692347e69e379d40 --workspace ws-initial --json\n  Failed phase: starting\n  Next steps: \n    - small-cloud app status recovery-acceptance-35 --workspace ws-initial --json\n    - small-cloud app logs recovery-acceptance-35 --source runtime --tail --since 2026-09-11T13:50:02.840057Z --limit 100 --workspace ws-initial --json\n  Diagnostics: \n    Source: runtime\n    Deployment id: d-d1d27082692347e69e379d40\n    Entries: \n      -         Timestamp: 2026-09-11T13:51:31.406055Z\n        Source: runtime\n        Deployment id: d-d1d27082692347e69e379d40\n        Message: issue35-startup-failure [REDACTED]\n      -         Timestamp: 2026-09-11T13:51:31.556192Z\n        Source: runtime\n        Deployment id: d-d1d27082692347e69e379d40\n        Message: [collection interrupted or container stopped; output may be missing]\n    Status: partial\n    Truncated: yes\n    Collection interrupted: yes\n    Dropped bytes: 0\n    Oldest available at: 2026-09-11T13:51:31.406055Z\n    Next cursor: none\n  Guidance: Inspect the original operation and diagnostics before deciding on a new deployment. No source or data repair was performed.\n  Operator escalation: If diagnostics remain unavailable or collection is interrupted, contact the platform operator with these request, operation and workspace IDs. Missing logs do not establish success.\n",
+        "database_credential_redacted": true,
+        "previous_release_and_data_preserved": true,
+        "verified": true
+      }
+    ],
+    "standalone_sha256": "85ccd037bb7560bd74baffdeea441a14d3077d2bed47c577a49aeaf418263da2",
+    "without_python_or_docker_on_path": true,
+    "usage_before": {
+      "creators": {
+        "used": 1,
+        "limit": 5
+      },
+      "deployed_apps": {
+        "used": 2,
+        "limit": 30
+      },
+      "active_apps": {
+        "used": 0,
+        "limit": 5
+      },
+      "build": {
+        "period_start": "2026-09-01T00:00:00Z",
+        "period_end": "2026-10-01T00:00:00Z",
+        "limit_seconds": 60000,
+        "charged_seconds": 993,
+        "reserved_seconds": 0,
+        "available_seconds": 58988
+      },
+      "limit_scope": "installation"
+    },
+    "app": {
+      "app": "recovery-acceptance-35",
+      "app_id": "a-c0250b45b593423ca498f6d6",
+      "description": "Temporary issue 35 recovery acceptance",
+      "url": "https://a-c0250b45b593423ca498f6d6.small-cloud.monkeysees.one",
+      "sharing_scope": "creator-only",
+      "availability": "running",
+      "runtime_error": null,
+      "active_deployment_id": "d-2ec349dd117b481489478658",
+      "latest_operation": {
+        "id": "d-8920d096b9d84d3cb2c1a5af",
+        "kind": "deploy",
+        "app": "recovery-acceptance-35",
+        "operation_id": "d-8920d096b9d84d3cb2c1a5af",
+        "deployment_id": "d-8920d096b9d84d3cb2c1a5af",
+        "state": "failed",
+        "request_id": "eeef75d5-c037-48af-ae1f-4f4ab6489c8d",
+        "created_at": "2026-09-11T13:44:59.073425Z",
+        "updated_at": "2026-09-11T13:49:34.401278Z",
+        "completed_at": "2026-09-11T13:49:34.401278Z",
+        "error": {
+          "code": "INTERNAL",
+          "message": "Build termination or execution timing requires operator reconciliation.",
+          "retryable": false,
+          "details": {
+            "reconciliation_required": false,
+            "failed_phase": "building",
+            "operator_reconciled": true
+          }
+        },
+        "cleanup_pending": false
+      },
+      "cleanup": null
+    },
+    "retained_rows": [
+      {
+        "id": 1,
+        "value": "Preserved across issue 35 failed updates"
+      }
+    ],
+    "service_side_uncertainty_encountered": true,
+    "credential_and_default_preserved": true,
+    "behavior_complete": true,
+    "cleanup": {
+      "app_id": "a-c0250b45b593423ca498f6d6",
+      "builders": [
+        {
+          "operation_id": "d-2ec349dd117b481489478658",
+          "deleted": true,
+          "id": 165521369,
+          "location": "nbg1",
+          "type": "cpx22",
+          "duration_seconds": 9.040186816000002,
+          "charged_seconds": 10
+        },
+        {
+          "operation_id": "d-0ccea2217ab5461ea2c9115c",
+          "deleted": true,
+          "id": 165521649,
+          "location": "nbg1",
+          "type": "cpx22",
+          "duration_seconds": 9.034618248999998,
+          "charged_seconds": 10
+        },
+        {
+          "operation_id": "d-8920d096b9d84d3cb2c1a5af",
+          "deleted": true,
+          "id": 165521921,
+          "location": "nbg1",
+          "type": "cpx22",
+          "duration_seconds": 8.818658242999994,
+          "charged_seconds": 9
+        },
+        {
+          "operation_id": "d-d1d27082692347e69e379d40",
+          "deleted": true,
+          "id": 165522786,
+          "location": "nbg1",
+          "type": "cpx22",
+          "duration_seconds": 8.980892366999996,
+          "charged_seconds": 9
+        }
+      ],
+      "charged_seconds_preserved": 38,
+      "temporary_app_database_credentials_source_logs_removed": true,
+      "artifact_references_retired_for_janitors": true,
+      "original_apps_preserved": true,
+      "services": {
+        "ready": true,
+        "maintenance": false
+      }
+    },
+    "usage_after_cleanup": {
+      "creators": {
+        "used": 1,
+        "limit": 5
+      },
+      "deployed_apps": {
+        "used": 2,
+        "limit": 30
+      },
+      "active_apps": {
+        "used": 0,
+        "limit": 5
+      },
+      "build": {
+        "period_start": "2026-09-01T00:00:00Z",
+        "period_end": "2026-10-01T00:00:00Z",
+        "limit_seconds": 60000,
+        "charged_seconds": 1031,
+        "reserved_seconds": 0,
+        "available_seconds": 58950
+      },
+      "limit_scope": "installation"
+    },
+    "provider_servers_after_cleanup": [
+      {
+        "id": 165120313,
+        "name": "small-cloud-control"
+      },
+      {
+        "id": 165120370,
+        "name": "small-cloud-runtime"
+      }
+    ],
+    "all_acceptance_builders_deleted": true
+  },
+  "preservation": {
+    "original_apps_preserved": 2,
+    "original_database_data_preserved": true,
+    "identity_memberships_credentials_defaults_preserved": true,
+    "configuration_preserved": true,
+    "services": {
+      "ready": true,
+      "maintenance": false
+    }
+  },
+  "removed_app_http_status": 404,
+  "credential_file_unchanged": true,
+  "native_workflow": "https://github.com/monkeysees/small-cloud/actions/runs/34605330941",
+  "native_tests_per_credential_mode": 31,
+  "native_verification": {
+    "linux-x86_64": {
+      "file": {
+        "platform": "Linux",
+        "architecture": "x86_64",
+        "sha256": "2098350454a4b623cab02bdc8bc0691b6b2a5e7c807e1e09c1ed1708e6718d51",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      },
+      "native": {
+        "platform": "Linux",
+        "architecture": "x86_64",
+        "sha256": "2098350454a4b623cab02bdc8bc0691b6b2a5e7c807e1e09c1ed1708e6718d51",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      }
+    },
+    "linux-arm64": {
+      "file": {
+        "platform": "Linux",
+        "architecture": "aarch64",
+        "sha256": "25692e693e4e3147a09f2c21ec6aae209ef2b87e43e58e5fdb203f2e5387d29e",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      },
+      "native": {
+        "platform": "Linux",
+        "architecture": "aarch64",
+        "sha256": "25692e693e4e3147a09f2c21ec6aae209ef2b87e43e58e5fdb203f2e5387d29e",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      }
+    },
+    "macos-x86_64": {
+      "file": {
+        "platform": "Darwin",
+        "architecture": "x86_64",
+        "sha256": "d61e0d2a18718382e2f9a30d02edc5a89510857dfd73f46426c8daa485f449f1",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      },
+      "native": {
+        "platform": "Darwin",
+        "architecture": "x86_64",
+        "sha256": "d61e0d2a18718382e2f9a30d02edc5a89510857dfd73f46426c8daa485f449f1",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      }
+    },
+    "macos-arm64": {
+      "file": {
+        "platform": "Darwin",
+        "architecture": "arm64",
+        "sha256": "9290b708973b738dbe378ddcd2865785c347316ad80216cd315e0d583e2530b6",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "file",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      },
+      "native": {
+        "platform": "Darwin",
+        "architecture": "arm64",
+        "sha256": "9290b708973b738dbe378ddcd2865785c347316ad80216cd315e0d583e2530b6",
+        "installed_checks": 14,
+        "installer_integrity": "passed",
+        "public_https_without_system_ca_paths": "passed",
+        "credential_storage": "native",
+        "frozen_https_login_status_logout": "passed",
+        "frozen_offline_app_preparation": "passed",
+        "frozen_https_deployment_completion": "passed",
+        "frozen_https_split_login_pending_expiry_protection": "passed"
+      }
+    }
+  },
+  "public_downloads": {
+    "version": "v0.6.0",
+    "public_files": {
+      "small-cloud-linux-x86_64": "2098350454a4b623cab02bdc8bc0691b6b2a5e7c807e1e09c1ed1708e6718d51",
+      "small-cloud-linux-x86_64.sha256": "ab1eaa0e6309030226faffcc4ecdeba65b0ce23faf0cb7d967e43e6a67e13493",
+      "small-cloud-linux-arm64": "25692e693e4e3147a09f2c21ec6aae209ef2b87e43e58e5fdb203f2e5387d29e",
+      "small-cloud-linux-arm64.sha256": "6926130b12c923db18e8897404b97aa399287ba4d015c0dd34d270c2975aa01a",
+      "small-cloud-macos-x86_64": "d61e0d2a18718382e2f9a30d02edc5a89510857dfd73f46426c8daa485f449f1",
+      "small-cloud-macos-x86_64.sha256": "7510fe064f9ad8badbcbbc1555a8b3a1dcb5f635281b0f2677c9f77f6493696d",
+      "small-cloud-macos-arm64": "9290b708973b738dbe378ddcd2865785c347316ad80216cd315e0d583e2530b6",
+      "small-cloud-macos-arm64.sha256": "67038bcfbbf0bfa390837abcb21f3aa7bcd703f6afe011e34e7f4c9739b51c23"
+    },
+    "previous_latest": "v0.5.0",
+    "latest": "v0.6.0",
+    "latest_checksums_verified": 4
+  },
+  "public_installation_workflow": "https://github.com/monkeysees/small-cloud/actions/runs/34607180924",
+  "public_installation": {
+    "linux-x86_64": {
+      "target": "linux-x86_64",
+      "version": "v0.6.0",
+      "public_installation": "passed",
+      "offline_without_python_on_path": "passed",
+      "shell_files_unchanged": true,
+      "installation_did_not_login": true
+    },
+    "macos-x86_64": {
+      "target": "macos-x86_64",
+      "version": "v0.6.0",
+      "public_installation": "passed",
+      "offline_without_python_on_path": "passed",
+      "shell_files_unchanged": true,
+      "installation_did_not_login": true
+    },
+    "linux-arm64": {
+      "target": "linux-arm64",
+      "version": "v0.6.0",
+      "public_installation": "passed",
+      "offline_without_python_on_path": "passed",
+      "shell_files_unchanged": true,
+      "installation_did_not_login": true
+    },
+    "macos-arm64": {
+      "target": "macos-arm64",
+      "version": "v0.6.0",
+      "public_installation": "passed",
+      "offline_without_python_on_path": "passed",
+      "shell_files_unchanged": true,
+      "installation_did_not_login": true
+    }
+  },
+  "workstation_installation": {
+    "version": "v0.6.0",
+    "sha256": "2098350454a4b623cab02bdc8bc0691b6b2a5e7c807e1e09c1ed1708e6718d51",
+    "public_installer": "passed",
+    "retained_credential_authentication": "passed",
+    "credential_file_unchanged": true,
+    "shell_files_unchanged": true,
+    "recovery_help_catalog_guide_and_hosted_diagnosis": "passed",
+    "without_python_or_docker_on_path": true,
+    "temporary_installation_removed": true
+  },
+  "release": "https://github.com/monkeysees/small-cloud/releases/tag/v0.6.0",
+  "fixture_only_faults": [
+    "publishing-worker unavailability",
+    "interrupted runtime collection",
+    "diagnostic access denial",
+    "lost acceptance response"
+  ],
+  "remaining_acceptance_steps": [],
+  "local_acceptance_source_removed": true
+}

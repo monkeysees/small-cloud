@@ -4,7 +4,7 @@ Small Cloud runs without a Python installation or source checkout. The native ex
 
 ## Install and sign in
 
-Version 0.5.0 is published on all four supported targets, including deployment readiness waits by default and explicit `--no-wait` acceptance; see the [deployment-completion acceptance record](../docs/acceptance/deployment-completion-2026-09-11.md). Offline `app check`, runtime guidance, workspace creation and selection remain available, and the server grants new owners administrator and creator privileges automatically.
+Version 0.6.0 is published on all four supported targets, adding failed phases, bounded redacted diagnostics, `app logs --tail` and structured recovery guidance; see the [deployment-recovery acceptance record](../docs/acceptance/deployment-recovery-2026-09-11.md). Deployment readiness waits, explicit `--no-wait` acceptance, offline `app check`, runtime guidance, workspace creation and selection remain available.
 
 ```sh
 curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
@@ -23,7 +23,7 @@ In Fish, use `fish_add_path "$HOME/.local/bin"`. Login requires human Google bro
 To select an existing release and another absolute install directory:
 
 ```sh
-curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.5.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
+curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.6.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
 ```
 
 Ordinary CLI commands do not update the executable. Rerunning the installer explicitly replaces it; the dedicated update command and completion generators belong to later #29 tickets.
@@ -59,7 +59,7 @@ Substitute the native target filename on other systems. Linux builders need a sh
 
 The [native workflow](../.github/workflows/cli-release.yml) uses four GitHub-hosted runners. It installs each production binary outside the checkout, checks offline help/catalog/guides, rejects endpoint flags, ignores environment/config endpoint overrides, and verifies installer checksum failure preserves the previous binary. It also makes a hosted authentication-status request using an invalid synthetic credential and unavailable system CA paths: the expected authentication refusal proves bundled public TLS trust without a real credential or hosted mutation. A separate frozen fixture executable exercises actual browser-protocol login, retained credentials, exact-origin refusal and logout against the existing signed-provider HTTPS harness. Both file fallback and native OS keyring roundtrips must pass per target. Installer tests supply local build bytes at the HTTPS-download boundary; published installation needs an additional real download check. The harness uses Python to operate the test service; the executable contains its own runtime.
 
-The native verifier also runs the deployment completion suite through the frozen HTTPS fixture: default readiness, explicit acceptance, request replay, failed operations, timeout, interruption, identity outages/restarts and elapsed bounds for slowly delivered responses. This is fixture evidence; hosted app deployment and redeployment are recorded separately in the [#34 acceptance report](../docs/acceptance/deployment-completion-2026-09-11.md).
+The native verifier also runs the deployment completion and recovery suite through the frozen HTTPS fixture: default readiness, explicit acceptance, request replay, failed phases and diagnostic excerpts, tail retrieval after long logs, redaction, denied/unavailable diagnostics, service-side uncertainty, timeout, interruption, identity outages/restarts and elapsed bounds for slowly delivered responses. This is fixture evidence; hosted behavior and publication are recorded separately in the [#35 acceptance report](../docs/acceptance/deployment-recovery-2026-09-11.md).
 
 CA dependency review on 2026-09-09: [certifi 2026.7.22](https://pypi.org/project/certifi/) is the established Requests ecosystem's Mozilla CA bundle, maintained at [certifi/python-certifi](https://github.com/certifi/python-certifi) (latest push August 25). Pinning it makes bundled trust reviewable; refresh it deliberately with CLI releases.
 

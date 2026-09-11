@@ -4,6 +4,7 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 
 | Report | Scope |
 | --- | --- |
+| [Deployment recovery — 2026-09-11](deployment-recovery-2026-09-11.md) | #35 failed phases, redacted diagnostic tails, safe reconciliation, four hosted operations and cleanup, v0.6.0 native release and public installation on all four targets. |
 | [Deployment completion — 2026-09-11](deployment-completion-2026-09-11.md) | #34 readiness waits and recovery, five hosted deployments and cleanup, v0.5.0 native release and public installation on all four targets. |
 | [App preparation — 2026-09-11](app-preparation-2026-09-11.md) | #33 offline runtime guidance and local source checks; v0.4.0 native release and actual public installation on all four targets. |
 | [Required service recovery — 2026-09-11](service-recovery-2026-09-11.md) | #47 automatic worker restoration, acknowledged readiness, graceful in-flight restart, fault recovery, maintenance and scoped hosted cleanup. |

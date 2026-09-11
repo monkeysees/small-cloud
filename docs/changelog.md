@@ -4,6 +4,8 @@
 
 ## 0.6.0 — 2026-09-11
 
+- Deploy and publish #35 on all four native targets; verify hosted failure diagnosis, redaction and safe operator reconciliation, preserve existing apps/data/credentials, and clean up acceptance resources while retaining 38 build seconds.
+
 - Add #35 deployment failure phases, bounded authorized diagnostic excerpts and `app logs --tail`, human/JSON recovery commands and operator escalation for uncertain work or unavailable diagnostics, verified through actual CLI failure and reconciliation fixtures.
 
 ## 0.5.0 — 2026-09-11
