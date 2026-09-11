@@ -14,6 +14,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from identity.tests.test_identity_cli import IdentityAcceptance
+from identity.tests.test_app_check_cli import AppCheckAcceptance
 
 
 class FrozenIdentity(IdentityAcceptance):
@@ -99,8 +100,17 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         config = home / 'config/small-cloud'
         config.mkdir(parents=True)
         (config / 'config.json').write_text('{"endpoint":"https://attacker.example.test"}')
+        source = home / 'app'
+        source.mkdir()
+        (source / 'Dockerfile').write_text('FROM scratch\n')
+        (source / '.env').write_text('TOKEN=never-display-this-value\n')
+        invalid_source = home / 'invalid-app'
+        invalid_source.mkdir()
         checks = [((), 0), (('--help',), 0), (('--version',), 0),
                   (('catalog', '--json'), 0), (('guide', 'getting-started'), 0),
+                  (('guide', 'runtime'), 0), (('catalog', 'app', 'check', '--json'), 0),
+                  (('app', 'check', str(source)), 0), (('app', 'check', str(source), '--json'), 0),
+                  (('app', 'check', str(invalid_source), '--json'), 2),
                   (('auth', 'status', '--json'), 3),
                   (('--endpoint', 'https://attacker.example.test', 'auth', 'status', '--json'), 2),
                   (('--endpoint=https://attacker.example.test', 'auth', 'status', '--json'), 2)]
@@ -108,6 +118,21 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
             result = subprocess.run([str(executable), *arguments], cwd=home, env=env,
                                     capture_output=True, text=True, timeout=30)
             assert result.returncode == expected, (arguments, result.stdout, result.stderr)
+            if arguments[:2] == ('app', 'check'):
+                assert 'never-display-this-value' not in result.stdout + result.stderr
+                if '--json' in arguments:
+                    report = json.loads(result.stdout)
+                    assert report['request_id'] is None
+                    if expected == 0:
+                        assert report['data']['included'] == ['Dockerfile']
+                        assert report['data']['excluded'] == ['.env']
+                        assert 'not verified' in report['data']['summary']
+                    else:
+                        assert report['error']['code'] == 'UPLOAD_REJECTED'
+                        assert report['error']['details']['next_command'] == 'small-cloud guide runtime'
+                else:
+                    assert 'Local source check passed' in result.stdout
+                    assert 'Requires remote' in result.stdout
             if arguments == ('auth', 'status', '--json'):
                 assert json.loads(result.stdout)['error']['code'] == 'AUTH_REQUIRED'
                 origin_hash = hashlib.sha256(b'https://small-cloud.monkeysees.one').hexdigest()
@@ -137,6 +162,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         'test_pending_split_login_can_resume_after_bounded_wait',
         'test_split_login_protects_pending_material_and_origin',
         'test_split_login_server_expiry_removes_pending_state'))
+    suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(AppCheckAcceptance))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful():
         raise SystemExit(1)
@@ -146,6 +172,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
                       'public_https_without_system_ca_paths': 'passed',
                       'credential_storage': 'native' if os.environ.get('SMALL_CLOUD_TEST_NATIVE_KEYRING') == '1' else 'file',
                       'frozen_https_login_status_logout': 'passed',
+                      'frozen_offline_app_preparation': 'passed',
                       'frozen_https_split_login_pending_expiry_protection': 'passed'}))
 
 

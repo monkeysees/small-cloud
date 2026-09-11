@@ -6,7 +6,7 @@ on:
       version:
         description: Published version to verify
         required: true
-        default: v0.3.1
+        default: v0.4.0
         type: string
 
 permissions:
@@ -52,6 +52,15 @@ jobs:
           PATH=/nonexistent "$executable" --version
           PATH=/nonexistent "$executable" catalog --json > "$RUNNER_TEMP/catalog.json"
           PATH=/nonexistent "$executable" guide getting-started
+          PATH=/nonexistent "$executable" guide runtime
+          source_dir="$RUNNER_TEMP/offline-source"
+          mkdir "$source_dir"
+          printf 'FROM scratch\n' > "$source_dir/Dockerfile"
+          printf 'TOKEN=never-display-this-value\n' > "$source_dir/.env"
+          PATH=/nonexistent "$executable" app check "$source_dir"
+          PATH=/nonexistent "$executable" app check "$source_dir" --json > "$RUNNER_TEMP/app-check.json"
+          grep -q 'not verified' "$RUNNER_TEMP/app-check.json"
+          if grep -q 'never-display-this-value' "$RUNNER_TEMP/app-check.json"; then exit 1; fi
           set +e
           PATH=/nonexistent XDG_STATE_HOME="$state_dir" SMALL_CLOUD_ENDPOINT=https://invalid.example "$executable" auth status --json > "$RUNNER_TEMP/status.json"
           status=$?

@@ -13,7 +13,7 @@ class AppCheckAcceptance(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.home = Path(self.temporary.name)
+        self.home = Path(self.temporary.name).resolve()
         self.source = self.home / 'app'
         self.source.mkdir()
         self.listener = socket.socket()
@@ -27,7 +27,9 @@ class AppCheckAcceptance(unittest.TestCase):
             'SMALL_CLOUD_TEST_ORIGIN': f'https://127.0.0.1:{self.listener.getsockname()[1]}'}
 
     def cli(self, *args):
-        result = subprocess.run([sys.executable, '-m', 'identity.tests.cli', *args],
+        executable = os.environ.get('SMALL_CLOUD_TEST_BINARY')
+        command = [executable] if executable else [sys.executable, '-m', 'identity.tests.cli']
+        result = subprocess.run([*command, *args],
             env=self.environment, capture_output=True, text=True, timeout=10)
         # Even a TLS connection would be observable; checking must never contact the service.
         with self.assertRaises(socket.timeout):
