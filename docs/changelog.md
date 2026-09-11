@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Restore the hosted publishing, lifecycle and diagnostics workers to active service and document restarting them after identity-service upgrades.
+
 ## 0.3.1 — 2026-09-11
 
 - Publish and verify all four native CLI downloads and public installers; deploy automatic owner creator grants and preserve the operator credential and workspace default.

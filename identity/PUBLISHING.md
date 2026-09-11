@@ -56,6 +56,22 @@ After worker interruption, affected operations retain their creator/app lock and
 
 Accounting reservations must also be settled before repairing an interrupted deployment to a terminal state. Preserve its admission-period ledger row; use the trusted `accounting.json` execution duration and confirmed `teardown.json` deletion evidence to charge `min(600, ceil(duration_seconds))` exactly once. A controller-proven preflight failure consumes zero. If timing or termination evidence is missing, retain the reservation and inspect the builder/reconciliation records rather than guessing a duration or resetting the month. Source/result logs are not termination evidence. Administrators can inspect the affected app's operation with `small-cloud app status APP --json`; creators see their own operation failures.
 
+## Keep the hosted workers running
+
+After an identity-service upgrade or restart, explicitly start all three dependent workers. Their systemd `Requires=small-cloud-identity.service` dependency can stop them when identity stops; enabling a unit for boot does not restart an already stopped unit after an identity upgrade.
+
+On the control host, start diagnostics first and verify its `/run/small-cloud-diagnostics.sock` forwarding is reachable from the runtime host before starting publishing and lifecycle:
+
+```bash
+systemctl enable --now small-cloud-diagnostics
+# After verifying the runtime host can connect to the diagnostics socket:
+systemctl enable --now small-cloud-lifecycle small-cloud-publishing
+systemctl is-active small-cloud-identity small-cloud-diagnostics small-cloud-lifecycle small-cloud-publishing
+systemctl is-enabled small-cloud-identity small-cloud-diagnostics small-cloud-lifecycle small-cloud-publishing
+```
+
+The normal hosted state is all four services active and enabled. Check that their restart counters remain stable and that an authorized request wakes an idle app. Do not restore workers to a stopped pre-test state when handing the service back for use.
+
 ## Acceptance report
 
 See [app publishing acceptance — 2026-09-09](../docs/acceptance/app-publishing-2026-09-09.md) for local tests, deployed checks and operator-confirmed browser outcomes.

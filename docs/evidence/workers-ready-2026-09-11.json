@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-11",
+  "services": {
+    "small-cloud-identity": {
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "small-cloud-publishing": {
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "small-cloud-lifecycle": {
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "small-cloud-diagnostics": {
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    }
+  },
+  "runtime_diagnostics_socket_connected": true,
+  "authenticated_idle_app_wake": "passed",
+  "wake_http_statuses": [
+    503,
+    503,
+    503,
+    503,
+    503,
+    503,
+    200
+  ],
+  "pending_deployments": 0,
+  "new_cloud_builds": 0
+}
