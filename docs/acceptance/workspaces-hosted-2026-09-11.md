@@ -24,7 +24,9 @@ All three builders were deleted: one failed runtime-start attempt and two succes
 
 The upgraded identity service and Caddy remain deployed. Publishing, lifecycle and diagnostics were restored to their original stopped states. The protected pre-upgrade snapshot remains under `/run/small-cloud-20-acceptance` on the control host; it is temporary rollback material, not a backup guarantee. No standalone release was published.
 
-## Remaining manual checks
+## Manual checks — closed by user acceptance
+
+Final acceptance: on 2026-09-11 the user instructed that acceptance testing be considered complete and requested ticket finalization after deleting only `test-one`. That empty workspace and its exclusive test admission were removed; Initial workspace and Lifecheq were preserved, including their identities and memberships. [Final cleanup evidence](../evidence/workspaces-final-2026-09-11.json) records the result. This closes the manual follow-up for #20 by user acceptance; it does not claim an additional agent-observed Google/browser trace. The original instructions below remain as the repeatable procedure.
 
 Release follow-up: [v0.3.1](cli-workspaces-2026-09-11.md) now provides the workspace commands in the published CLI and grants new owners creator privileges automatically. For the manual steps below, use the published CLI and expect `member`, `creator` and `administrator` roles; the earlier instructions describe the policy and release availability at the time of this hosted run.
 

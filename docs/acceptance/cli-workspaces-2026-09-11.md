@@ -24,7 +24,7 @@ Preflight identified one catalog entry left by the earlier requested user deleti
 
 Final inventory is one user (the existing platform administrator), one workspace, two catalogued apps and all three preserved app databases. The admin's running app remains running. The identity service is active; publishing, lifecycle and diagnostics retain their original stopped states. This release did not create cloud builders or run new app builds.
 
-The [earlier hosted workspace acceptance](workspaces-hosted-2026-09-11.md) covers real cloud builds and database isolation. Its owner-role expectations describe the earlier policy and are superseded by this release. Fresh human Google approval and rendered-browser checks remain the manual checks recorded there; native release fixtures do not substitute for those observations.
+The [earlier hosted workspace acceptance](workspaces-hosted-2026-09-11.md) covers real cloud builds and database isolation. Its owner-role expectations describe the earlier policy and are superseded by this release. The user subsequently accepted the testing as complete and requested #20 finalization after removal of `test-one`; that report records the final acceptance and cleanup. Native release fixtures are not represented as human Google/browser observations.
 
 ## Worker activation follow-up — 2026-09-11
 

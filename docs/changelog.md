@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Finalize #20 with user acceptance and remove only the empty test-one workspace and its exclusive admission, preserving the other workspaces.
+
 - Restore the hosted publishing, lifecycle and diagnostics workers to active service and document restarting them after identity-service upgrades.
 
 ## 0.3.1 — 2026-09-11

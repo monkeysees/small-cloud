@@ -1,0 +1,23 @@
+{
+  "deleted_workspace": {
+    "id": "ws-0ac4b97be8004ad38ae6b104fe2b5244",
+    "name": "test-one"
+  },
+  "deleted_apps": 0,
+  "removed_test_only_admissions": 1,
+  "other_workspaces_memberships_identities_unchanged": true,
+  "remaining_workspaces": [
+    {
+      "id": "ws-7bc339157664408bbfa8134a1f50a947",
+      "name": "Lifecheq"
+    },
+    {
+      "id": "ws-initial",
+      "name": "Initial workspace"
+    }
+  ],
+  "date": "2026-09-11",
+  "issue": 20,
+  "acceptance": "User accepted the completed testing and requested finalization",
+  "manual_browser_observation_source": "User acceptance; no additional agent browser trace"
+}
