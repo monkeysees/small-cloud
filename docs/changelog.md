@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.5.0 — 2026-09-11
+
 - Add #34 deployment readiness waits by default, explicit `--no-wait` acceptance, readable/JSON outcomes and workspace-pinned inspection after timeout, interruption or service outages, with tested redeployment and schema-compatibility guidance.
 
 - Verify #34 through the frozen CLI and five hosted deployments; retain data, sharing and failed-update availability, clean up acceptance resources while preserving 101 build seconds, and include completion checks in native release verification.
