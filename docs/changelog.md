@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.3.1 — 2026-09-11
+
+- Build and verify Linux x86-64 downloads on Ubuntu 22.04 so the CLI runs on glibc 2.35 workstations.
+
 ## 0.3.0 — 2026-09-11
 
 - Grant new workspace owners administrator and creator privileges automatically, count them toward creator capacity, and verify publishing without an override uses the first associated workspace.
