@@ -616,5 +616,190 @@
   "harness_correction": "Unauthenticated app JSON access expects the existing 401 AUTH_REQUIRED contract; no product change was needed.",
   "local_acceptance_source_removed": true,
   "acceptance_complete": true,
-  "release_published": false
+  "release_published": true,
+  "release": {
+    "version": "v0.5.0",
+    "tag_commit": "45c3c59dc479b6a7915156425f61c6bbe2aa8657",
+    "native_workflow": "https://github.com/monkeysees/small-cloud/actions/runs/34598367799",
+    "installation_workflow": "https://github.com/monkeysees/small-cloud/actions/runs/34599347436",
+    "native": {
+      "linux-x86_64": {
+        "file": {
+          "platform": "Linux",
+          "architecture": "x86_64",
+          "sha256": "14b8a956ef1ec5b546b00651f92fb8a83b39f08fe0dc949e28611c072554a314",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "file",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        },
+        "native": {
+          "platform": "Linux",
+          "architecture": "x86_64",
+          "sha256": "14b8a956ef1ec5b546b00651f92fb8a83b39f08fe0dc949e28611c072554a314",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "native",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        }
+      },
+      "linux-arm64": {
+        "file": {
+          "platform": "Linux",
+          "architecture": "aarch64",
+          "sha256": "d4f50472dd1af0f75e0bd3ed1a46e8c201bf2c0a8fb86af066e4aac921e3a8af",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "file",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        },
+        "native": {
+          "platform": "Linux",
+          "architecture": "aarch64",
+          "sha256": "d4f50472dd1af0f75e0bd3ed1a46e8c201bf2c0a8fb86af066e4aac921e3a8af",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "native",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        }
+      },
+      "macos-x86_64": {
+        "file": {
+          "platform": "Darwin",
+          "architecture": "x86_64",
+          "sha256": "f8bd577b7e0e6f264b1ec722503cfdeed4b6b4e7ea7f5485973e79782ae772a0",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "file",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        },
+        "native": {
+          "platform": "Darwin",
+          "architecture": "x86_64",
+          "sha256": "f8bd577b7e0e6f264b1ec722503cfdeed4b6b4e7ea7f5485973e79782ae772a0",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "native",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        }
+      },
+      "macos-arm64": {
+        "file": {
+          "platform": "Darwin",
+          "architecture": "arm64",
+          "sha256": "7c86cc2bbf44c75e429ad6908372e2aed6dc7294c0ee437f2180888778600bc3",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "file",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        },
+        "native": {
+          "platform": "Darwin",
+          "architecture": "arm64",
+          "sha256": "7c86cc2bbf44c75e429ad6908372e2aed6dc7294c0ee437f2180888778600bc3",
+          "installed_checks": 14,
+          "installer_integrity": "passed",
+          "public_https_without_system_ca_paths": "passed",
+          "credential_storage": "native",
+          "frozen_https_login_status_logout": "passed",
+          "frozen_offline_app_preparation": "passed",
+          "frozen_https_deployment_completion": "passed",
+          "frozen_https_split_login_pending_expiry_protection": "passed"
+        }
+      }
+    },
+    "installation": {
+      "linux-x86_64": {
+        "target": "linux-x86_64",
+        "version": "v0.5.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      },
+      "linux-arm64": {
+        "target": "linux-arm64",
+        "version": "v0.5.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      },
+      "macos-x86_64": {
+        "target": "macos-x86_64",
+        "version": "v0.5.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      },
+      "macos-arm64": {
+        "target": "macos-arm64",
+        "version": "v0.5.0",
+        "public_installation": "passed",
+        "offline_without_python_on_path": "passed",
+        "shell_files_unchanged": true,
+        "installation_did_not_login": true
+      }
+    },
+    "downloads": {
+      "version": "v0.5.0",
+      "public_files": {
+        "small-cloud-linux-x86_64": "14b8a956ef1ec5b546b00651f92fb8a83b39f08fe0dc949e28611c072554a314",
+        "small-cloud-linux-x86_64.sha256": "b5ed526fde6fb7a3415ef4c4b09583c6ce30bc4ae94edf09c5a58947658467dc",
+        "small-cloud-linux-arm64": "d4f50472dd1af0f75e0bd3ed1a46e8c201bf2c0a8fb86af066e4aac921e3a8af",
+        "small-cloud-linux-arm64.sha256": "ada942c164cf35879459c9cc4941526a1c9f02e600f703e7b2e04e82c15a9754",
+        "small-cloud-macos-x86_64": "f8bd577b7e0e6f264b1ec722503cfdeed4b6b4e7ea7f5485973e79782ae772a0",
+        "small-cloud-macos-x86_64.sha256": "a4f8708a15b860fe6579f5e9106b94594ee1c96d2fc843d8ac9885fafa64df38",
+        "small-cloud-macos-arm64": "7c86cc2bbf44c75e429ad6908372e2aed6dc7294c0ee437f2180888778600bc3",
+        "small-cloud-macos-arm64.sha256": "ea2add2b58e05287454fceebad8d97a4947b266a055e2c51bbd3899ab24d1a39"
+      },
+      "previous_latest": "v0.4.0",
+      "latest": "v0.5.0",
+      "latest_checksums_verified": 4
+    },
+    "workstation_installation": {
+      "version": "v0.5.0",
+      "sha256": "14b8a956ef1ec5b546b00651f92fb8a83b39f08fe0dc949e28611c072554a314",
+      "public_installer": "passed",
+      "retained_credential_authentication": "passed",
+      "credential_file_unchanged": true,
+      "shell_files_unchanged": true,
+      "deploy_help_and_publishing_guide": "passed",
+      "without_python_or_docker_on_path": true,
+      "temporary_installation_removed": true
+    },
+    "services": {
+      "ready": true,
+      "maintenance": false
+    }
+  }
 }

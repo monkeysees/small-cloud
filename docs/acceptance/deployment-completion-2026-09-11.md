@@ -1,6 +1,6 @@
 # Deployment completion acceptance — 2026-09-11
 
-Feature acceptance is complete for [#34](https://github.com/monkeysees/small-cloud/issues/34), from specification #29. Deployment now waits for readiness by default. `--no-wait` explicitly returns acceptance, and the obsolete deploy `--wait` flag is removed. Local CLI/HTTPS/PostgreSQL acceptance was followed by Linux x86-64 standalone verification and five hosted deployments using implementation commit `a47bf5c`. [Redacted evidence](../evidence/deployment-completion-2026-09-11.json) records the hosted results and cleanup. Publishing a new native CLI release remains a separate shipping step.
+Feature acceptance and shipping are complete for [#34](https://github.com/monkeysees/small-cloud/issues/34), from specification #29. Deployment now waits for readiness by default. `--no-wait` explicitly returns acceptance, and the obsolete deploy `--wait` flag is removed. Local CLI/HTTPS/PostgreSQL acceptance was followed by Linux x86-64 standalone verification and five hosted deployments using implementation commit `a47bf5c`. Version **v0.5.0**, tagged at `45c3c59`, is published on all four native targets through versioned downloads and the public installer. [Redacted evidence](../evidence/deployment-completion-2026-09-11.json) records hosted acceptance, cleanup and release verification.
 
 ## Completion and recovery
 
@@ -31,7 +31,7 @@ npx --yes pyright@1.1.413 --pythonpath "$(command -v python3)"
 
 ## Standalone and hosted follow-up
 
-The user delegated completion of acceptance. A locally built Linux x86-64 executable passed all 11 completion tests through the separate frozen HTTPS fixture. The native release verifier now includes that suite for every supported target; its complete Linux run passed **21 tests** plus 14 installed-command checks, installer-integrity checks and public HTTPS verification without system CA paths. Typechecking the verifier passed. Other native targets and a new public installer release have not been exercised in this follow-up; public downloads remain v0.4.0.
+The user delegated completion of acceptance. A locally built Linux x86-64 executable passed all 11 completion tests through the separate frozen HTTPS fixture. The native release verifier now includes that suite for every supported target; its complete Linux run passed **21 tests** plus 14 installed-command checks, installer-integrity checks and public HTTPS verification without system CA paths. Typechecking the verifier passed. This initial follow-up preceded the four-target release acceptance below.
 
 Using the retained hosted credential, the standalone executable published only the temporary `completion-acceptance-34` app, with Python and Docker absent from its PATH. First deployment returned readable `Ready` output and a working protected URL. Unauthenticated JSON access correctly returned `401 AUTH_REQUIRED`; an initial harness assertion expecting 404 was corrected without changing the product or repeating the first deployment.
 
@@ -39,7 +39,15 @@ Three successful deployments verified creator-only and workspace-wide updates wh
 
 Worker unavailability, identity restart, prolonged outage and slow-response faults passed through the frozen HTTPS fixtures. Hosted services required no restart or upgrade for this CLI change. All five fresh EU builders were deleted, with **101 charged build seconds** retained in the allowance ledger. The temporary app, container, database/role, encrypted database credentials, source staging, diagnostics and request/session records were removed; release/image references were retired for the existing janitors. Its authenticated URL now returns 404.
 
-Final provider inventory contains only the two permanent hosts. Both original apps (`fieldnotes` and `publishing-probe`) retain their recorded metadata, deployment IDs and sharing scopes. The saved credential file and workspace default are unchanged. Usage returned to two deployed apps and zero active apps, with zero reserved build seconds and 993 charged seconds in the selected workspace. All required hosted services are ready and maintenance is off. No human browser or manual acceptance step remains for #34; pushing the commits and publishing a new CLI release remain pending.
+Final provider inventory contains only the two permanent hosts. Both original apps (`fieldnotes` and `publishing-probe`) retain their recorded metadata, deployment IDs and sharing scopes. The saved credential file and workspace default are unchanged. Usage returned to two deployed apps and zero active apps, with zero reserved build seconds and 993 charged seconds in the selected workspace. All required hosted services are ready and maintenance is off. No human browser or manual acceptance step remains for #34.
+
+## Published release
+
+The user subsequently authorized shipping. The [native release workflow](https://github.com/monkeysees/small-cloud/actions/runs/34598367799) passed on Linux and macOS, each on ARM64 and x86-64, including the completion suite with both file and native credential storage. All eight public binary/checksum URLs matched the verified artifacts. The existing installer matched the repository bytes, and `latest` moved atomically from v0.4.0 to v0.5.0.
+
+The [public installation workflow](https://github.com/monkeysees/small-cloud/actions/runs/34599347436) passed on all four targets using real HTTPS downloads, with unchanged shell files and no login during installation. An isolated workstation installation verified v0.5.0, deployment help, publishing guidance, retained-credential authentication and app listing with Python and Docker absent from PATH. The credential file and shell files remained byte-identical, and the temporary installation was removed.
+
+The release is published on GitHub and the public download service. Hosted service health passed after publication; no service upgrade or restart was required. Implementation and release commits are pushed to main.
 
 ## Review
 
