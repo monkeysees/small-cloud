@@ -112,8 +112,8 @@ def execute(args, request_id, service_origin):
             metadata = {'name': args.name}
             if args.description is not None:
                 metadata['description'] = args.description
-            from .completion import inspection, wait_for_completion
-            recovery = inspection(request_id, client.workspace)
+            from .completion import inspection, wait_for_completion, uncertain_recovery
+            recovery = {**inspection(request_id, client.workspace), **uncertain_recovery()}
             print('Uploading validated source...', file=sys.stderr, flush=True)
             result = None
             try:
@@ -127,6 +127,7 @@ def execute(args, request_id, service_origin):
                 if result is not None:
                     raise Failure('INTERRUPTED', 'Observation interrupted; accepted work continues. Inspect before retrying.', 500,
                                   **inspection(request_id, client.workspace, result['operation_id']),
+                                  **uncertain_recovery(),
                                   state=result['state'], work_continues=True) from None
                 raise Failure('INTERRUPTED', 'Submission interrupted; deployment may continue. Inspect before retrying.', 500,
                               **recovery, outcome_unknown=True) from None
@@ -244,11 +245,27 @@ def authenticated_command(args, request_id, client, credentials):
             raise Failure('INVALID_ARGUMENT', 'Supply an operation ID or --request-id, exclusively.')
         path = ('/api/operations/' + urllib.parse.quote(args.id, safe='') if args.id
                 else '/api/operations?request_id=' + request_id)
-        return client.request(path, token=token)
+        try:
+            operation = client.request(path, token=token)
+        except Failure as error:
+            from .completion import inspection, uncertain_recovery
+            error.details.update(inspection(request_id, client.workspace, args.id),
+                                 **uncertain_recovery(), outcome_unknown=True)
+            if error.code in ('NOT_FOUND', 'FORBIDDEN', 'AUTH_REQUIRED', 'CREDENTIAL_REVOKED'):
+                error.details['guidance'] += ' Verify sign-in, workspace and inspection authority; a missing receipt does not prove non-execution.'
+            raise
+        if operation['kind'] == 'deploy' and operation['state'] != 'succeeded':
+            from .recovery import deployment_recovery
+            operation['recovery'] = deployment_recovery(client, token, operation)
+        return operation
     if args.command == 'logs':
         if not 1 <= args.limit <= 1000:
             raise Failure('INVALID_ARGUMENT', 'Log limit must be between 1 and 1000.')
         query = {'source': args.source, 'limit': str(args.limit)}
+        if args.tail:
+            if args.cursor:
+                raise Failure('INVALID_ARGUMENT', 'Tail cannot combine with cursor.')
+            query['tail'] = 'true'
         if args.deployment:
             query['deployment'] = args.deployment
         if args.since:

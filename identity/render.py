@@ -87,6 +87,14 @@ def human_error(error, request_id=None):
         'NETWORK_ERROR': 'Check the connection and endpoint. Inspect accepted work before retrying a mutation.',
     }
     result = safe(error.code) + ': ' + safe(error.message)
+    if error.details.get('failed_phase'):
+        result += '\nFailed phase: ' + safe(error.details['failed_phase'])
+    if error.details.get('diagnostics'):
+        result += '\nDiagnostics: ' + fields(error.details['diagnostics'])
+    if error.details.get('guidance'):
+        result += '\n' + safe(error.details['guidance'])
+    if error.details.get('operator_escalation'):
+        result += '\n' + safe(error.details['operator_escalation'])
     if error.details.get('service_endpoint'):
         result += '\nService: ' + safe(error.details['service_endpoint'])
     if error.details.get('next_command'):

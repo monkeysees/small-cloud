@@ -176,8 +176,14 @@ Timeout/interruption error details include request_id, operation_id, workspace_i
 last observed state, work_continues and next_command. Run that exact command to
 inspect the original workspace even if your saved default changes. If submission
 loses its response, outcome_unknown is true and next_command inspects by request
-ID. Inspect before retrying; use the original request ID AND workspace with
-identical source/metadata to recover the same operation. Changed inputs conflict.
+ID. Run next_command before considering another deployment; unresolved outcomes
+must not be retried with a new ID. Inspection is read-only. If the operation is
+not found, this may mean missing authority or an expired receipt, not proof that
+nothing happened: verify the workspace and access and contact the platform
+operator if the outcome remains unresolved. Identical source/metadata with the
+original request ID AND workspace retains server deduplication; changed inputs
+conflict. Recovery never uploads source, repairs code, resets data or restarts
+privileged services.
 
 Redeploy to the same name in the same workspace. The URL, database, sharing and
 omitted description remain; temporary container files and memory do not. Failed
@@ -189,6 +195,34 @@ queries. Use repeatable, compatible migrations and creator-owned schema repair.
 Runtime availability alone does not prove every database query still works.
 Errors with reconciliation_required need operator inspection before another
 deployment. Data has no backup or recovery guarantee.
+
+Deployment failure details include failed_phase (building, starting, cleaning,
+or unknown for older unclassified failures), diagnostics, next_steps, guidance
+and operator_escalation. Human output includes the same essentials. Run the
+returned next_command to inspect the operation, and next_steps for app status
+and logs in the original workspace. Failed operation inspection returns recovery
+with these same fields; it preserves the original operation error and state.
+
+Diagnostic excerpts contain at most 20 entries and 4096 message characters and
+use only authorized, already-redacted logs. Build logs select that deployment;
+runtime excerpts filter its deployment ID from the app stream. Runtime log
+commands also show other deployments since the original request; compare IDs.
+Enrichment reads one bounded tail snapshot within three seconds after detecting
+failure. app logs --tail reads the latest retained entries chronologically and
+cannot combine with --cursor; omit --tail for forward pagination from the start.
+An unavailable or interrupted diagnostic read preserves the
+original failure, including when Ctrl-C stops enrichment. diagnostics.status
+distinguishes available, partial, empty and unavailable. Empty or missing logs
+never prove success. Collection gaps, truncation and retention metadata remain
+visible. Diagnostic access denial requires sign-in or a workspace administrator
+to verify access.
+
+For pending work, recovery requires reconciliation and conditionally advises
+contacting the platform operator with the request, operation and workspace IDs.
+An unavailable publishing worker can leave an operation accepted even when
+sign-in works. Interrupted runtime collection can leave missing evidence. If
+these conditions persist, escalate to the operator; creators should inspect the
+same operation, not restart services or submit a duplicate deployment.
 
 Use status for availability and cleanup, and logs for the failed phase. Logs are
 bounded snapshots, subject to seven-day retention and volume loss; use the

@@ -4,6 +4,7 @@ import os
 import select
 import shlex
 import signal
+import socket
 import subprocess
 import threading
 import time
@@ -18,9 +19,15 @@ from identity.worker import State, Worker
 
 class InfrastructureFixture:
     failure = None
+    build_prefix = b''
 
     def build(self, operation, logs):
+        if self.failure == 'UNCERTAIN_BUILD':
+            raise Failure('INTERNAL', 'Builder termination requires operator reconciliation.', 500,
+                          reconciliation_required=True)
         if self.failure == 'BUILD_FAILED':
+            logs.feed(self.build_prefix)
+            logs.feed(b'Compiler: missing module fixture_dependency.\n')
             raise Failure(self.failure, 'Fixture build failed.', 500)
         logs.feed(b'Fixture build completed.\n')
         return {}
@@ -189,6 +196,221 @@ class CompletionAcceptance(unittest.TestCase):
                 self.assertEqual(details['state'], 'failed')
                 self.assertFalse(details['work_continues'])
                 self.assertEqual(self.inspect(details)['error']['code'], code)
+
+    def test_failed_build_reports_diagnostics_and_executable_recovery_commands(self):
+        self.infrastructure.failure = 'BUILD_FAILED'
+        process = self.launch()
+        self.accepted(process)
+        self.assertTrue(self.worker.once())
+        stdout, _ = self.finish(process, 1)
+        details = json.loads(stdout)['error']['details']
+        self.assertEqual(details['failed_phase'], 'building')
+        self.assertEqual(details['diagnostics']['status'], 'available')
+        self.assertIn('missing module fixture_dependency', str(details['diagnostics']['entries']))
+        self.assertEqual(details['diagnostics']['source'], 'build')
+        for command in details['next_steps']:
+            result = self.cli(*shlex.split(command)[1:])
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        inspected = self.inspect(details)
+        self.assertEqual(inspected['recovery']['failed_phase'], 'building')
+        self.assertFalse(self.worker.once())
+
+    def test_capacity_failure_reports_starting_phase_without_claiming_build_failure(self):
+        self.infrastructure.failure = 'ACTIVE_CAPACITY'
+        process = self.launch()
+        self.accepted(process)
+        self.assertTrue(self.worker.once())
+        stdout, _ = self.finish(process, 5)
+        details = json.loads(stdout)['error']['details']
+        self.assertEqual(details['failed_phase'], 'starting')
+        self.assertEqual(details['diagnostics']['source'], 'runtime')
+
+    def test_diagnostic_access_denial_preserves_failure_and_identifies_access_recovery(self):
+        original = self.platform_server.RequestHandlerClass
+        class DeniedLogs(original):
+            def do_GET(handler):
+                if '/logs?' in handler.path:
+                    from identity.common import envelope
+                    handler.respond(404, envelope(failure=Failure('NOT_FOUND', 'App not found.', 404)))
+                    return
+                super().do_GET()
+        self.platform_server.RequestHandlerClass = DeniedLogs
+        self.infrastructure.failure = 'BUILD_FAILED'
+        process = self.launch()
+        self.accepted(process)
+        self.assertTrue(self.worker.once())
+        stdout, _ = self.finish(process, 1)
+        result = json.loads(stdout)
+        self.assertEqual(result['error']['code'], 'BUILD_FAILED')
+        details = result['error']['details']
+        self.assertEqual(details['diagnostics']['status'], 'unavailable')
+        self.assertEqual(details['diagnostics']['error_code'], 'NOT_FOUND')
+        self.assertEqual(details['diagnostics']['entries'], [])
+        self.assertIn('workspace administrator', details['guidance'])
+        self.assertEqual(self.inspect(details)['state'], 'failed')
+        self.assertFalse(self.worker.once())
+
+    def test_startup_excerpt_is_redacted_bounded_and_reports_interrupted_collection(self):
+        from identity.collector import Collector
+        self.infrastructure.failure = 'STARTUP_FAILED'
+        request_id = str(uuid.uuid4())
+        stdout, _ = self.finish(self.launch('--no-wait', '--request-id', request_id))
+        operation = json.loads(stdout)['data']['operation_id']
+        self.worker.registry.register(operation, ['fixture-confidential'])
+        collector = Collector(self.home / 'logs.sock', self.worker.state, self.worker.registry)
+        try:
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
+                connection.connect(str(self.home / 'logs.sock'))
+                collector.poll(.1)
+                for index in range(25):
+                    message = 'x' * 300 + ' fixture-confidential startup marker ' + str(index)
+                    connection.sendall(('<14>1 2026-09-11T00:00:00Z runtime ' + operation +
+                                        ' 1 - - ' + message + '\n').encode())
+                    collector.poll(.1)
+            collector.poll(.1)
+        finally:
+            collector.close()
+        self.assertTrue(self.worker.once())
+        stdout, stderr = self.finish(self.launch('--request-id', request_id), 1)
+        details = json.loads(stdout)['error']['details']
+        self.assertEqual(details['failed_phase'], 'starting')
+        diagnostic = details['diagnostics']
+        self.assertEqual(diagnostic['status'], 'partial')
+        self.assertTrue(diagnostic['collection_interrupted'])
+        self.assertTrue(diagnostic['truncated'])
+        self.assertLessEqual(len(diagnostic['entries']), 20)
+        self.assertLessEqual(sum(len(entry['message']) for entry in diagnostic['entries']), 4096)
+        self.assertIn('startup marker 24', str(diagnostic['entries']))
+        self.assertIn('[REDACTED]', stdout)
+        self.assertNotIn('fixture-confidential', stdout + stderr)
+        self.assertIn('operator', details['operator_escalation'])
+        stdout, stderr = self.finish(self.launch('--request-id', request_id, json_mode=False), 1)
+        self.assertEqual(stdout, '')
+        self.assertIn('Failed phase: starting', stderr)
+        self.assertIn('startup marker 24', stderr)
+        self.assertNotIn('fixture-confidential', stderr)
+        self.assertIn(details['next_command'], stderr)
+        self.assertFalse(self.worker.once())
+
+    def test_unavailable_publishing_worker_requires_inspection_and_operator_escalation(self):
+        stdout, stderr = self.finish(self.launch('--timeout', '1'), 6)
+        details = json.loads(stdout)['error']['details']
+        self.assertEqual(details['state'], 'accepted')
+        self.assertTrue(details['reconciliation_required'])
+        self.assertIn('operator', details['operator_escalation'])
+        self.assertIn('Do not submit another deployment', details['guidance'])
+        self.assertNotIn('succeeded', stderr)
+        operation = self.inspect(details)
+        self.assertEqual(operation['state'], 'accepted')
+        self.assertTrue(operation['recovery']['reconciliation_required'])
+        self.assertIn('operator', operation['recovery']['operator_escalation'])
+        self.assertTrue(self.worker.once())
+        self.assertFalse(self.worker.once())
+        self.assertEqual(self.inspect(details)['state'], 'succeeded')
+
+    def test_build_diagnosis_reaches_failure_after_more_than_sixteen_pages_of_progress(self):
+        self.infrastructure.failure = 'BUILD_FAILED'
+        self.infrastructure.build_prefix = b'ordinary compiler progress\n' * 16020
+        process = self.launch()
+        self.accepted(process)
+        self.assertTrue(self.worker.once())
+        stdout, _ = self.finish(process, 1)
+        diagnostic = json.loads(stdout)['error']['details']['diagnostics']
+        self.assertIn('missing module fixture_dependency', str(diagnostic['entries']))
+        self.assertTrue(diagnostic['truncated'])
+
+    def test_recovery_log_command_reads_tail_without_walking_old_progress(self):
+        self.infrastructure.failure = 'BUILD_FAILED'
+        self.infrastructure.build_prefix = b'ordinary compiler progress\n' * 1100
+        process = self.launch()
+        self.accepted(process)
+        self.assertTrue(self.worker.once())
+        stdout, _ = self.finish(process, 1)
+        details = json.loads(stdout)['error']['details']
+        command = details['next_steps'][1]
+        self.assertIn('--tail', command)
+        result = self.cli(*shlex.split(command)[1:])
+        self.assertEqual(result.returncode, 0, result.stdout)
+        logs = json.loads(result.stdout)['data']
+        self.assertIn('missing module fixture_dependency', logs['entries'][-1]['message'])
+        self.assertLessEqual(len(logs['entries']), 100)
+        self.assertIsNone(logs['next_cursor'])
+        self.assertTrue(logs['truncated'])
+        refused = self.cli('app', 'logs', 'example', '--source', 'build', '--tail', '--cursor', 'invalid')
+        self.assertEqual(refused.returncode, 2)
+
+    def test_missing_request_receipt_does_not_advise_a_duplicate_deployment(self):
+        request_id = str(uuid.uuid4())
+        result = self.cli('operation', 'status', '--request-id', request_id)
+        self.assertEqual(result.returncode, 4, result.stdout)
+        error = json.loads(result.stdout)['error']
+        self.assertEqual(error['code'], 'NOT_FOUND')
+        self.assertTrue(error['details']['outcome_unknown'])
+        self.assertEqual(error['details']['request_id'], request_id)
+        self.assertIn('Do not submit another deployment', error['details']['guidance'])
+        self.assertIn('operator', error['details']['operator_escalation'])
+
+    def test_service_side_uncertainty_preserves_error_and_does_not_replay_work(self):
+        self.infrastructure.failure = 'UNCERTAIN_BUILD'
+        process = self.launch('--timeout', '4')
+        self.accepted(process)
+        self.assertTrue(self.worker.once())
+        stdout, _ = self.finish(process, 1)
+        error = json.loads(stdout)['error']
+        self.assertEqual(error['code'], 'INTERNAL')
+        self.assertIn('Builder termination', error['message'])
+        details = error['details']
+        self.assertTrue(details['reconciliation_required'])
+        self.assertEqual(details['state'], 'building')
+        self.assertEqual(details['failed_phase'], 'building')
+        self.assertIn('operator', details['operator_escalation'])
+        self.assertEqual(self.inspect(details)['error']['code'], 'INTERNAL')
+        self.assertFalse(self.worker.once())
+
+    def test_diagnostic_outage_deadline_and_interrupt_never_replace_build_failure(self):
+        self.infrastructure.failure = 'BUILD_FAILED'
+        request_id = str(uuid.uuid4())
+        stdout, _ = self.finish(self.launch('--no-wait', '--request-id', request_id))
+        operation_id = json.loads(stdout)['data']['operation_id']
+        self.assertTrue(self.worker.once())
+        original = self.platform_server.RequestHandlerClass
+        for mode in ('timeout', 'interrupt', 'malformed'):
+            with self.subTest(mode=mode):
+                entered, release = threading.Event(), threading.Event()
+                class UnavailableLogs(original):
+                    def do_GET(handler):
+                        if '/logs?' in handler.path:
+                            entered.set()
+                            if mode == 'malformed':
+                                from identity.common import envelope
+                                handler.respond(200, envelope({'entries': None}))
+                            else:
+                                release.wait(7)
+                            return
+                        super().do_GET()
+                self.platform_server.RequestHandlerClass = UnavailableLogs
+                try:
+                    process = self.launch('--request-id', request_id)
+                    self.assertTrue(entered.wait(5))
+                    started = time.monotonic()
+                    if mode == 'interrupt':
+                        process.send_signal(signal.SIGINT)
+                    stdout, _ = self.finish(process, 1, timeout=5)
+                    self.assertLess(time.monotonic() - started, 4 if mode == 'timeout' else 2)
+                    error = json.loads(stdout)['error']
+                    self.assertEqual(error['code'], 'BUILD_FAILED')
+                    self.assertEqual(error['message'], 'Fixture build failed.')
+                    self.assertEqual(error['details']['operation_id'], operation_id)
+                    self.assertEqual(error['details']['state'], 'failed')
+                    self.assertEqual(error['details']['diagnostics']['status'], 'unavailable')
+                    self.assertEqual(error['details']['diagnostics']['error_code'],
+                                     {'timeout': 'WAIT_TIMEOUT', 'interrupt': 'INTERRUPTED',
+                                      'malformed': 'INVALID_RESPONSE'}[mode])
+                    self.assertIn('operator', error['details']['operator_escalation'])
+                finally:
+                    release.set()
+                    self.platform_server.RequestHandlerClass = original
+        self.assertFalse(self.worker.once())
 
     def test_ctrl_c_stops_only_observation_and_pins_inspection_to_original_workspace(self):
         for json_mode in (True, False):

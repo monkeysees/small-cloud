@@ -329,6 +329,7 @@ class Worker:
         target = None
         switched = False
         starting = False
+        phase = 'building'
         logs = diagnostics.Writer(self.state, self.registry, operation['id'], 'build')
         try:
             if (not re.fullmatch(r'd-[0-9a-f]{24}', operation['id'])
@@ -341,6 +342,7 @@ class Worker:
                 self.settle_build(operation)
                 raise
             self.settle_build(operation)
+            phase = 'starting'
             with self.state.connect() as db:
                 db.execute('BEGIN IMMEDIATE')
                 try:
@@ -371,6 +373,7 @@ class Worker:
                            (self.clock(), app['id']))
                 db.execute("UPDATE deployments SET state='cleaning',cleanup_pending=1 WHERE id=?", (operation['id'],))
             switched = True
+            phase = 'cleaning'
             container = self.infrastructure.promote(operation, app, target)
             with self.state.connect() as db:
                 db.execute('UPDATE apps SET container=? WHERE id=?', (container, app['id']))
@@ -391,6 +394,7 @@ class Worker:
                 except (Failure, OSError, ValueError):
                     failure = Failure('INTERNAL', 'Deployment cleanup requires operator reconciliation.', 500,
                                       reconciliation_required=True)
+            failure.details['failed_phase'] = phase
             with self.state.connect() as db:
                 db.execute('UPDATE deployments SET state=?,finished=?,source=NULL,error=?,cleanup_pending=? WHERE id=?',
                            (('cleaning' if starting else 'building') if failure.details.get('reconciliation_required') else 'failed',

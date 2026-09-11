@@ -208,12 +208,12 @@ class Publishing:
                 raise Failure('NOT_FOUND', 'Operation not found.', 404)
             return self.operation_result(row, app['name'])
 
-    def logs(self, token, name, source, deployment=None, since=None, limit=100, cursor=None, workspace=None):
+    def logs(self, token, name, source, deployment=None, since=None, limit=100, cursor=None, workspace=None, tail=False):
         with self.store.connect() as db:
             db.execute('BEGIN IMMEDIATE')
             app = self.authorized_app(db, token, name, workspace)
             _, user = self.store.credential(db, token, workspace=workspace)
-            return diagnostics.snapshot(db, user['id'], app, source, deployment, since, limit, cursor, self.clock())
+            return diagnostics.snapshot(db, user['id'], app, source, deployment, since, limit, cursor, self.clock(), tail)
 
     @staticmethod
     def accessible_apps(db, user_id, app_id=None, workspace=None):

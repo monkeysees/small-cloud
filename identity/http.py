@@ -275,16 +275,19 @@ class Handler(BaseHTTPRequestHandler):
             self.respond(200, envelope(result))
         elif self.command == 'GET' and path.startswith('/api/apps/'):
             target = urllib.parse.unquote(path.removeprefix('/api/apps/'))
-            allowed = {'source', 'deployment', 'since', 'limit', 'cursor'} if target.endswith('/logs') else set()
+            allowed = {'source', 'deployment', 'since', 'limit', 'cursor', 'tail'} if target.endswith('/logs') else set()
             if set(query) - allowed or any(len(values) != 1 for values in query.values()):
                 raise Failure('INVALID_ARGUMENT', 'Unsupported or duplicate app target inputs.')
             if target.endswith('/secrets'):
                 result = self.app.publishing.secrets.names(self.app.publishing, self.bearer(), target.removesuffix('/secrets'), self.workspace())
             elif target.endswith('/logs'):
+                if query.get('tail', ['false'])[0] not in ('true', 'false'):
+                    raise Failure('INVALID_ARGUMENT', 'Tail must be true or false.')
                 result = self.app.publishing.logs(self.bearer(), target.removesuffix('/logs'),
                     source=query['source'][0], deployment=query.get('deployment', [None])[0],
                     since=query.get('since', [None])[0], limit=int(query.get('limit', ['100'])[0]),
-                    cursor=query.get('cursor', [None])[0], workspace=self.workspace())
+                    cursor=query.get('cursor', [None])[0], workspace=self.workspace(),
+                    tail=query.get('tail', ['false'])[0] == 'true')
             else:
                 result = self.app.publishing.status(self.bearer(), target, self.workspace())
             self.respond(200, envelope(result))

@@ -250,11 +250,11 @@ class Writer:
                            (removed, removed, self.stream))
 
 
-def snapshot(db, actor, app, source, deployment, since, limit, cursor, now):
+def snapshot(db, actor, app, source, deployment, since, limit, cursor, now, tail=False):
     if source not in VOLUME or type(limit) is not int or not 1 <= limit <= 1000:
         raise Failure('INVALID_ARGUMENT', 'Select build or runtime logs and a limit between 1 and 1000.')
-    if (source == 'runtime' and deployment) or (cursor and since):
-        raise Failure('INVALID_ARGUMENT', 'Deployment applies only to build logs; cursor and since are exclusive.')
+    if (source == 'runtime' and deployment) or (cursor and (since or tail)):
+        raise Failure('INVALID_ARGUMENT', 'Deployment applies only to build logs; cursor cannot combine with since or tail.')
     prune(db, now)
     saved = None
     if cursor:
@@ -286,8 +286,9 @@ def snapshot(db, actor, app, source, deployment, since, limit, cursor, now):
         if saved is None or saved['stream'] != stream:
             raise Failure('INVALID_ARGUMENT', 'Invalid or expired log cursor.')
         after, through, expires = saved['after_id'], saved['through_id'], saved['expires']
+    order = 'DESC' if tail else 'ASC'
     rows = db.execute('SELECT * FROM diagnostic_records WHERE stream=? AND id>? AND id<=? AND ingested>=? '
-                      'ORDER BY id LIMIT ?', (stream, after, through, minimum, limit + 1)).fetchall()
+                      f'ORDER BY id {order} LIMIT ?', (stream, after, through, minimum, limit + 1)).fetchall()
     entries, size, more = [], 0, False
     for row in rows:
         if len(entries) == limit or size + row['size'] + 2 > SNAPSHOT_LIMIT:
@@ -297,7 +298,9 @@ def snapshot(db, actor, app, source, deployment, since, limit, cursor, now):
         size += row['size'] + 2
         after = row['id']
     next_cursor = None
-    if more:
+    if tail:
+        entries.reverse()
+    if more and not tail:
         next_cursor = secrets.token_urlsafe(32)
         db.execute('DELETE FROM diagnostic_cursors WHERE id IN '
                    '(SELECT id FROM diagnostic_cursors ORDER BY expires DESC LIMIT -1 OFFSET 999)')

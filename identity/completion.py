@@ -17,7 +17,13 @@ def inspection(request_id, workspace_id, operation_id=None):
                                         '--workspace', workspace_id, '--json'])}
 
 
-def operation_status(client, token, operation_id, deadline):
+def uncertain_recovery():
+    return {'reconciliation_required': True,
+            'guidance': 'Inspect the original request or operation. Do not submit another deployment while its outcome is unresolved.',
+            'operator_escalation': 'If work remains pending or inspection stays unavailable, contact the platform operator with the request, operation and workspace IDs. A publishing worker may be unavailable even when sign-in works.'}
+
+
+def read_before_deadline(client, token, path, deadline):
     remaining = deadline - time.monotonic()
     if remaining <= 0:
         raise TimeoutError
@@ -25,8 +31,7 @@ def operation_status(client, token, operation_id, deadline):
 
     def read():
         try:
-            response = client.request('/api/operations/' + urllib.parse.quote(operation_id, safe=''),
-                                      token=token, timeout=min(30, remaining))
+            response = client.request(path, token=token, timeout=min(30, remaining))
         except Exception as error:
             response = error
         responses.put(response)
@@ -55,7 +60,8 @@ def wait_for_completion(client, token, result, request_id, timeout, label):
         print(f'{label}: accepted (0s elapsed).', file=sys.stderr, flush=True)
         while True:
             try:
-                operation = operation_status(client, token, result['operation_id'], deadline)
+                operation = read_before_deadline(client, token,
+                    '/api/operations/' + urllib.parse.quote(result['operation_id'], safe=''), deadline)
             except Failure as error:
                 if error.code != 'NETWORK_ERROR':
                     raise
@@ -76,24 +82,29 @@ def wait_for_completion(client, token, result, request_id, timeout, label):
                 last_report = now
             if state == 'succeeded':
                 return operation
-            if state == 'failed':
+            if state == 'failed' or (operation.get('error') or {}).get('details', {}).get('reconciliation_required'):
+                from .recovery import deployment_recovery
                 error = operation['error']
                 raise Failure(error['code'], error['message'],
-                              409 if error['code'] == 'ACTIVE_CAPACITY' else 500, **error['details'])
+                              409 if error['code'] == 'ACTIVE_CAPACITY' else 500,
+                              **{**error['details'], **deployment_recovery(client, token, operation)})
             time.sleep(min(2, max(0, deadline - time.monotonic())))
     except TimeoutError:
         raise Failure('WAIT_TIMEOUT', 'Observation timed out; accepted work continues. Inspect before retrying.', 503,
-                      **details, state=state, work_continues=True,
+                      **details, **uncertain_recovery(), state=state, work_continues=True,
                       **({'last_observation_error': last_error} if last_error else {})) from None
     except KeyboardInterrupt:
         continuing = state not in ('succeeded', 'failed')
         message = ('Observation interrupted; accepted work continues. Inspect before retrying.' if continuing
                    else 'Observation interrupted after completion. Inspect the operation result.')
         raise Failure('INTERRUPTED', message, 500,
-                      **details, state=state, work_continues=continuing,
+                      **details, **(uncertain_recovery() if continuing else {}), state=state, work_continues=continuing,
                       **({'last_observation_error': last_error} if last_error else {})) from None
     except Failure as error:
         error.details.update(details, state=state, work_continues=state not in ('succeeded', 'failed'))
+        if state not in ('succeeded', 'failed'):
+            for key, value in uncertain_recovery().items():
+                error.details.setdefault(key, value)
         if last_error:
             error.details['last_observation_error'] = last_error
         raise
