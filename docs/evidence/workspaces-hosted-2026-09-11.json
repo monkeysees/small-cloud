@@ -1,0 +1,180 @@
+{
+  "upgrade": {
+    "implementation_commit": "4431953",
+    "retained_control_state_unchanged": true,
+    "app_database_data_unchanged": true,
+    "retained_apps": 3,
+    "retained_databases": 3,
+    "repeat_bootstrap": true,
+    "caddy_validated": true,
+    "original_services": {
+      "small-cloud-identity": "active",
+      "small-cloud-publishing": "inactive",
+      "small-cloud-lifecycle": "inactive",
+      "small-cloud-diagnostics": "inactive"
+    },
+    "upgrade_time": 1789084646.9373837,
+    "wheel_sha256": "eebf5bb596c2b672835a4a4edd3d1e3118691bd80d11e2f43b1fee1337a82230"
+  },
+  "creation_selection": {
+    "workspace": "ws-fc00aa228736482d98f1a8e65f55264a",
+    "creation_retry": true,
+    "changed_creation_rejected": true,
+    "owner_requires_creator_grant": true,
+    "list_default_override": true,
+    "non_platform_creation_denied": true,
+    "fixture_identities": 2
+  },
+  "hosted_checks": {
+    "apps": [
+      {
+        "id": "a-4a83959759b34d75bfdc9aaa",
+        "workspace": "ws-initial",
+        "url": "https://a-4a83959759b34d75bfdc9aaa.small-cloud.monkeysees.one",
+        "operation": "d-bb88ee2243db4d0486f10607"
+      },
+      {
+        "id": "a-97e8ebc0dccb40fb92126907",
+        "workspace": "ws-fc00aa228736482d98f1a8e65f55264a",
+        "url": "https://a-97e8ebc0dccb40fb92126907.small-cloud.monkeysees.one",
+        "operation": "d-ee65960a2ffd4b2dae48b019"
+      }
+    ],
+    "distinct_ids_urls_and_rows": true,
+    "bidirectional_database_role_denials": true,
+    "gateway_matrix": [
+      {
+        "actor": "elsewhere",
+        "workspace": "ws-initial",
+        "scope": "workspace-wide",
+        "status": 200
+      },
+      {
+        "actor": "elsewhere",
+        "workspace": "ws-fc00aa228736482d98f1a8e65f55264a",
+        "scope": "creator-only",
+        "status": 404
+      },
+      {
+        "actor": "overlap",
+        "workspace": "ws-initial",
+        "scope": "workspace-wide",
+        "status": 200
+      },
+      {
+        "actor": "overlap",
+        "workspace": "ws-fc00aa228736482d98f1a8e65f55264a",
+        "scope": "creator-only",
+        "status": 404
+      },
+      {
+        "actor": "elsewhere",
+        "workspace": "ws-fc00aa228736482d98f1a8e65f55264a",
+        "scope": "workspace-wide",
+        "status": 404
+      },
+      {
+        "actor": "overlap",
+        "workspace": "ws-fc00aa228736482d98f1a8e65f55264a",
+        "scope": "workspace-wide",
+        "status": 200
+      }
+    ],
+    "unauthenticated_denied": true,
+    "workspace_url_mismatch_denied": true,
+    "changed_workspace_sharing_receipt_denied": true,
+    "foreign_and_conflicting_identifiers_denied": true,
+    "directory_http_boundaries": true,
+    "independent_roles": true,
+    "restart_preserved_urls_data_scope": true,
+    "shared_build_remaining": 59099,
+    "fixture_identity_note": "Operator-seeded disposable identities and browser sessions; not fresh Google approval or rendered-browser evidence",
+    "administrator_private_content_denied": true
+  },
+  "public_routes": {
+    "directory_redirects_to_google": true,
+    "directory_flow_cookie_flags": true,
+    "/": 200,
+    "/cli/install.sh": 200,
+    "google_approval_completed": false,
+    "rendered_browser_checked": false
+  },
+  "cleanup": {
+    "temporary_apps_removed": [
+      "a-97e8ebc0dccb40fb92126907",
+      "a-4a83959759b34d75bfdc9aaa"
+    ],
+    "builders": [
+      {
+        "operation": "d-ee65960a2ffd4b2dae48b019",
+        "builder_id": 165461385,
+        "location": "nbg1",
+        "type": "cx23",
+        "deleted": true,
+        "charged_seconds": 19,
+        "state": "succeeded"
+      },
+      {
+        "operation": "d-9b22592878784853bffe89fb",
+        "builder_id": 165460867,
+        "location": "nbg1",
+        "type": "cx23",
+        "deleted": true,
+        "charged_seconds": 20,
+        "state": "failed"
+      },
+      {
+        "operation": "d-bb88ee2243db4d0486f10607",
+        "builder_id": 165461290,
+        "location": "nbg1",
+        "type": "cx23",
+        "deleted": true,
+        "charged_seconds": 19,
+        "state": "succeeded"
+      }
+    ],
+    "charged_seconds_preserved": 58,
+    "temporary_workspace_removed": true,
+    "temporary_identities_removed": 2,
+    "preexisting_apps_and_data_preserved": true,
+    "original_default_preserved": true,
+    "artifact_references_retired": true,
+    "finished_at": 1789085405.3842983,
+    "services": {
+      "small-cloud-identity": "active",
+      "small-cloud-publishing": "inactive",
+      "small-cloud-lifecycle": "inactive",
+      "small-cloud-diagnostics": "inactive"
+    }
+  },
+  "tls": {
+    "certificates": [
+      {
+        "app_id": "a-4a83959759b34d75bfdc9aaa",
+        "issuer_common_name": "ZeroSSL ECC DV SSL CA 2",
+        "verified_tls": true
+      },
+      {
+        "app_id": "a-97e8ebc0dccb40fb92126907",
+        "issuer_common_name": "ZeroSSL ECC DV SSL CA 2",
+        "verified_tls": true
+      }
+    ],
+    "initial_lets_encrypt_secondary_dns_failures": true,
+    "configured_fallback_issuer_succeeded": true
+  },
+  "runtime_prerequisite": {
+    "initial_failed_operation": "d-9b22592878784853bffe89fb",
+    "cause": "Diagnostics collector was stopped; Docker syslog driver could not connect to its Unix socket.",
+    "resolution": "Started the existing collector before retrying the normal deployment API.",
+    "runtime_code_changed": false
+  },
+  "date": "2026-09-11",
+  "final_inventory": {
+    "workspaces": 1,
+    "identities": 3,
+    "apps": 3,
+    "running_containers": 1,
+    "pending_deployments": 0
+  }
+}

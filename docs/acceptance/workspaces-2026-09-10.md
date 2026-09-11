@@ -2,6 +2,8 @@
 
 Local implementation acceptance for [#20](https://github.com/monkeysees/small-cloud/issues/20), under specification #18 and ADR 0009. No hosted deployment or release was performed. Deployed multi-workspace isolation and infrastructure verification remain #28.
 
+Follow-up: [hosted acceptance on 2026-09-11](workspaces-hosted-2026-09-11.md) deployed #20 and verified live isolation, preserving the dated local observations below. That report records remaining manual checks and distinguishes later #28 workflows.
+
 ## Verified behavior
 
 - Real CLI subprocesses and authenticated HTTPS create a workspace with one pending owner, enforce platform-only creation, retain matching receipts through restart and concurrent retries, and reject changed inputs.

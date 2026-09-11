@@ -4,6 +4,7 @@ Reports use `<topic>-YYYY-MM-DD.md`, dated by the acceptance or validation miles
 
 | Report | Scope |
 | --- | --- |
+| [Hosted workspaces — 2026-09-11](workspaces-hosted-2026-09-11.md) | #20 live upgrade, two cloud builds, workspace/app/database isolation, restart and cleanup; fresh Google approval and visual browser checks remain manual. |
 | [Multiple workspaces — 2026-09-10](workspaces-2026-09-10.md) | #20 local workspace creation/selection, scoped roles and retries, browser/gateway boundaries and duplicate-name PostgreSQL isolation. |
 | [CLI distribution — 2026-09-09](cli-distribution-2026-09-09.md) | #31 standalone releases, fixed-service credentials, native OS storage and public installation on Linux/macOS ARM64/x86-64. |
 | [CLI discovery — 2026-09-09](cli-discovery-2026-09-09.md) | #30 installed offline discovery, hosted read-only human/JSON app inspection and local CLI/HTTPS authorization acceptance. |
