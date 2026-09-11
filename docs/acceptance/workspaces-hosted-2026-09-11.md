@@ -26,6 +26,8 @@ The upgraded identity service and Caddy remain deployed. Publishing, lifecycle a
 
 ## Remaining manual checks
 
+Release follow-up: [v0.3.1](cli-workspaces-2026-09-11.md) now provides the workspace commands in the published CLI and grants new owners creator privileges automatically. For the manual steps below, use the published CLI and expect `member`, `creator` and `administrator` roles; the earlier instructions describe the policy and release availability at the time of this hosted run.
+
 No callable Chrome tool, `mcporter` or `openclaw` executable was available in this session. These checks require a real Google account and the user's browser. The operator's retained credential and the disposable authorization fixtures do not establish them.
 
 ### 1. Fresh designated-owner Google sign-in and first default

@@ -49,7 +49,7 @@ Existing app, operation, usage, directory and auth-status routes honor `X-Worksp
 
 ## Installation and limits
 
-Stop the publishing and identity services before upgrading as described in [migration](WORKSPACE-MIGRATION.md). Install the updated package and merge `/directory`, `/api/workspaces` and `/api/workspaces/*` from [the Caddy fragment](Caddyfile.fragment) into the management site. Validate Caddy configuration, run the original operator bootstrap as preflight, and restart the services. Upgrade the CLI package for the new commands; previously published standalone artifacts do not include this unreleased change.
+Stop the publishing and identity services before upgrading as described in [migration](WORKSPACE-MIGRATION.md). Install the updated package and merge `/directory`, `/api/workspaces` and `/api/workspaces/*` from [the Caddy fragment](Caddyfile.fragment) into the management site. Validate Caddy configuration, run the original operator bootstrap as preflight, and restart the services. Install [CLI v0.3.1 or later](../distribution/README.md) for the workspace commands; the hosted service includes the automatic owner creator grant.
 
 Startup upgrades the single-workspace constraints and global app-name uniqueness transactionally while preserving existing identity/app IDs, URLs, data references, roles, credentials and operations. Do not downgrade to the single-workspace package. The persisted-receipt contract is explicit: existing unexpired initial-workspace fingerprints keep their format; additional-workspace fingerprints include the resolved ID. An old receipt can only replay in its original initial workspace. No legacy role-writing or alternate authorization path is retained.
 

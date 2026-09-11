@@ -4,6 +4,8 @@
 
 ## 0.3.1 — 2026-09-11
 
+- Publish and verify all four native CLI downloads and public installers; deploy automatic owner creator grants and preserve the operator credential and workspace default.
+
 - Build and verify Linux x86-64 downloads on Ubuntu 22.04 so the CLI runs on glibc 2.35 workstations.
 
 ## 0.3.0 — 2026-09-11

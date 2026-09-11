@@ -4,7 +4,7 @@ Small Cloud runs without a Python installation or source checkout. The native ex
 
 ## Install and sign in
 
-Version 0.2.0 is published and verified on all four supported targets; see the [login release acceptance record](../docs/acceptance/cli-login-2026-09-09.md) and [original distribution acceptance](../docs/acceptance/cli-distribution-2026-09-09.md).
+Version 0.3.1 is published on all four supported targets, including workspace creation and selection; see the [workspace release acceptance record](../docs/acceptance/cli-workspaces-2026-09-11.md). The server grants new owners administrator and creator privileges automatically.
 
 ```sh
 curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
@@ -23,7 +23,7 @@ In Fish, use `fish_add_path "$HOME/.local/bin"`. Login requires human Google bro
 To select an existing release and another absolute install directory:
 
 ```sh
-curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.2.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
+curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.3.1 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
 ```
 
 Ordinary CLI commands do not update the executable. Rerunning the installer explicitly replaces it; the dedicated update command and completion generators belong to later #29 tickets.
@@ -39,7 +39,7 @@ Download the executable and matching `.sha256` file from `https://small-cloud.mo
 | macOS | Intel x86-64 | `small-cloud-macos-x86_64` | macOS 15 |
 | macOS | Apple Silicon ARM64 | `small-cloud-macos-arm64` | macOS 15 |
 
-Verify the downloaded checksum (`sha256sum -c FILE.sha256` or `shasum -a 256 -c FILE.sha256`), rename the executable to `small-cloud`, and `chmod +x small-cloud` before placing it on PATH. Linux requires glibc and system CA certificates; musl/Alpine and native Windows are unsupported. PyInstaller performs ad-hoc signing on macOS; releases are not Developer ID signed or notarized. Browser-downloaded macOS files can require explicit approval in System Settings → Privacy & Security. No installer step disables Gatekeeper or removes quarantine.
+Verify the downloaded checksum (`sha256sum -c FILE.sha256` or `shasum -a 256 -c FILE.sha256`), rename the executable to `small-cloud`, and `chmod +x small-cloud` before placing it on PATH. Linux x86-64 is built and tested on Ubuntu 22.04 (glibc 2.35), and Linux ARM64 on Ubuntu 24.04. Linux requires glibc and system CA certificates; musl/Alpine and native Windows are unsupported. PyInstaller performs ad-hoc signing on macOS; releases are not Developer ID signed or notarized. Browser-downloaded macOS files can require explicit approval in System Settings → Privacy & Security. No installer step disables Gatekeeper or removes quarantine.
 
 Native macOS Keychain and Linux Secret Service support, including their Python dependencies, are bundled. Linux desktop Secret Service requires the OS session's D-Bus/keyring service; headless systems use the existing owner-only file fallback. A locked available native store still fails instead of silently writing plaintext. Credential files and lock behavior retain the existing protection and exact-origin rules. Public HTTPS trust includes a bundled Mozilla CA set from certifi, so the executable does not depend on its build machine's certificate paths; system trust remains available as well.
 
