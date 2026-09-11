@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from identity.tests.test_identity_cli import IdentityAcceptance
 from identity.tests.test_app_check_cli import AppCheckAcceptance
+from identity.tests.test_completion_cli import CompletionAcceptance
 
 
 class FrozenIdentity(IdentityAcceptance):
@@ -163,6 +164,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
         'test_split_login_protects_pending_material_and_origin',
         'test_split_login_server_expiry_removes_pending_state'))
     suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(AppCheckAcceptance))
+    suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(CompletionAcceptance))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful():
         raise SystemExit(1)
@@ -173,6 +175,7 @@ cp "$SMALL_CLOUD_TEST_DOWNLOADS/${url##*/}" "$output"
                       'credential_storage': 'native' if os.environ.get('SMALL_CLOUD_TEST_NATIVE_KEYRING') == '1' else 'file',
                       'frozen_https_login_status_logout': 'passed',
                       'frozen_offline_app_preparation': 'passed',
+                      'frozen_https_deployment_completion': 'passed',
                       'frozen_https_split_login_pending_expiry_protection': 'passed'}))
 
 

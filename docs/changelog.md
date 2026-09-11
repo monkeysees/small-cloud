@@ -4,6 +4,8 @@
 
 - Add #34 deployment readiness waits by default, explicit `--no-wait` acceptance, readable/JSON outcomes and workspace-pinned inspection after timeout, interruption or service outages, with tested redeployment and schema-compatibility guidance.
 
+- Verify #34 through the frozen CLI and five hosted deployments; retain data, sharing and failed-update availability, clean up acceptance resources while preserving 101 build seconds, and include completion checks in native release verification.
+
 ## 0.4.0 — 2026-09-11
 
 - Verify and publish #33 on all four native targets and through the public installer, preserving credentials and testing human/JSON source checks without local Docker.

@@ -1,0 +1,620 @@
+{
+  "issue": 34,
+  "commit": "a47bf5c",
+  "endpoint": "https://small-cloud.monkeysees.one",
+  "workspace_id": "ws-initial",
+  "app_name": "completion-acceptance-34",
+  "deployments": [
+    {
+      "version": "completion-first",
+      "expected_failure": null,
+      "first": true,
+      "request_id": "a5f86ccc-3f90-4367-b8c1-e28b65617a97",
+      "observed_stages": [
+        "building",
+        "starting"
+      ],
+      "http_checks": 0,
+      "operation_id": "d-205eaef9e06a4d8da72b68f1",
+      "elapsed_seconds": 127.65,
+      "exit_code": 0,
+      "progress": [
+        "Request ID: a5f86ccc-3f90-4367-b8c1-e28b65617a97",
+        "Uploading validated source...",
+        "Deployment: accepted (0s elapsed).",
+        "Deployment: building (2s elapsed).",
+        "Deployment: building (18s elapsed).",
+        "Deployment: building (34s elapsed).",
+        "Deployment: building (50s elapsed).",
+        "Deployment: building (66s elapsed).",
+        "Deployment: building (82s elapsed).",
+        "Deployment: building (98s elapsed).",
+        "Deployment: building (114s elapsed).",
+        "Deployment: starting (116s elapsed).",
+        "Deployment: succeeded (126s elapsed)."
+      ],
+      "human_result": "Ready: completion-acceptance-34\nURL: https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one\nWorkspace: ws-initial\nOperation: d-205eaef9e06a4d8da72b68f1\nInspect: small-cloud operation status d-205eaef9e06a4d8da72b68f1 --workspace ws-initial --json\n",
+      "app": {
+        "app": "completion-acceptance-34",
+        "app_id": "a-4603203e23d444eba07e0582",
+        "description": "Temporary issue 34 deployment completion acceptance",
+        "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "runtime_error": null,
+        "active_deployment_id": "d-205eaef9e06a4d8da72b68f1",
+        "latest_operation": {
+          "id": "d-205eaef9e06a4d8da72b68f1",
+          "kind": "deploy",
+          "app": "completion-acceptance-34",
+          "operation_id": "d-205eaef9e06a4d8da72b68f1",
+          "deployment_id": "d-205eaef9e06a4d8da72b68f1",
+          "state": "succeeded",
+          "request_id": "a5f86ccc-3f90-4367-b8c1-e28b65617a97",
+          "created_at": "2026-09-11T11:32:08.630902Z",
+          "updated_at": "2026-09-11T11:34:15.325697Z",
+          "completed_at": "2026-09-11T11:34:15.325697Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      }
+    },
+    {
+      "version": "completion-private-update",
+      "expected_failure": null,
+      "first": false,
+      "request_id": "b8b47417-28a9-4b16-b306-d528517f25d7",
+      "observed_stages": [
+        "building",
+        "starting",
+        "cleaning"
+      ],
+      "http_checks": 49,
+      "operation_id": "d-116e250bf7aa4e6aaf1a15f4",
+      "elapsed_seconds": 149.62,
+      "exit_code": 0,
+      "progress": [
+        "Request ID: b8b47417-28a9-4b16-b306-d528517f25d7",
+        "Uploading validated source...",
+        "Deployment: accepted (0s elapsed).",
+        "Deployment: building (2s elapsed).",
+        "Deployment: building (18s elapsed).",
+        "Deployment: building (34s elapsed).",
+        "Deployment: building (50s elapsed).",
+        "Deployment: building (66s elapsed).",
+        "Deployment: building (82s elapsed).",
+        "Deployment: building (98s elapsed).",
+        "Deployment: building (114s elapsed).",
+        "Deployment: building (130s elapsed).",
+        "Deployment: starting (137s elapsed).",
+        "Deployment: cleaning (147s elapsed).",
+        "Deployment: succeeded (149s elapsed)."
+      ],
+      "result": {
+        "schema_version": 1,
+        "ok": true,
+        "request_id": "b8b47417-28a9-4b16-b306-d528517f25d7",
+        "data": {
+          "operation_id": "d-116e250bf7aa4e6aaf1a15f4",
+          "state": "succeeded",
+          "app": "completion-acceptance-34",
+          "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+          "active_deployment_id": "d-116e250bf7aa4e6aaf1a15f4",
+          "request_id": "b8b47417-28a9-4b16-b306-d528517f25d7",
+          "workspace_id": "ws-initial",
+          "next_command": "small-cloud operation status d-116e250bf7aa4e6aaf1a15f4 --workspace ws-initial --json",
+          "ready": true
+        },
+        "error": null
+      },
+      "app": {
+        "app": "completion-acceptance-34",
+        "app_id": "a-4603203e23d444eba07e0582",
+        "description": "Temporary issue 34 deployment completion acceptance",
+        "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+        "sharing_scope": "creator-only",
+        "availability": "running",
+        "runtime_error": null,
+        "active_deployment_id": "d-116e250bf7aa4e6aaf1a15f4",
+        "latest_operation": {
+          "id": "d-116e250bf7aa4e6aaf1a15f4",
+          "kind": "deploy",
+          "app": "completion-acceptance-34",
+          "operation_id": "d-116e250bf7aa4e6aaf1a15f4",
+          "deployment_id": "d-116e250bf7aa4e6aaf1a15f4",
+          "state": "succeeded",
+          "request_id": "b8b47417-28a9-4b16-b306-d528517f25d7",
+          "created_at": "2026-09-11T11:35:32.740036Z",
+          "updated_at": "2026-09-11T11:38:01.019344Z",
+          "completed_at": "2026-09-11T11:38:01.019344Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "url_data_sharing_description_retained": true
+    },
+    {
+      "version": "completion-shared-update",
+      "expected_failure": null,
+      "first": false,
+      "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+      "observed_stages": [
+        "building",
+        "starting"
+      ],
+      "http_checks": 45,
+      "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+      "immediate_result": {
+        "schema_version": 1,
+        "ok": true,
+        "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+        "data": {
+          "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+          "state": "accepted",
+          "app": "completion-acceptance-34",
+          "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+          "active_deployment_id": "d-116e250bf7aa4e6aaf1a15f4",
+          "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+          "workspace_id": "ws-initial",
+          "next_command": "small-cloud operation status d-fe33704c83a8499ab0a4a4fd --workspace ws-initial --json",
+          "ready": false
+        },
+        "error": null
+      },
+      "timeout_result": {
+        "schema_version": 1,
+        "ok": false,
+        "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+        "data": null,
+        "error": {
+          "code": "WAIT_TIMEOUT",
+          "message": "Observation timed out; accepted work continues. Inspect before retrying.",
+          "retryable": false,
+          "details": {
+            "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+            "workspace_id": "ws-initial",
+            "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+            "next_command": "small-cloud operation status d-fe33704c83a8499ab0a4a4fd --workspace ws-initial --json",
+            "state": "accepted",
+            "work_continues": true
+          }
+        }
+      },
+      "interrupted_result": {
+        "schema_version": 1,
+        "ok": false,
+        "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+        "data": null,
+        "error": {
+          "code": "INTERRUPTED",
+          "message": "Observation interrupted; accepted work continues. Inspect before retrying.",
+          "retryable": false,
+          "details": {
+            "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+            "workspace_id": "ws-initial",
+            "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+            "next_command": "small-cloud operation status d-fe33704c83a8499ab0a4a4fd --workspace ws-initial --json",
+            "state": "building",
+            "work_continues": true
+          }
+        }
+      },
+      "elapsed_seconds": 138.28,
+      "exit_code": 0,
+      "progress": [
+        "Request ID: ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+        "Uploading validated source...",
+        "Deployment: accepted (0s elapsed).",
+        "Deployment: building (0s elapsed).",
+        "Deployment: building (16s elapsed).",
+        "Deployment: building (32s elapsed).",
+        "Deployment: building (48s elapsed).",
+        "Deployment: building (64s elapsed).",
+        "Deployment: building (80s elapsed).",
+        "Deployment: building (96s elapsed).",
+        "Deployment: building (112s elapsed).",
+        "Deployment: starting (126s elapsed).",
+        "Deployment: succeeded (136s elapsed)."
+      ],
+      "result": {
+        "schema_version": 1,
+        "ok": true,
+        "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+        "data": {
+          "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+          "state": "succeeded",
+          "app": "completion-acceptance-34",
+          "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+          "active_deployment_id": "d-fe33704c83a8499ab0a4a4fd",
+          "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+          "workspace_id": "ws-initial",
+          "next_command": "small-cloud operation status d-fe33704c83a8499ab0a4a4fd --workspace ws-initial --json",
+          "ready": true
+        },
+        "error": null
+      },
+      "app": {
+        "app": "completion-acceptance-34",
+        "app_id": "a-4603203e23d444eba07e0582",
+        "description": "Temporary issue 34 deployment completion acceptance",
+        "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "runtime_error": null,
+        "active_deployment_id": "d-fe33704c83a8499ab0a4a4fd",
+        "latest_operation": {
+          "id": "d-fe33704c83a8499ab0a4a4fd",
+          "kind": "deploy",
+          "app": "completion-acceptance-34",
+          "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+          "deployment_id": "d-fe33704c83a8499ab0a4a4fd",
+          "state": "succeeded",
+          "request_id": "ccf7c762-f4d4-4e90-9148-9d85acb1dc9c",
+          "created_at": "2026-09-11T11:38:03.779747Z",
+          "updated_at": "2026-09-11T11:40:24.006075Z",
+          "completed_at": "2026-09-11T11:40:24.006075Z",
+          "error": null,
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "url_data_sharing_description_retained": true
+    },
+    {
+      "version": "completion-build-failed",
+      "expected_failure": "BUILD_FAILED",
+      "first": false,
+      "request_id": "20e933f2-00d2-49aa-98be-4f52f0206946",
+      "observed_stages": [
+        "building"
+      ],
+      "http_checks": 41,
+      "operation_id": "d-4dd44c1a9f43454885743f7a",
+      "elapsed_seconds": 126.03,
+      "exit_code": 1,
+      "progress": [
+        "Request ID: 20e933f2-00d2-49aa-98be-4f52f0206946",
+        "Uploading validated source...",
+        "Deployment: accepted (0s elapsed).",
+        "Deployment: building (2s elapsed).",
+        "Deployment: building (18s elapsed).",
+        "Deployment: building (34s elapsed).",
+        "Deployment: building (50s elapsed).",
+        "Deployment: building (66s elapsed).",
+        "Deployment: building (82s elapsed).",
+        "Deployment: building (98s elapsed).",
+        "Deployment: building (114s elapsed).",
+        "Deployment: failed (124s elapsed)."
+      ],
+      "result": {
+        "schema_version": 1,
+        "ok": false,
+        "request_id": "20e933f2-00d2-49aa-98be-4f52f0206946",
+        "data": null,
+        "error": {
+          "code": "BUILD_FAILED",
+          "message": "Dockerfile build failed; inspect build logs.",
+          "retryable": false,
+          "details": {
+            "request_id": "20e933f2-00d2-49aa-98be-4f52f0206946",
+            "workspace_id": "ws-initial",
+            "operation_id": "d-4dd44c1a9f43454885743f7a",
+            "next_command": "small-cloud operation status d-4dd44c1a9f43454885743f7a --workspace ws-initial --json",
+            "state": "failed",
+            "work_continues": false
+          }
+        }
+      },
+      "app": {
+        "app": "completion-acceptance-34",
+        "app_id": "a-4603203e23d444eba07e0582",
+        "description": "Temporary issue 34 deployment completion acceptance",
+        "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "runtime_error": null,
+        "active_deployment_id": "d-fe33704c83a8499ab0a4a4fd",
+        "latest_operation": {
+          "id": "d-4dd44c1a9f43454885743f7a",
+          "kind": "deploy",
+          "app": "completion-acceptance-34",
+          "operation_id": "d-4dd44c1a9f43454885743f7a",
+          "deployment_id": "d-4dd44c1a9f43454885743f7a",
+          "state": "failed",
+          "request_id": "20e933f2-00d2-49aa-98be-4f52f0206946",
+          "created_at": "2026-09-11T11:40:26.390484Z",
+          "updated_at": "2026-09-11T11:42:29.777888Z",
+          "completed_at": "2026-09-11T11:42:29.777888Z",
+          "error": {
+            "code": "BUILD_FAILED",
+            "message": "Dockerfile build failed; inspect build logs.",
+            "retryable": false,
+            "details": {}
+          },
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "url_data_sharing_description_retained": true
+    },
+    {
+      "version": "completion-startup-failed",
+      "expected_failure": "STARTUP_FAILED",
+      "first": false,
+      "request_id": "d082f6d2-22a9-42aa-a690-58b9e76f3c5a",
+      "observed_stages": [
+        "building",
+        "starting",
+        "failed"
+      ],
+      "http_checks": 84,
+      "operation_id": "d-40d7a881874f471b9db48019",
+      "elapsed_seconds": 257.01,
+      "exit_code": 1,
+      "progress": [
+        "Request ID: d082f6d2-22a9-42aa-a690-58b9e76f3c5a",
+        "Uploading validated source...",
+        "Deployment: accepted (0s elapsed).",
+        "Deployment: building (2s elapsed).",
+        "Deployment: building (18s elapsed).",
+        "Deployment: building (34s elapsed).",
+        "Deployment: building (50s elapsed).",
+        "Deployment: building (66s elapsed).",
+        "Deployment: building (82s elapsed).",
+        "Deployment: building (98s elapsed).",
+        "Deployment: building (114s elapsed).",
+        "Deployment: starting (124s elapsed).",
+        "Deployment: starting (141s elapsed).",
+        "Deployment: starting (157s elapsed).",
+        "Deployment: starting (173s elapsed).",
+        "Deployment: starting (189s elapsed).",
+        "Deployment: starting (205s elapsed).",
+        "Deployment: starting (221s elapsed).",
+        "Deployment: starting (237s elapsed).",
+        "Deployment: starting (253s elapsed).",
+        "Deployment: failed (255s elapsed)."
+      ],
+      "result": {
+        "schema_version": 1,
+        "ok": false,
+        "request_id": "d082f6d2-22a9-42aa-a690-58b9e76f3c5a",
+        "data": null,
+        "error": {
+          "code": "STARTUP_FAILED",
+          "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+          "retryable": false,
+          "details": {
+            "request_id": "d082f6d2-22a9-42aa-a690-58b9e76f3c5a",
+            "workspace_id": "ws-initial",
+            "operation_id": "d-40d7a881874f471b9db48019",
+            "next_command": "small-cloud operation status d-40d7a881874f471b9db48019 --workspace ws-initial --json",
+            "state": "failed",
+            "work_continues": false
+          }
+        }
+      },
+      "app": {
+        "app": "completion-acceptance-34",
+        "app_id": "a-4603203e23d444eba07e0582",
+        "description": "Temporary issue 34 deployment completion acceptance",
+        "url": "https://a-4603203e23d444eba07e0582.small-cloud.monkeysees.one",
+        "sharing_scope": "workspace-wide",
+        "availability": "running",
+        "runtime_error": null,
+        "active_deployment_id": "d-fe33704c83a8499ab0a4a4fd",
+        "latest_operation": {
+          "id": "d-40d7a881874f471b9db48019",
+          "kind": "deploy",
+          "app": "completion-acceptance-34",
+          "operation_id": "d-40d7a881874f471b9db48019",
+          "deployment_id": "d-40d7a881874f471b9db48019",
+          "state": "failed",
+          "request_id": "d082f6d2-22a9-42aa-a690-58b9e76f3c5a",
+          "created_at": "2026-09-11T11:42:33.490085Z",
+          "updated_at": "2026-09-11T11:46:47.914831Z",
+          "completed_at": "2026-09-11T11:46:47.914831Z",
+          "error": {
+            "code": "STARTUP_FAILED",
+            "message": "App did not answer HTTP readiness with HTTP 200 within 120 seconds.",
+            "retryable": false,
+            "details": {}
+          },
+          "cleanup_pending": false
+        },
+        "cleanup": null
+      },
+      "url_data_sharing_description_retained": true
+    }
+  ],
+  "standalone_sha256": "caad35b58df171307a9dd8091b7577708b28f835f17a4324abe7c61c885f7c26",
+  "standalone_without_python_or_docker_on_path": true,
+  "credential_id": "cred_4f500ba8a89a4642a4aecec068e5d513",
+  "usage_before": {
+    "creators": {
+      "used": 1,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 2,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 0,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 892,
+      "reserved_seconds": 0,
+      "available_seconds": 59089
+    },
+    "limit_scope": "installation"
+  },
+  "unauthenticated_access": {
+    "status": 401,
+    "code": "AUTH_REQUIRED"
+  },
+  "rows": [
+    {
+      "id": 1,
+      "value": "Retained through issue 34 acceptance"
+    }
+  ],
+  "sharing_request_id": "1a79496a-0de5-4a85-8994-478e35e857f4",
+  "credential_file_unchanged": true,
+  "default_workspace_unchanged": true,
+  "behavior_complete": true,
+  "usage_before_cleanup": {
+    "creators": {
+      "used": 1,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 3,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 1,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 993,
+      "reserved_seconds": 0,
+      "available_seconds": 58988
+    },
+    "limit_scope": "installation"
+  },
+  "cleanup": {
+    "app_id": "a-4603203e23d444eba07e0582",
+    "builders": [
+      {
+        "operation_id": "d-205eaef9e06a4d8da72b68f1",
+        "deleted": true,
+        "id": 165503040,
+        "location": "nbg1",
+        "type": "cx23",
+        "duration_seconds": 17.121427953999998,
+        "charged_seconds": 18
+      },
+      {
+        "operation_id": "d-116e250bf7aa4e6aaf1a15f4",
+        "deleted": true,
+        "id": 165503310,
+        "location": "nbg1",
+        "type": "cx23",
+        "duration_seconds": 24.388437828999997,
+        "charged_seconds": 25
+      },
+      {
+        "operation_id": "d-fe33704c83a8499ab0a4a4fd",
+        "deleted": true,
+        "id": 165503468,
+        "location": "nbg1",
+        "type": "cx23",
+        "duration_seconds": 22.659074663,
+        "charged_seconds": 23
+      },
+      {
+        "operation_id": "d-4dd44c1a9f43454885743f7a",
+        "deleted": true,
+        "id": 165503582,
+        "location": "nbg1",
+        "type": "cx23",
+        "duration_seconds": 14.247985486999994,
+        "charged_seconds": 15
+      },
+      {
+        "operation_id": "d-40d7a881874f471b9db48019",
+        "deleted": true,
+        "id": 165503728,
+        "location": "nbg1",
+        "type": "cx23",
+        "duration_seconds": 19.208506553999996,
+        "charged_seconds": 20
+      }
+    ],
+    "charged_seconds_preserved": 101,
+    "temporary_app_database_credentials_source_logs_removed": true,
+    "artifact_references_retired_for_janitors": true,
+    "original_apps_preserved": true,
+    "services": {
+      "ready": true,
+      "maintenance": false
+    }
+  },
+  "usage_after_cleanup": {
+    "creators": {
+      "used": 1,
+      "limit": 5
+    },
+    "deployed_apps": {
+      "used": 2,
+      "limit": 30
+    },
+    "active_apps": {
+      "used": 0,
+      "limit": 5
+    },
+    "build": {
+      "period_start": "2026-09-01T00:00:00Z",
+      "period_end": "2026-10-01T00:00:00Z",
+      "limit_seconds": 60000,
+      "charged_seconds": 993,
+      "reserved_seconds": 0,
+      "available_seconds": 58988
+    },
+    "limit_scope": "installation"
+  },
+  "removed_app_http_status": 404,
+  "provider_servers_after_cleanup": [
+    {
+      "id": 165120313,
+      "name": "small-cloud-control"
+    },
+    {
+      "id": 165120370,
+      "name": "small-cloud-runtime"
+    }
+  ],
+  "all_acceptance_builders_deleted": true,
+  "original_apps_preserved": [
+    {
+      "id": "a-3f770422b2dc442fb5e49235",
+      "name": "fieldnotes",
+      "active_deployment_id": "d-d851610a32294e22ae81c69b",
+      "sharing_scope": "creator-only"
+    },
+    {
+      "id": "a-9ce8504acd8242b98d681bc3",
+      "name": "publishing-probe",
+      "active_deployment_id": "d-cd728bf566aa4215b126f37b",
+      "sharing_scope": "creator-only"
+    }
+  ],
+  "native_verifier": {
+    "platform": "Linux",
+    "architecture": "x86_64",
+    "sha256": "caad35b58df171307a9dd8091b7577708b28f835f17a4324abe7c61c885f7c26",
+    "installed_checks": 14,
+    "installer_integrity": "passed",
+    "public_https_without_system_ca_paths": "passed",
+    "credential_storage": "file",
+    "frozen_https_login_status_logout": "passed",
+    "frozen_offline_app_preparation": "passed",
+    "frozen_https_deployment_completion": "passed",
+    "frozen_https_split_login_pending_expiry_protection": "passed"
+  },
+  "frozen_completion_tests": 11,
+  "native_verifier_tests": 21,
+  "harness_correction": "Unauthenticated app JSON access expects the existing 401 AUTH_REQUIRED contract; no product change was needed.",
+  "local_acceptance_source_removed": true,
+  "acceptance_complete": true,
+  "release_published": false
+}
