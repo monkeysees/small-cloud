@@ -8,6 +8,8 @@ import json
 import os
 import re
 import selectors
+import signal
+import socket
 from pathlib import Path
 import shlex
 import sqlite3
@@ -107,6 +109,7 @@ def command(arguments, timeout=900, data=None, logs=None):
 class Infrastructure:
     """Calls only installed operator entry points and pinned runtime SSH."""
     def __init__(self, config):
+        self.config = config
         self.root = Path(config.get('infra_directory', '/opt/small-cloud/infra'))
         self.runtime = str(ipaddress.IPv4Address(config.get('runtime_address', '10.42.0.3')))
         self.admin_cidr = str(ipaddress.IPv4Network(config['admin_cidr'], strict=True))
@@ -124,6 +127,9 @@ class Infrastructure:
         return command(['ssh', *self.options, 'root@' + self.runtime, shlex.join(arguments)], timeout, data)
 
     def sandbox(self, *arguments):
+        if arguments and arguments[0] in ('start', 'resume'):
+            from .services import dependencies_ready
+            dependencies_ready(self.config)
         return self.ssh('python3', '/opt/small-cloud/runtime/sandbox.py', '--config',
                         '/etc/small-cloud/runtime.json', *arguments)
 
@@ -445,14 +451,33 @@ def main():
     if os.geteuid() != 0 or not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or stat.S_IMODE(info.st_mode) != 0o600:
         parser.error('Worker requires root and a root-owned mode-0600 configuration')
     config = json.loads(args.config.read_text())
-    publisher = Worker(State(config['database']), Infrastructure(config),
-                       config.get('redaction_key', '/srv/small-cloud/secrets/diagnostics.key'))
-    worker = lifecycle.LifecycleWorker(publisher.state, publisher.infrastructure, registry=publisher.registry) if args.lifecycle else publisher
+    stopping = False
+    def stop(_signum, _frame):
+        nonlocal stopping
+        stopping = True
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
     with open('/run/small-cloud-' + ('lifecycle' if args.lifecycle else 'publishing') + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        publisher = Worker(State(config['database']), Infrastructure(config),
+                           config.get('redaction_key', '/srv/small-cloud/secrets/diagnostics.key'))
+        worker = lifecycle.LifecycleWorker(publisher.state, publisher.infrastructure, registry=publisher.registry) if args.lifecycle else publisher
+        from .services import dependencies_ready, wait_ready
+        wait_ready(lambda: dependencies_ready(config), 45)
         seed_redaction(publisher.registry, config)
         worker.recover()
-        while True:
+        if os.environ.get('NOTIFY_SOCKET'):
+            address = os.environ['NOTIFY_SOCKET']
+            with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as notification:
+                notification.connect('\0' + address[1:] if address.startswith('@') else address)
+                notification.sendall(b'READY=1')
+        last_check = 0
+        while not stopping:
+            if time.monotonic() - last_check >= 5:
+                wait_ready(lambda: dependencies_ready(config), 45)
+                last_check = time.monotonic()
+            if stopping:
+                break
             worked = worker.once()
             if args.once:
                 break

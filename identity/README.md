@@ -1,5 +1,7 @@
 # Workspace identity and CLI
 
+For server upgrades, automatic worker recovery, full installation readiness and intentional maintenance, use the [service deployment runbook](SERVICES.md).
+
 The public homepage is served by Caddy from the [static landing page](../landing/README.md), with testing-stage and manual-admission notices. It requires no sign-in; app content and management APIs retain their existing authentication requirements.
 
 For creator-only/workspace-wide access and the accessible app directory, see [sharing and discovery](SHARING.md).

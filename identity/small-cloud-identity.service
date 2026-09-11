@@ -2,12 +2,18 @@
 Description=Small Cloud identity service
 After=network-online.target
 Wants=network-online.target
+Wants=small-cloud-diagnostics.service small-cloud-lifecycle.service small-cloud-publishing.service
+ConditionPathExists=!/etc/small-cloud/maintenance
+StartLimitIntervalSec=600
+StartLimitBurst=4
 
 [Service]
 Type=simple
 User=small-cloud-identity
 Group=small-cloud-identity
 ExecStart=/opt/small-cloud-identity/bin/small-cloud-identity --config /etc/small-cloud/identity/server.json serve
+ExecStartPost=/opt/small-cloud-identity/bin/python -m identity.services identity
+TimeoutStartSec=60
 Restart=on-failure
 RestartSec=5
 UMask=0077

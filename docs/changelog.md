@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add #47 coordinated server deployment, automatic worker restoration, acknowledged diagnostics readiness, bounded recovery and persistent maintenance stop/resume while preserving operation locks and accounting.
+
 - Finalize #20 with user acceptance and remove only the empty test-one workspace and its exclusive admission, preserving the other workspaces.
 
 - Restore the hosted publishing, lifecycle and diagnostics workers to active service and document restarting them after identity-service upgrades.

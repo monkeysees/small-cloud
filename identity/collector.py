@@ -12,6 +12,7 @@ import time
 from . import diagnostics
 from .common import Failure, read_private
 from .worker import Infrastructure, State, platform_redaction, seed_redaction
+from .services import probe_command
 
 HEADER = re.compile(rb'^<\d{1,3}>1 \S+ \S+ (d-[0-9a-f]{24}) \S+ \S+ - (?:\xef\xbb\xbf)?(.*)$', re.DOTALL)
 SOCKET = '/run/small-cloud-diagnostics.sock'
@@ -76,6 +77,14 @@ class Collector:
                     data = key.fileobj.recv(65536)
                     if not data:
                         raise EOFError()
+                    if key.data.writer is None and (key.data.buffer + data).startswith(b'PING '):
+                        key.data.buffer += data
+                        if re.fullmatch(rb'PING [0-9a-f]{32}\n', key.data.buffer):
+                            key.fileobj.sendall(b'PONG ' + key.data.buffer[5:])
+                            raise EOFError()
+                        if len(key.data.buffer) >= 38:
+                            raise ValueError('Malformed readiness probe')
+                        continue
                     key.data.feed(data)
                 except (EOFError, OSError, ValueError):
                     self.selector.unregister(key.fileobj)
@@ -117,9 +126,28 @@ def main():
                 '[collector restarted; output during the interruption may be missing]', interrupted=True)
         collector = Collector(SOCKET, state, registry)
         tunnel = None
+        health = None
+        health_started = 0
+        last_healthy = time.monotonic()
         last_maintenance = 0
         try:
             while True:
+                now = time.monotonic()
+                if health is not None and (health.poll() is not None or now - health_started > 10):
+                    if health.poll() is None:
+                        health.kill()
+                    if health.wait() == 0:
+                        last_healthy = now
+                    elif tunnel is not None:
+                        tunnel.terminate()
+                        tunnel.wait(timeout=5)
+                    health = None
+                if now - last_healthy > 45:
+                    raise OSError('Diagnostics tunnel recovery deadline exceeded')
+                if health is None and now - health_started >= 5:
+                    health = subprocess.Popen(probe_command(infrastructure), stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    health_started = now
                 if time.monotonic() - last_maintenance >= 30:
                     platform_redaction(registry, config)
                     registry.maintain()
@@ -142,6 +170,9 @@ def main():
                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 collector.poll()
         finally:
+            if health is not None:
+                health.kill()
+                health.wait(timeout=5)
             if tunnel is not None:
                 tunnel.terminate()
                 tunnel.wait(timeout=10)

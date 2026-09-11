@@ -3,14 +3,20 @@ Description=Small Cloud redacted runtime diagnostics collector
 After=network-online.target small-cloud-identity.service
 Wants=network-online.target
 Requires=small-cloud-identity.service
+PartOf=small-cloud-identity.service
+ConditionPathExists=!/etc/small-cloud/maintenance
+StartLimitIntervalSec=600
+StartLimitBurst=4
 
 [Service]
 Type=simple
 User=root
 UMask=0077
 ExecStart=/opt/small-cloud-identity/bin/python -m identity.collector --config /etc/small-cloud/publishing.json
-Restart=always
-RestartSec=2
+ExecStartPost=/opt/small-cloud-identity/bin/python -m identity.services dependencies
+TimeoutStartSec=60
+Restart=on-failure
+RestartSec=5
 TimeoutStopSec=15
 KillMode=control-group
 PrivateTmp=true

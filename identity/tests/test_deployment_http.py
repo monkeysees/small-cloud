@@ -236,8 +236,17 @@ class DeploymentAcceptance(unittest.TestCase):
                 output = b'{}'
             return subprocess.CompletedProcess(arguments, 0, output)
 
+        import threading
+        from identity.http import create_server
+        health_server = create_server(json.loads(self.config.read_text()), port=0)
+        health_thread = threading.Thread(target=health_server.serve_forever)
+        health_thread.start()
+        self.addCleanup(health_server.server_close)
+        self.addCleanup(health_thread.join)
+        self.addCleanup(health_server.shutdown)
         worker = Worker(State(self.home / 'server' / 'identity.sqlite3'),
-                        InfrastructureFixture({'admin_cidr': '203.0.113.1/32'}))
+                        InfrastructureFixture({'admin_cidr': '203.0.113.1/32',
+                            'identity_config': str(self.config), 'identity_port': health_server.server_port}))
         _, accepted = self.deploy()
         with patch('identity.worker.subprocess.run', side_effect=external_process):
             worker.once()

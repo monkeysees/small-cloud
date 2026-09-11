@@ -58,19 +58,13 @@ Accounting reservations must also be settled before repairing an interrupted dep
 
 ## Keep the hosted workers running
 
-After an identity-service upgrade or restart, explicitly start all three dependent workers. Their systemd `Requires=small-cloud-identity.service` dependency can stop them when identity stops; enabling a unit for boot does not restart an already stopped unit after an identity upgrade.
-
-On the control host, start diagnostics first and verify its `/run/small-cloud-diagnostics.sock` forwarding is reachable from the runtime host before starting publishing and lifecycle:
+Use the [supported server deployment and maintenance procedure](SERVICES.md). Identity startup, restart and control-host boot restore all required workers automatically, with bounded readiness and recovery. On the control host:
 
 ```bash
-systemctl enable --now small-cloud-diagnostics
-# After verifying the runtime host can connect to the diagnostics socket:
-systemctl enable --now small-cloud-lifecycle small-cloud-publishing
-systemctl is-active small-cloud-identity small-cloud-diagnostics small-cloud-lifecycle small-cloud-publishing
-systemctl is-enabled small-cloud-identity small-cloud-diagnostics small-cloud-lifecycle small-cloud-publishing
+/opt/small-cloud-identity/bin/python -m identity.services check
 ```
 
-The normal hosted state is all four services active and enabled. Check that their restart counters remain stable and that an authorized request wakes an idle app. Do not restore workers to a stopped pre-test state when handing the service back for use.
+The normal hosted state is all four services ready and enabled, including an acknowledged runtime-to-collector round trip. A service failure prevents deployment success. Use the documented maintenance-stop/resume commands for intentional shutdown; do not restore workers to a stopped pre-test state when handing the service back for use.
 
 ## Acceptance report
 
