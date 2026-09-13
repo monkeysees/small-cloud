@@ -39,5 +39,12 @@
     "Native CI on Ubuntu 22.04 x86-64, Ubuntu 24.04 ARM64, macOS Intel and macOS ARM64",
     "New version and verified artifact publication",
     "Public HTTPS update and no-update acceptance on all four targets"
-  ]
+  ],
+  "subsequent_release_acceptance": {
+    "date": "2026-09-13",
+    "version": "v0.7.1",
+    "status": "complete",
+    "evidence": "cli-update-release-2026-09-13.json",
+    "note": "The preceding publication/pending fields describe the September 11 development checkpoint."
+  }
 }

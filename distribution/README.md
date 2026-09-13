@@ -4,7 +4,7 @@ Small Cloud runs without a Python installation or source checkout. The native ex
 
 ## Install and sign in
 
-Version 0.6.0 is published on all four supported targets, adding failed phases, bounded redacted diagnostics, `app logs --tail` and structured recovery guidance; see the [deployment-recovery acceptance record](../docs/acceptance/deployment-recovery-2026-09-11.md). Deployment readiness waits, explicit `--no-wait` acceptance, offline `app check`, runtime guidance, workspace creation and selection remain available.
+Version 0.7.1 is published on all four supported targets, adding explicit executable updates with checksum verification, atomic replacement and failure recovery; see the [update acceptance record](../docs/acceptance/cli-update-2026-09-13.md). Deployment readiness waits, explicit `--no-wait` acceptance, failed-phase diagnostics, `app logs --tail`, offline `app check`, runtime guidance, workspace creation and selection remain available.
 
 ```sh
 curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | sh
@@ -23,14 +23,14 @@ In Fish, use `fish_add_path "$HOME/.local/bin"`. Login requires human Google bro
 To select an existing release and another absolute install directory:
 
 ```sh
-curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.6.0 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
+curl --fail --silent --show-error --proto '=https' https://small-cloud.monkeysees.one/cli/install.sh | SMALL_CLOUD_VERSION=v0.7.1 SMALL_CLOUD_INSTALL_DIR="$HOME/bin" sh
 ```
 
-In builds containing #43, update deliberately with `small-cloud update` or `small-cloud update --json --no-input`. This downloads the official latest artifact and checksum for your native target, checks startup, and atomically replaces the executable you invoked (including custom installation paths and resolved symlinks). Its directory must be writable. Human/JSON results report installed and resulting versions, the executable path, and `updated` or `already_current`; matching bytes are not rewritten. It never prompts, starts login, changes credentials or edits shell startup files. Ordinary commands never check for or install updates.
+Update deliberately with `small-cloud update` or `small-cloud update --json --no-input`. This downloads the official latest artifact and checksum for your native target, checks startup, and atomically replaces the executable you invoked (including custom installation paths and resolved symlinks). Its directory must be writable. Human/JSON results report installed and resulting versions, the executable path, and `updated` or `already_current`; matching bytes are not rewritten. It never prompts, starts login, changes credentials or edits shell startup files. Ordinary commands never check for or install updates.
 
 `UPDATE_FAILED` exits 1 with the failed stage and `small-cloud guide updating` recovery guidance; download, checksum and startup failures preserve the previous executable. Downloads have a two-minute budget, 30-second socket timeout and 256 MiB limit; startup has a 30-second timeout. Resolve connectivity or directory permissions before retrying; malformed/corrupt releases may require operator repair. Interrupted updates exit 130: inspect `small-cloud --version` before retrying. Older published versions are refused; different bytes with the same version are reinstalled. Published releases must still remain immutable.
 
-Current public v0.6.0 and earlier releases do not include this command; rerun the installer to bootstrap a release that does. Source/Python installations return `UPDATE_UNSUPPORTED` (exit 2), preserving Python and package-manager scripts. The installer remains the explicit way to select a pinned release with `SMALL_CLOUD_VERSION` and `SMALL_CLOUD_INSTALL_DIR`. Help and `small-cloud guide updating` explain recovery offline. Completion generators remain pending.
+Public v0.6.0 and earlier releases do not include this command; rerun the installer once to bootstrap v0.7.1 or later. Source/Python installations return `UPDATE_UNSUPPORTED` (exit 2), preserving Python and package-manager scripts. The installer remains the explicit way to select a pinned release with `SMALL_CLOUD_VERSION` and `SMALL_CLOUD_INSTALL_DIR`. Help and `small-cloud guide updating` explain recovery offline. Completion generators remain pending.
 
 ## Standalone downloads
 
@@ -65,7 +65,7 @@ The [native workflow](../.github/workflows/cli-release.yml) uses four GitHub-hos
 
 The native verifier also runs the deployment completion and recovery suite through the frozen HTTPS fixture: default readiness, explicit acceptance, request replay, failed phases and diagnostic excerpts, tail retrieval after long logs, redaction, denied/unavailable diagnostics, service-side uncertainty, timeout, interruption, identity outages/restarts and elapsed bounds for slowly delivered responses. This is fixture evidence; hosted behavior and publication are recorded separately in the [#35 acceptance report](../docs/acceptance/deployment-recovery-2026-09-11.md).
 
-The same four-target verifier now copies the frozen fixture into an installation directory and exercises explicit update over controlled HTTPS, including replacement with the real production artifact, no-update inode preservation, corrupt/unusable/older releases, unavailable/redirected/truncated downloads, interruption, custom symlinks, and offline discovery. These tests preserve shell files and create no credential state. The test launcher alone supplies the fixture download origin and source-test executable location; production exposes neither override. New artifact execution uses PyInstaller's independent-process environment ([upstream guidance](https://pyinstaller.org/en/stable/common-issues-and-pitfalls.html)). Local native results and pending cross-platform/public acceptance are recorded in the [#43 acceptance record](../docs/acceptance/cli-update-2026-09-11.md).
+The same four-target verifier now copies the frozen fixture into an installation directory and exercises explicit update over controlled HTTPS, including replacement with the real production artifact, no-update inode preservation, corrupt/unusable/older releases, unavailable/redirected/truncated downloads, interruption, custom symlinks, and offline discovery. These tests preserve shell files and create no credential state. The test launcher alone supplies the fixture download origin and source-test executable location; production exposes neither override. New artifact execution uses PyInstaller's independent-process environment ([upstream guidance](https://pyinstaller.org/en/stable/common-issues-and-pitfalls.html)). Local results are recorded in the [implementation report](../docs/acceptance/cli-update-2026-09-11.md); four-target native and public acceptance are recorded in the [release report](../docs/acceptance/cli-update-2026-09-13.md).
 
 CA dependency review on 2026-09-09: [certifi 2026.7.22](https://pypi.org/project/certifi/) is the established Requests ecosystem's Mozilla CA bundle, maintained at [certifi/python-certifi](https://github.com/certifi/python-certifi) (latest push August 25). Pinning it makes bundled trust reviewable; refresh it deliberately with CLI releases.
 
@@ -75,7 +75,7 @@ Production calls `identity.cli.main()` with its fixed default. Source tests call
 
 ## Operator publication
 
-The source repository is private. Native CI artifacts and draft GitHub releases stay private; public downloads expose only the four verified production binaries, their checksums and the installer, not the source or fixture executable.
+The source repository and native CI evidence are public. The release workflow uploads only production binaries, checksums and acceptance evidence; it never uploads the fixture executable. The download service exposes the four verified production binaries, their checksums and the installer.
 
 Dispatch `Standalone CLI` to build and verify the current branch. A `v*` tag runs the same checks and creates a draft GitHub release only after all four targets pass. Before tagging, ensure the tag matches the version in `pyproject.toml` and `identity/commands.py`. Keep both per-target acceptance JSON files with the release evidence.
 

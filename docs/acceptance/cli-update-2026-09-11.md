@@ -1,6 +1,6 @@
 # Explicit CLI updates — #43
 
-Implementation `f9ba163` and v0.7.1 release preparation are pushed on `main`, based on `55066d900c3777af301551b1171ec7b29202cd4f`. The CLI release is not published: public v0.6.0 artifacts remain unchanged and do not contain `update`. Issue #43 remains open pending native and publication acceptance. See the [September 13 shipping follow-up](cli-update-2026-09-13.md) for the GitHub Actions billing blocker.
+Implementation `f9ba163` is based on `55066d900c3777af301551b1171ec7b29202cd4f`. This report preserves the local development evidence. v0.7.1 subsequently passed native and public acceptance on all four targets and is published as `latest`; see the [September 13 release acceptance](cli-update-2026-09-13.md). Public v0.6.0 artifacts remain available unchanged and require installer bootstrap because they do not contain `update`.
 
 ## Delivered behavior
 
@@ -23,8 +23,8 @@ Tests use the agreed executable/subprocess boundary and a controlled HTTPS artif
 
 This workstation uses Linux x86-64 with glibc 2.36. These builds establish local native execution, not the Ubuntu 22.04 minimum-version acceptance or another platform's compatibility. Build files are ignored and have not replaced any published version. Artifact hashes and final regression results are recorded in the [evidence file](../evidence/cli-update-2026-09-11.json).
 
-## Pending acceptance
+## Subsequent release acceptance
 
-The existing `Standalone CLI` workflow calls `distribution/verify.py` on Ubuntu 22.04 x86-64, Ubuntu 24.04 ARM64, macOS Intel and macOS ARM64. Its verifier now includes the update suite, including replacement with each target's real production artifact. Native execution began September 13; a macOS test assertion was corrected, and the subsequent v0.7.1 run was refused before execution because of account billing/spending limits.
+The `Standalone CLI` workflow calls `distribution/verify.py` on Ubuntu 22.04 x86-64, Ubuntu 24.04 ARM64, macOS Intel and macOS ARM64. Its verifier includes the update suite, including replacement with each target's real production artifact. On September 13, a macOS access-time assertion was corrected, and making the repository public resolved the subsequent Actions execution blocker.
 
-After GitHub Actions billing access is restored, rerun v0.7.1 and retain all four results. Publish only verified artifacts, then run the extended public installation workflow for real HTTPS update/no-update on every supported target. Existing releases lacking `update` bootstrap through the installer. The pushed implementation alone does not complete those acceptance criteria.
+All four v0.7.1 targets passed both credential modes and the public installation/update/no-update workflow. Verified artifacts were published without changing backend services, and workstation acceptance preserved existing credentials and shell files. The [release report](cli-update-2026-09-13.md) and [release evidence](../evidence/cli-update-release-2026-09-13.json) complete #43's acceptance; broader human/fresh-agent journeys remain in #45.
