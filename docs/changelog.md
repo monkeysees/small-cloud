@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-## 0.7.1 — 2026-09-13
-
 - Add #43 explicit `small-cloud update` with checked atomic executable replacement, human/JSON version outcomes, failure recovery and offline discovery; extend native artifact acceptance for all four supported targets.
+
+- Ship #43 source and v0.7.1 release preparation; correct macOS access-time sensitivity in the preservation test, with native/public release acceptance blocked by GitHub Actions billing access.
 
 ## 0.6.0 — 2026-09-11
 

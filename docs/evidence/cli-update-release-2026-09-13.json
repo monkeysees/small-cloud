@@ -1,0 +1,35 @@
+{
+  "issue": 43,
+  "date": "2026-09-13",
+  "source_shipping": "pushed to main",
+  "implementation_commit": "f9ba163",
+  "release_preparation_commit": "bd5ab22",
+  "test_correction_commit": "785304f",
+  "candidate_version": "v0.7.1",
+  "public_latest": "v0.6.0",
+  "published_downloads_changed": false,
+  "backend_services_changed": false,
+  "initial_run": {
+    "url": "https://github.com/monkeysees/small-cloud/actions/runs/34731758639",
+    "conclusion": "cancelled after macOS test assertion failure",
+    "macos_arm64_frozen_tests": {"run": 42, "passed": 41, "failed": 1},
+    "failure": "Source-install test compared atime; macOS updates it on normal Python execution",
+    "correction": "Compare exact bytes, inode, mtime_ns and mode; exclude access time",
+    "linux_arm64_file_credential_pass": "passed before cancellation"
+  },
+  "retry": {
+    "url": "https://github.com/monkeysees/small-cloud/actions/runs/34732254382",
+    "tag": "v0.7.1",
+    "conclusion": "failure before any job step executed",
+    "affected_targets": ["linux-x86_64", "linux-arm64", "macos-x86_64", "macos-arm64"],
+    "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+  },
+  "local_release_checks": {
+    "update_suite_before_metadata_correction": "10 passed; 1 native-only case skipped",
+    "corrected_source_installation_test": "passed",
+    "pyright": "0 errors, 0 warnings",
+    "actionlint": "passed",
+    "independent_correction_review": "no findings"
+  },
+  "pending": ["Restore GitHub Actions billing/spending access", "Complete four-target native verification", "Publish verified v0.7.1 artifacts", "Complete public installation/update/no-update verification on all four targets", "Record retained-credential verification and close #43"]
+}

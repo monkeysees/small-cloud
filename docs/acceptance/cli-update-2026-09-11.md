@@ -1,6 +1,6 @@
 # Explicit CLI updates — #43
 
-Implementation is local on `main`, based on `55066d900c3777af301551b1171ec7b29202cd4f`. It is not published. The public v0.6.0 artifacts remain unchanged and do not contain `update`. Issue #43 remains open pending the other native targets and publication acceptance.
+Implementation `f9ba163` and v0.7.1 release preparation are pushed on `main`, based on `55066d900c3777af301551b1171ec7b29202cd4f`. The CLI release is not published: public v0.6.0 artifacts remain unchanged and do not contain `update`. Issue #43 remains open pending native and publication acceptance. See the [September 13 shipping follow-up](cli-update-2026-09-13.md) for the GitHub Actions billing blocker.
 
 ## Delivered behavior
 
@@ -25,6 +25,6 @@ This workstation uses Linux x86-64 with glibc 2.36. These builds establish local
 
 ## Pending acceptance
 
-The existing `Standalone CLI` workflow calls `distribution/verify.py` on Ubuntu 22.04 x86-64, Ubuntu 24.04 ARM64, macOS Intel and macOS ARM64. Its verifier now includes the update suite, including replacement with each target's real production artifact. These workflow runs have not yet executed this commit.
+The existing `Standalone CLI` workflow calls `distribution/verify.py` on Ubuntu 22.04 x86-64, Ubuntu 24.04 ARM64, macOS Intel and macOS ARM64. Its verifier now includes the update suite, including replacement with each target's real production artifact. Native execution began September 13; a macOS test assertion was corrected, and the subsequent v0.7.1 run was refused before execution because of account billing/spending limits.
 
-After authorized push, run the native workflow and retain all four results. Before release, choose a new version in `pyproject.toml` and `identity/commands.py`; never republish v0.6.0 with these different bytes. Publish only verified artifacts, then verify the public HTTPS update and no-update paths on every supported target. Existing releases lacking `update` bootstrap through the installer. The implementation commit alone does not complete those acceptance criteria.
+After GitHub Actions billing access is restored, rerun v0.7.1 and retain all four results. Publish only verified artifacts, then run the extended public installation workflow for real HTTPS update/no-update on every supported target. Existing releases lacking `update` bootstrap through the installer. The pushed implementation alone does not complete those acceptance criteria.
