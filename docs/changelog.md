@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.0 — 2026-09-13
+
 - Add #43 explicit `small-cloud update` with checked atomic executable replacement, human/JSON version outcomes, failure recovery and offline discovery; extend native artifact acceptance for all four supported targets.
 
 ## 0.6.0 — 2026-09-11

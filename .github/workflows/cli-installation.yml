@@ -6,7 +6,7 @@ on:
       version:
         description: Published version to verify
         required: true
-        default: v0.6.0
+        default: v0.7.0
         type: string
 
 permissions:
@@ -68,8 +68,22 @@ jobs:
           test "$status" -eq 3
           grep -q AUTH_REQUIRED "$RUNNER_TEMP/status.json"
           printf '{"target":"%s","version":"%s","public_installation":"passed","offline_without_python_on_path":"passed","shell_files_unchanged":true,"installation_did_not_login":true}\n' "$TARGET" "$RELEASE_VERSION" > "$RUNNER_TEMP/installation.json"
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Build an undistributed update source for public HTTPS acceptance
+        env:
+          OPENSSL_STATIC: '1'
+        run: |
+          python -m pip install --no-cache-dir . -r distribution/requirements.txt
+          python distribution/build.py --fixture
+      - name: Verify explicit public update and no-update from installed executables
+        run: python distribution/verify_public_update.py build/release/small-cloud-fixture "$RUNNER_TEMP/installed cli/small-cloud" > "$RUNNER_TEMP/update.json"
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: published-install-${{ matrix.target }}
-          path: ${{ runner.temp }}/installation.json
+          path: |
+            ${{ runner.temp }}/installation.json
+            ${{ runner.temp }}/update.json
           if-no-files-found: error
