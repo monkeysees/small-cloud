@@ -4,7 +4,7 @@ from typing import Any
 
 from .common import Failure
 
-VERSION = '0.7.0'
+VERSION = '0.7.1'
 
 def argument(name, description, **options):
     return {'name': name, 'description': description, **options}

@@ -189,6 +189,7 @@ class UpdateAcceptance(unittest.TestCase):
         self.assertEqual(self.installed.read_bytes(), self.original)
 
     def test_source_installation_refuses_update_without_replacing_python(self):
+        original_bytes = Path(sys.executable).read_bytes()
         before = Path(sys.executable).stat()
         result = subprocess.run([sys.executable, '-m', 'identity.cli', 'update', '--json'],
                                 env=self.environment, capture_output=True, text=True, timeout=30)
@@ -196,7 +197,10 @@ class UpdateAcceptance(unittest.TestCase):
         error = json.loads(result.stdout)['error']
         self.assertEqual(error['code'], 'UPDATE_UNSUPPORTED')
         self.assertEqual(error['details']['next_command'], 'small-cloud guide updating')
-        self.assertEqual(Path(sys.executable).stat(), before)
+        self.assertEqual(Path(sys.executable).read_bytes(), original_bytes)
+        after = Path(sys.executable).stat()
+        self.assertEqual((after.st_ino, after.st_mtime_ns, after.st_mode),
+                         (before.st_ino, before.st_mtime_ns, before.st_mode))
         self.assertEqual(self.paths, [])
         self.assertEqual(self.installed.read_bytes(), self.original)
 
